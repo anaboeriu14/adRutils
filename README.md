@@ -1,4 +1,4 @@
-# adRUtils
+# adRutils
 
 [![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)](https://github.com/anaboeriu14/adRUtils/releases)
 
