@@ -1,7 +1,7 @@
 
 #' @title rUtils: A collection of R utility functions
 #' @description This package provides various utility functions for data manipulation, imputation, and other common tasks.
-#' @name adRUtils
+#' @name adRutils
 #'
 #' @import dplyr
 #' @importFrom magrittr %>%
@@ -14,6 +14,6 @@
 #' @importFrom missForest missForest
 #' @importFrom doParallel registerDoParallel
 #' @importFrom here here
-#' @importFrom utils head
+#' @importFrom utils head object.size
 NULL
 
