@@ -3,7 +3,7 @@ Type: Package
 Version: 0.1.0
 Title: Utility Functions for Alzheimer's Disease Research
 Authors@R: c(person("Ana", "Boeriu", email = "ana.boeriu@ucsf.edu",role = c("aut", "cre")))
-Description: A collection of utility function to support AD research in R.This package
+Description: A collection of utility functions to support AD research in R. This package
   provides caching mechanisms for API calls, and data processing, along with general helper functions
   for common data transformations and quality checks.
   Functions include methods for caching results, handling missing values,
