@@ -1,4 +1,4 @@
-# adRUtils 0.1.0
+# adRutils 0.1.0
 
 ## Initial Release
 
