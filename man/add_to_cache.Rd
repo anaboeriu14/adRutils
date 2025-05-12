@@ -2,20 +2,20 @@
 % Please edit documentation in R/cache.R
 \name{add_to_cache}
 \alias{add_to_cache}
-\title{Add an entry to the cache}
+\title{Store a value in the cache}
 \usage{
 add_to_cache(cache, key, value)
 }
 \arguments{
-\item{cache}{The cache object (list) to add to}
+\item{cache}{List containing the cache data}
 
-\item{key}{The key to store the value under}
+\item{key}{Character string for the cache key}
 
-\item{value}{The value to store}
+\item{value}{The value to store in the cache}
 }
 \value{
-The updated cache object
+The updated cache list
 }
 \description{
-This function adds or updates a key-value pair in the cache.
+Adds or updates a value in the cache with a timestamp.
 }

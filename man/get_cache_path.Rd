@@ -2,7 +2,7 @@
 % Please edit documentation in R/cache.R
 \name{get_cache_path}
 \alias{get_cache_path}
-\title{Create a standardized cache file path}
+\title{Generate a cache file path}
 \usage{
 get_cache_path(
   cache_name,
@@ -13,19 +13,26 @@ get_cache_path(
 )
 }
 \arguments{
-\item{cache_name}{Character string for the cache name (will be sanitized)}
+\item{cache_name}{Character string for the base name of the cache file}
 
-\item{cache_dir}{Directory to store cache files, defaults to "cache"}
+\item{cache_dir}{Character string for the directory where cache files are stored}
 
-\item{extension}{File extension to use, defaults to ".rds"}
+\item{extension}{Character string for the file extension (should start with '.')}
 
-\item{create_dir}{Logical, should the directory be created if missing?}
+\item{create_dir}{Logical indicating whether to create the cache directory if it doesn't exist}
 
-\item{validate_name}{Logical, should cache_name be validated/sanitized?}
+\item{validate_name}{Logical indicating whether to validate and sanitize the cache name}
 }
 \value{
-A full path to the cache file
+Character string containing the full path to the cache file
 }
 \description{
-Create a standardized cache file path
+Creates a standardized path for cache files, ensuring valid filenames and proper directory structure.
+}
+\examples{
+\dontrun{
+# Get a path for medication cache
+cache_path <- get_cache_path("medication_lookup", "cache", ".rds")
+}
+
 }

@@ -12,31 +12,32 @@ save_cache(
   force = FALSE,
   periodic = TRUE,
   save_frequency = 100,
-  counter = NULL
+  counter = NULL,
+  compress = FALSE
 )
 }
 \arguments{
-\item{cache}{The cache object to save}
+\item{cache}{List containing the cache data}
 
-\item{cache_name}{Name of the cache}
+\item{cache_name}{Character string for the base name of the cache file}
 
-\item{cache_dir}{Directory where cache files are stored, defaults to "cache"}
+\item{cache_dir}{Character string for the directory where cache files are stored}
 
-\item{extension}{File extension to use, defaults to ".rds"}
+\item{extension}{Character string for the file extension}
 
-\item{force}{Logical, force saving regardless of counter}
+\item{force}{Logical indicating whether to force saving regardless of other conditions}
 
-\item{periodic}{Logical, enable periodic saving based on counter}
+\item{periodic}{Logical indicating whether to use periodic saving based on counter}
 
-\item{save_frequency}{How often to save when periodic is TRUE, default is 100}
+\item{save_frequency}{Integer indicating how often to save when using periodic saving}
 
-\item{counter}{Current iteration counter for periodic saving}
+\item{counter}{Integer indicating the current iteration count}
+
+\item{compress}{Logical indicating whether to use compression when saving, default = FALSE}
 }
 \value{
-Logical, TRUE if cache was saved, FALSE otherwise
+Logical indicating whether the cache was saved
 }
 \description{
-This function saves a cache to disk, either immediately or
-based on a periodic counter. This allows for periodic saving during
-long-running operations to prevent data loss.
+Saves a cache object to disk, with options for periodic saving and compression.
 }

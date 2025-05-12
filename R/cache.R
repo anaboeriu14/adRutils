@@ -294,7 +294,7 @@ get_cache_stats <- function(cache) {
     created = created,
     last_updated = last_updated,
     age_days = age_days,
-    size_estimate = object.size(cache)
+    size_estimate = utils::object.size(cache)
   ))
 }
 
@@ -349,7 +349,7 @@ export_cache <- function(cache, format = c("csv", "dataframe"), file_path = NULL
   for (i in seq_along(keys)) {
     entry <- cache$entries[[keys[i]]]
     if (is.list(entry) && "value" %in% names(entry)) {
-      values[i] <- if(is.character(entry$value)) entry$value else jsonlite::toJSON(entry$value)
+      values[i] <- if(is.character(entry$value)) entry$value else as.character(entry$value)
       timestamps[i] <- if("timestamp" %in% names(entry)) as.character(entry$timestamp) else NA
     }
   }
@@ -363,14 +363,14 @@ export_cache <- function(cache, format = c("csv", "dataframe"), file_path = NULL
   )
 
   # Export based on format
-  if (format == "csv" && !is.null(file_path)) {
+  if (format == "csv") {
+    if (is.null(file_path)) {
+      stop("file_path must be provided when format='csv'")
+    }
     utils::write.csv(cache_df, file = file_path, row.names = FALSE)
     message("Exported cache to CSV: ", file_path)
     return(invisible(NULL))
   } else if (format == "dataframe") {
-    return(cache_df)
-  } else {
-    warning("Invalid format or missing file_path for export")
     return(cache_df)
   }
 }

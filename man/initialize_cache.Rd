@@ -2,21 +2,20 @@
 % Please edit documentation in R/cache.R
 \name{initialize_cache}
 \alias{initialize_cache}
-\title{Initialize or load a cache}
+\title{Initialize a cache}
 \usage{
 initialize_cache(cache_name, cache_dir = "cache", extension = ".rds")
 }
 \arguments{
-\item{cache_name}{Name of the cache}
+\item{cache_name}{Character string for the base name of the cache file}
 
-\item{cache_dir}{Directory where cache files are stored, defaults to "cache"}
+\item{cache_dir}{Character string for the directory where cache files are stored}
 
-\item{extension}{File extension to use, defaults to ".rds"}
+\item{extension}{Character string for the file extension}
 }
 \value{
 A list containing the cache data
 }
 \description{
-This function creates a new cache or loads an existing one from disk. If the cache doesn't exist, it will return an empty list. If it does
-exist it will load the cache from the file.
+Loads an existing cache file or creates a new one if it doesn't exist.
 }

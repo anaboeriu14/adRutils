@@ -2,21 +2,22 @@
 % Please edit documentation in R/cache.R
 \name{get_from_cache}
 \alias{get_from_cache}
-\title{Retrieve a value from cache}
+\title{Retrieve a value from the cache}
 \usage{
-get_from_cache(cache, key, default = NULL)
+get_from_cache(cache, key, default = NULL, max_age_days = NULL)
 }
 \arguments{
-\item{cache}{The cache object (list) to retrieve from}
+\item{cache}{List containing the cache data}
 
-\item{key}{The key to look up in the cache}
+\item{key}{Character string for the cache key}
 
-\item{default}{The default value to return if key is not found}
+\item{default}{Value to return if the key is not found or if the entry is expired}
+
+\item{max_age_days}{Numeric indicating the maximum age in days for cached entries, NULL for no expiration}
 }
 \value{
-The cached value or the default if not found
+The cached value or the default value if not found or expired
 }
 \description{
-This function safely retrieves a value from a cache object
-by key, returning a default value if the key doesn't exist.
+Gets a value from the cache by key, with optional expiration checking.
 }
