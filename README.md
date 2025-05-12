@@ -1,9 +1,20 @@
 # adRUtils
+
+[![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)](https://github.com/anaboeriu14/adRUtils/releases)
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+
 R utility functions for data cleaning, transformation, and file operations
 
 ## Overview
 
 `adRUtils` provides a collection of general-purpose functions to streamline common data processing tasks. 
+
+## Version Information
+
+**Current version:** 0.1.0
+
+See [Releases](https://github.com/anaboeriu14/adRUtils/releases) for detailed changelog and release notes.
+
 
 ## Installation
 
