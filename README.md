@@ -1,23 +1,23 @@
 # adRutils
 
-[![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)](https://github.com/anaboeriu14/adRUtils/releases)
+[![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)](https://github.com/anaboeriu14/adRutils/releases)
 
 R utility functions for data cleaning, transformation, and file operations
 
 ## Overview
 
-`adRUtils` provides a collection of general-purpose functions to streamline common data processing tasks. 
+`adRutils` provides a collection of general-purpose functions to streamline common data processing tasks. 
 
 ## Version Information
 
 **Current version:** 0.1.0
 
-See [Releases](https://github.com/anaboeriu14/adRUtils/releases) for detailed changelog and release notes.
+See [Releases](https://github.com/anaboeriu14/adRutils/releases) for detailed changelog and release notes.
 
 
 ## Installation
 
-You can install the  `adRUtils` package from GitHub using one of these methods:
+You can install the  `adRutils` package from GitHub using one of these methods:
 
 ### Option 1: Using remotes (recommended for most users)
 The `remotes` package is lightweight and focused solely on package installation:
@@ -28,8 +28,8 @@ if (!requireNamespace("remotes", quietly = TRUE)) {
   install.packages("remotes")
 }
 
-# Install adRUtils from GitHub
-remotes::install_github("anaboeriu14/adRUtils")
+# Install adRutils from GitHub
+remotes::install_github("anaboeriu14/adRutils")
 ```
 ### Option 2: Using devtools 
 
@@ -39,7 +39,7 @@ The `devtools` package is more comprehensive than `remotes`, with additional too
 if (!requireNamespace("devtools", quietly = TRUE)) {
   install.packages("devtools")
 }
-devtools::install_github("anaboeriu14/adRUtils")
+devtools::install_github("anaboeriu14/adRutils")
 ```
 
 ## Features
@@ -71,8 +71,8 @@ This package provides utility functions for data cleaning, transformation, and f
 For full documentation, including function details and additional examples, run:
 
 ```r
-?adRUtils::read_pattern_csv
-?adRUtils::summarize_na
+?adRutils::read_pattern_csv
+?adRutils::summarize_na
 # etc.
 ```
 
