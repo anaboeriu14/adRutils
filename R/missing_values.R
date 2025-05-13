@@ -114,15 +114,15 @@ summarize_na <- function(data,
 #' )
 #'
 #' # Remove columns with more than 90% NA values
-#' drop_na_sparse_cols(df, threshold = 90)
+#' drop_sparse_na_cols(df, threshold = 90)
 #'
 #' # Get information about what was removed
-#' result <- drop_na_sparse_cols(df, threshold = 90, return_info = TRUE)
+#' result <- drop_sparse_na_cols(df, threshold = 90, return_info = TRUE)
 #' result$removed_cols
 #' result$na_summary
 #'
 #' @seealso \code{\link{summarize_na}} for analyzing NA patterns without removing columns
-drop_na_sparse_cols <- function(data, threshold = 99, quiet = FALSE, return_info = FALSE) {
+drop_sparse_na_cols <- function(data, threshold = 99, quiet = FALSE, return_info = FALSE) {
   # Input validation
   if (!is.data.frame(data)) {
     stop("Input 'data' must be a data frame or tibble.")
