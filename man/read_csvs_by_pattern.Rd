@@ -20,7 +20,13 @@ read_csvs_by_pattern(
 
 \item{missing_vals}{Character vector. Values to be treated as NA (required)}
 
-\item{patterns}{List or character vector. Patterns to match files (e.g., c("base_pattern", "pattern_2"))}
+\item{patterns}{List or character vector. Patterns to match files against.
+Each pattern will match any file containing that string.
+\itemize{
+\item Single pattern: "dataf_version_" will match all files containing this exact phrase
+\item Multiple patterns: c("genetics", "clean_") will match ANY file containing EITHER "genetics" OR "clean_"
+\item Regular expressions can be used: "Genetic_v\link{0-9}+" will match files "Genetic_v1", "Genetic_v2", etc
+}}
 
 \item{all_files}{Logical. If TRUE, reads all CSV files in directory regardless of patterns}
 

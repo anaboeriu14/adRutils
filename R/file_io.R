@@ -2,7 +2,11 @@
 #'
 #' @param directory_path Character. Path to the directory containing CSV files
 #' @param missing_vals Character vector. Values to be treated as NA (required)
-#' @param patterns List or character vector. Patterns to match files (e.g., c("base_pattern", "pattern_2"))
+#' @param patterns List or character vector. Patterns to match files against.
+#'    Each pattern will match any file containing that string.
+#'    - Single pattern: "dataf_version_" will match all files containing this exact phrase
+#'   - Multiple patterns: c("genetics", "clean_") will match ANY file containing EITHER "genetics" OR "clean_"
+#'   - Regular expressions can be used: "Genetic_v[0-9]+" will match files "Genetic_v1", "Genetic_v2", etc
 #' @param all_files Logical. If TRUE, reads all CSV files in directory regardless of patterns
 #' @param clean_col_names Logical. If TRUE, cleans column names using janitor::clean_names()
 #' @param guess_max Integer. Maximum number of rows to use for guessing column types
