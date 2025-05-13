@@ -56,7 +56,7 @@ This package provides utility functions for data cleaning, transformation, and f
 
 ### Missing Value Management
 - `summarize_na()`: Generate summaries of missing values in a dataset
-- `drop_na_sparse_cols()`: Remove columns with high percentages of missing values
+- `drop_sparse_na_cols()`: Remove columns with high percentages of missing values
 - `rf_impute_data()`: Impute missing values using Random Forest
 
 ### Data Selection
