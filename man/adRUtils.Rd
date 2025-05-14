@@ -2,7 +2,7 @@
 % Please edit documentation in R/config.R
 \name{adRutils}
 \alias{adRutils}
-\title{rUtils: A collection of R utility functions}
+\title{adRutils: A collection of R utility functions}
 \description{
 This package provides various utility functions for data manipulation, imputation, and other common tasks.
 }
