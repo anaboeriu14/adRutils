@@ -25,7 +25,7 @@ Each pattern will match any file containing that string.
 \itemize{
 \item Single pattern: "dataf_version_" will match all files containing this exact phrase
 \item Multiple patterns: c("genetics", "clean_") will match ANY file containing EITHER "genetics" OR "clean_"
-\item Regular expressions can be used: "Genetic_v\link{0-9}+" will match files "Genetic_v1", "Genetic_v2", etc
+\item Regular expressions can be used: "Genetic_v\\d+" will match files "Genetic_v1", "Genetic_v2", etc
 }}
 
 \item{all_files}{Logical. If TRUE, reads all CSV files in directory regardless of patterns}

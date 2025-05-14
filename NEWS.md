@@ -1,3 +1,20 @@
+# adRutils 0.1.1
+
+## New Features
+* Added function processing tracking system to prevent duplicate operations
+  * `is_processed()`: Check if variables have been processed by a function
+  * `register_processed()`: register variables as processed
+  * `reset_processing()`: Reset processing history
+* Enhanced `transform_log10()` with processing tracking to prevent accidental double transformations
+* Added override capability with `force` parameter to intentionally reprocess data when needed
+
+## Bug Fixes
+* None
+
+## Breaking Changes
+* None
+
+
 # adRutils 0.1.0
 
 ## Initial Release

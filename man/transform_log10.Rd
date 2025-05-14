@@ -4,12 +4,14 @@
 \alias{transform_log10}
 \title{Transform numeric variables to log10 scale}
 \usage{
-transform_log10(dataf, vars)
+transform_log10(dataf, vars, force = FALSE)
 }
 \arguments{
 \item{dataf}{A data frame containing the variables to transform}
 
 \item{vars}{Character vector of column names to transform}
+
+\item{force}{Logical. If TRUE, bypasses the check for previous processing}
 }
 \value{
 A data frame with the original columns plus new log10-transformed columns
@@ -17,7 +19,7 @@ A data frame with the original columns plus new log10-transformed columns
 \description{
 This function transforms specified numeric variables to log10 scale and adds them
 as new columns with "log10_" prefix. It includes several validation checks to ensure
-proper transformation.
+proper transformation. Prevents double transformation ie log10(log10(x))
 }
 \examples{
  \dontrun{
