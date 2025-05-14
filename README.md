@@ -1,6 +1,6 @@
 # adRutils
 
-[![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)](https://github.com/anaboeriu14/adRutils/releases)
+[![Version](https://img.shields.io/badge/version-0.1.1-blue.svg)](https://github.com/anaboeriu14/adRutils/releases)
 
 R utility functions for data cleaning, transformation, and file operations
 
@@ -10,10 +10,14 @@ R utility functions for data cleaning, transformation, and file operations
 
 ## Version Information
 
-**Current version:** 0.1.0
+**Current version:** 0.1.1
 
 See [Releases](https://github.com/anaboeriu14/adRutils/releases) for detailed changelog and release notes.
 
+### What's New in 0.1.1
+- Function processing tracking system to prevent duplicate operations
+- Enhanced transformation functions with processing protection
+- Override capabilities for intentional reprocessing
 
 ## Installation
 
