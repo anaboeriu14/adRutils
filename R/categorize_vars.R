@@ -15,6 +15,7 @@
 #' @param filter_missing Logical. Whether to filter rows with NA in any group column (default: FALSE)
 #'
 #' @return A data frame with added grouping variables
+#'
 #' @export
 #'
 #' @examples
