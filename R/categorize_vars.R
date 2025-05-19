@@ -1,7 +1,7 @@
 #' Bin and Categorize Variables into Groups
 #'
-#' Transforms variables into categorical groups using cutpoints for continuous variables
-#' and value mappings for categorical variables.
+#' @description Transforms variables into categorical groups using cutpoints for continuous variables
+#'  and value mappings for categorical variables.
 #'
 #' @param data A data frame containing demographic variables
 #' @param groups List of group specifications. Each element should be a list with:
