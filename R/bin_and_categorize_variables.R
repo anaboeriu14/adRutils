@@ -5,9 +5,9 @@
 #'
 #' @param data A data frame containing demographic variables
 #' @param groups List of group specifications. Each element should be a list with:
-#'        - 'col': Column name in the data
-#'        - 'name': Name for the new grouping variable (optional, defaults to col_group)
-#'        - 'type': One of "cutpoints" (for continuous), "categorical", or "custom"
+#'        - 'col': String. Column name in the data
+#'        - 'name': String. Name for the new grouping variable (optional, defaults to col_group)
+#'        - 'type': String. One of "cutpoints" (for continuous), "categorical", or "custom"
 #'        - 'cutpoints': For continuous variables, numeric vector of cutpoints (required for "cutpoints" type)
 #'        - 'labels': Labels for the groups (optional)
 #'        - 'values': For categorical variables, named vector mapping codes to labels (required for "categorical" type)
