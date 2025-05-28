@@ -2,12 +2,12 @@
 % Please edit documentation in R/remove_duplicates.R
 \name{remove_duplicates_if_exists}
 \alias{remove_duplicates_if_exists}
-\title{Remove duplicate rows based on ID}
+\title{Remove duplicate rows based on ID, keeping the most complete row}
 \usage{
 remove_duplicates_if_exists(
   dataf,
   id_col,
-  keep = c("first", "last", "none"),
+  keep = c("first", "last", "none", "most_complete"),
   quiet = FALSE
 )
 }
@@ -16,8 +16,8 @@ remove_duplicates_if_exists(
 
 \item{id_col}{Column name or expression specifying the ID to check for duplicates}
 
-\item{keep}{One of "first" (default), "last", or "none". Determines which occurrence
-to keep when duplicates are found.}
+\item{keep}{One of "first" (default), "last", "none", or "most_complete".
+"most_complete" keeps the row with fewest NAs.}
 
 \item{quiet}{Logical; if TRUE, suppresses messages about duplicate IDs}
 }
@@ -27,18 +27,18 @@ A data frame with duplicates removed according to the 'keep' parameter
 \description{
 This function identifies and removes duplicate rows based on a specified ID column.
 It provides information about which IDs have duplicates and whether the duplicate
-rows are identical or have conflicting values.
+rows are identical or have conflicting values. When duplicates exist, it keeps
+the row with the fewest NA values (most complete information).
 }
 \details{
-The keep argumet will match full or partially,
-ie "la" = "last", "al" = "all", "fi", "fir" = "first"
+The keep argument will match full or partially,
+ie "la" = "last", "al" = "all", "fi", "fir" = "first", "mo" = "most_complete"
 }
 \examples{
 testDF <- data.frame(
 id_num = c(1, 1, 2, 2, 3, 4, 5, 5, 6),
-value = c(100, 100, 200, 250, 300, 400, 500, 500, 600),
-group = c("A", "A", "B", "B", "C", "D", "E", "F", "G")
+value = c(100, NA, 200, 250, 300, 400, 500, 500, 600),
+group = c("A", "A", "B", NA, "C", "D", "E", "F", "G")
 )
-remove_duplicates_if_exists(testDF, "id_num", "first")
-remove_duplicates_if_exists(testDF, "id_num", "fir")
+remove_duplicates_if_exists(testDF, "id_num", "most_complete")
 }
