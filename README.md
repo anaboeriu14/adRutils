@@ -10,14 +10,13 @@ R utility functions for data cleaning, transformation, and file operations
 
 ## Version Information
 
-**Current version:** 0.1.1
+**Current version:** 0.1.2
 
 See [Releases](https://github.com/anaboeriu14/adRutils/releases) for detailed changelog and release notes.
 
-### What's New in 0.1.1
-- Function processing tracking system to prevent duplicate operations
-- Enhanced transformation functions with processing protection
-- Override capabilities for intentional reprocessing
+### What's New in 0.1.2
+- **Bug Fix**: Fixed runtime errors in `remove_duplicates_if_exists()` when using `keep = "most_complete"`
+- **Improvement**: Enhanced type safety and NA handling in duplicate removal
 
 ## Installation
 
