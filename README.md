@@ -1,6 +1,6 @@
 # adRutils
 
-[![Version](https://img.shields.io/badge/version-0.1.1-blue.svg)](https://github.com/anaboeriu14/adRutils/releases)
+[![Version](https://img.shields.io/badge/version-0.1.2-blue.svg)](https://github.com/anaboeriu14/adRutils/releases)
 
 R utility functions for data cleaning, transformation, and file operations
 

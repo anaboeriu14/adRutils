@@ -138,25 +138,47 @@ remove_duplicates_if_exists <- function(dataf, id_col,
 
     # For each duplicate ID, find the row with fewest NAs
     for (dup_id in unique_duplicate_ids) {
-      rows_with_id <- which(id_values == dup_id)
+      # Handle NA IDs separately
+      if (is.na(dup_id)) {
+        # For NA IDs, just keep the first occurrence
+        na_rows <- which(is.na(id_values))
+        if (length(na_rows) > 0) {
+          rows_to_keep[na_rows[1]] <- TRUE
+        }
+        next
+      }
+
+      rows_with_id <- which(id_values == dup_id & !is.na(id_values))
+
+      if (length(rows_with_id) == 0) next
 
       # Count NAs in each row (excluding the ID column to avoid bias)
-      na_counts <- sapply(rows_with_id, function(row_idx) {
-        row_data <- dataf[row_idx, ]
+      na_counts <- vapply(rows_with_id, function(row_idx) {
+        row_data <- dataf[row_idx, , drop = FALSE]
         # Exclude the ID column from NA counting
         id_col_idx <- which(names(dataf) == id_col_name)
         if (length(id_col_idx) > 0) {
-          row_data <- row_data[-id_col_idx]
+          row_data <- row_data[, -id_col_idx, drop = FALSE]
         }
         sum(is.na(row_data))
-      })
+      }, FUN.VALUE = integer(1))
 
-      # Find row(s) with minimum NAs
-      min_nas <- min(na_counts)
-      best_rows <- rows_with_id[na_counts == min_nas]
+      # Check if na_counts is valid
+      if (length(na_counts) == 0 || all(is.na(na_counts))) {
+        # Fallback: keep first row
+        rows_to_keep[rows_with_id[1]] <- TRUE
+      } else {
+        # Find row(s) with minimum NAs
+        min_nas <- min(na_counts, na.rm = TRUE)
+        best_rows <- rows_with_id[na_counts == min_nas & !is.na(na_counts)]
 
-      # If tie, keep the first one
-      rows_to_keep[best_rows[1]] <- TRUE
+        # If tie or no valid rows, keep the first one
+        if (length(best_rows) > 0) {
+          rows_to_keep[best_rows[1]] <- TRUE
+        } else {
+          rows_to_keep[rows_with_id[1]] <- TRUE
+        }
+      }
     }
 
     result <- dataf[rows_to_keep, ]

@@ -1,3 +1,17 @@
+# adRutils 0.1.2
+## New Features
+* None
+
+## Bug Fixes
+* Fixed error in `remove_duplicates_if_exists()` when using `keep = "most_complete"`
+  - Resolved "invalid 'type' (list) of argument" error in `min(na_counts)`
+  - Fixed "no non-missing arguments to min" warning when processing NA IDs
+  - Replaced `sapply()` with `vapply()` 
+
+## Breaking Changes
+* None
+
+
 # adRutils 0.1.1
 
 ## New Features
