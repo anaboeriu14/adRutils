@@ -14,9 +14,9 @@ R utility functions for data cleaning, transformation, and file operations
 
 See [Releases](https://github.com/anaboeriu14/adRutils/releases) for detailed changelog and release notes.
 
-### What's New in 0.1.2
-- **Bug Fix**: Fixed runtime errors in `remove_duplicates_if_exists()` when using `keep = "most_complete"`
-- **Improvement**: Enhanced type safety and NA handling in duplicate removal
+### What's New in 0.2.0
+- **New**: Added `validate_inputs()` function for comprehensive input validation with context-aware error messages
+- **Improvement**: Streamlined validation patterns to reduce code duplication across functions
 
 ## Installation
 
