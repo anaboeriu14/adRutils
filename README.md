@@ -1,6 +1,6 @@
 # adRutils
 
-[![Version](https://img.shields.io/badge/version-0.1.2-blue.svg)](https://github.com/anaboeriu14/adRutils/releases)
+[![Version](https://img.shields.io/badge/version-0.2.0-blue.svg)](https://github.com/anaboeriu14/adRutils/releases)
 
 R utility functions for data cleaning, transformation, and file operations
 
@@ -10,7 +10,7 @@ R utility functions for data cleaning, transformation, and file operations
 
 ## Version Information
 
-**Current version:** 0.1.2
+**Current version:** 0.2.0
 
 See [Releases](https://github.com/anaboeriu14/adRutils/releases) for detailed changelog and release notes.
 
@@ -48,6 +48,9 @@ devtools::install_github("anaboeriu14/adRutils")
 ## Features
 
 This package provides utility functions for data cleaning, transformation, and file operations 
+
+### Input Validation
+- `validate_inputs()`: Comprehensive input validation for R functions with context-aware error messages
 
 ### File Operations
 - `read_csvs_by_pattern()`: Read and combine CSV files matching specified patterns

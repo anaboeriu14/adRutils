@@ -1,17 +1,21 @@
-# adRutils 0.1.2
+# adRutils 0.2.0
+
 ## New Features
-* None
+
+* Added `validate_inputs()` function for comprehensive input validation
+  - Validates data frames, column existence, numeric columns, and grouping variables
+  - Supports method validation and custom checks
+  - Provides consistent, context-aware error messages
+  - Designed to reduce code duplication across package functions
+
+# adRutils 0.1.2
 
 ## Bug Fixes
 * Fixed error in `remove_duplicates_if_exists()` when using `keep = "most_complete"`
   - Resolved "invalid 'type' (list) of argument" error in `min(na_counts)`
   - Fixed "no non-missing arguments to min" warning when processing NA IDs
   - Replaced `sapply()` with `vapply()` 
-
-## Breaking Changes
-* None
-
-
+  
 # adRutils 0.1.1
 
 ## New Features
@@ -21,13 +25,6 @@
   * `reset_processing()`: Reset processing history
 * Enhanced `transform_log10()` with processing tracking to prevent accidental double transformations
 * Added override capability with `force` parameter to intentionally reprocess data when needed
-
-## Bug Fixes
-* None
-
-## Breaking Changes
-* None
-
 
 # adRutils 0.1.0
 
