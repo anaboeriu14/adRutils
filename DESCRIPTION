@@ -6,7 +6,7 @@ Authors@R: c(person("Ana", "Boeriu", email = "ana.boeriu@ucsf.edu",role = c("aut
 Description: A collection of utility functions for data cleaning, transformation, file operations. Provides tools 
     for reading pattern-matched CSV files, handling missing values, standardizing data formats, 
      caching mechanisms for API calls, and tracking functions to prevent duplicate operations.
-    prevent duplicate operations and input validation
+    prevent duplicate operations and parameter validation
 License: MIT + file LICENSE.md
 Encoding: UTF-8
 LazyData: true

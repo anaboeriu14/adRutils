@@ -1,7 +1,7 @@
-#' Base Input Validation Function for adRpheno Package
+#' Base Input Validation
 #'
-#' A streamlined validation function based on actual adRpheno validation patterns.
-#' Handles the most common validation scenarios found across your functions.
+#' A streamlined validation function based on common validation patterns.
+#' Handles the most common validation scenarios found across functions.
 #'
 #' @param data A data frame to validate
 #' @param columns Character vector of column names that must exist in data
@@ -14,7 +14,7 @@
 #'
 #' @return Invisibly returns TRUE if all validations pass, stops with error otherwise
 #'
-validate_inputs <- function(data = NULL,
+validate_params <- function(data = NULL,
                             columns = NULL,
                             numeric_columns = NULL,
                             grouping_vars = NULL,

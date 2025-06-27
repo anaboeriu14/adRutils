@@ -2,7 +2,7 @@
 
 ## New Features
 
-* Added `validate_inputs()` function for comprehensive input validation
+* Added `validate_params()` function for comprehensive input validation
   - Validates data frames, column existence, numeric columns, and grouping variables
   - Supports method validation and custom checks
   - Provides consistent, context-aware error messages
