@@ -13,7 +13,7 @@
 #' @param context Character string describing the calling function
 #'
 #' @return Invisibly returns TRUE if all validations pass, stops with error otherwise
-#'
+#' @export
 validate_params <- function(data = NULL,
                             columns = NULL,
                             numeric_columns = NULL,

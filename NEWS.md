@@ -2,6 +2,10 @@
 
 ## New Features
 
+* Added `coalesce_variables()` function for combining related variables from different time points or sources
+  - Supports pattern-based grouping (e.g., "_t1", "_t2" → combined columns)
+  - Supports custom grouping for precise control over which columns to combine
+
 * Added `validate_params()` function for comprehensive input validation
   - Validates data frames, column existence, numeric columns, and grouping variables
   - Supports method validation and custom checks

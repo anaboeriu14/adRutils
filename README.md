@@ -15,8 +15,10 @@ R utility functions for data cleaning, transformation, and file operations
 See [Releases](https://github.com/anaboeriu14/adRutils/releases) for detailed changelog and release notes.
 
 ### What's New in 0.2.0
-- **New**: Added `validate_params()` function for comprehensive input validation with context-aware error messages
-- **Improvement**: Streamlined validation patterns to reduce code duplication across functions
+
+- **New**: Added `coalesce_variables()` function for combining related variables based on a pattern or custom grouping
+- **New**: Added `validate_params()` function for comprehensive input validation with context-aware error messages.
+Streamlined validation patterns to reduce code duplication across functions
 
 ## Installation
 
