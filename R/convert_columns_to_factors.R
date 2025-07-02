@@ -54,11 +54,15 @@ convert_columns_to_factors <- function(dataf, patterns, exclude = NULL, ordered 
     return(dataf)  # Return unchanged data if no match
   }
 
-  # Report what will be converted if not quiet
+  # Just the essential info
   if (!quiet) {
-    message("Converting ", length(matching_cols), " column(s) to ",
-            if (ordered) "ordered " else "", "factors: ",
-            paste(matching_cols, collapse = ", "))
+    message("Converted ", length(matching_cols), " columns to factors",
+            if (length(matching_cols) <= 8) {
+              paste0(": ", paste(matching_cols, collapse = ", "))
+            } else {
+              paste0(" (", paste(head(matching_cols, 5), collapse = ", "), " and ",
+                     length(matching_cols) - 5, " more)")
+            })
   }
 
   # Create a result data frame
