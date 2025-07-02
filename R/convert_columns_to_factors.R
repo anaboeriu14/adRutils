@@ -31,20 +31,20 @@ convert_columns_to_factors <- function(dataf, patterns, exclude = NULL, ordered 
   if (!is.character(patterns) || length(patterns) == 0) {
     stop("'patterns' must be a non-empty character vector of column name patterns.")
   }
-
+  
   # Combine patterns into a single regex pattern for matching
   combined_pattern <- paste(patterns, collapse = "|")
-
+  
   # Find columns that match the pattern
   all_cols <- names(dataf)
   matching_cols <- grep(combined_pattern, all_cols, value = TRUE)
-
+  
   # Apply exclusion patterns if provided
   if (!is.null(exclude) && length(exclude) > 0) {
     exclude_pattern <- paste(exclude, collapse = "|")
     matching_cols <- matching_cols[!grepl(exclude_pattern, matching_cols)]
   }
-
+  
   # Check if any columns match after exclusions
   if (length(matching_cols) == 0) {
     warning("No columns found matching the patterns: ",
@@ -53,25 +53,14 @@ convert_columns_to_factors <- function(dataf, patterns, exclude = NULL, ordered 
                                          paste(exclude, collapse = ", "), ")", sep = ""))
     return(dataf)  # Return unchanged data if no match
   }
-
-  # Just the essential info
-  if (!quiet) {
-    message("Converted ", length(matching_cols), " columns to factors",
-            if (length(matching_cols) <= 8) {
-              paste0(": ", paste(matching_cols, collapse = ", "))
-            } else {
-              paste0(" (", paste(head(matching_cols, 5), collapse = ", "), " and ",
-                     length(matching_cols) - 5, " more)")
-            })
-  }
-
+  
   # Create a result data frame
   result <- dataf
-
+  
   # Perform the conversion for each matching column
   for (col in matching_cols) {
     x <- dataf[[col]]
-
+    
     # Different conversion logic based on current column type
     if (is.factor(x)) {
       if (ordered && !is.ordered(x)) {
@@ -84,17 +73,16 @@ convert_columns_to_factors <- function(dataf, patterns, exclude = NULL, ordered 
       result[[col]] <- factor(x, ordered = ordered)
     }
   }
-
-  # Report the factor levels if not quiet
+  
+  # Just the essential info (after conversion so we know it succeeded)
   if (!quiet) {
-    for (col in matching_cols) {
-      message("Column '", col, "' converted to ",
-              if (is.ordered(result[[col]])) "ordered " else "", "factor with ",
-              length(levels(result[[col]])), " levels: ",
-              paste(head(levels(result[[col]]), 5), collapse = ", "),
-              if (length(levels(result[[col]])) > 5) "..." else "")
-    }
+    message("Converted ", length(matching_cols), " columns to factors",
+            if (length(matching_cols) <= 8) {
+              paste0(": ", paste(matching_cols, collapse = ", "))
+            } else {
+              paste0(" (", paste(head(matching_cols, 5), collapse = ", "), " and ",
+                     length(matching_cols) - 5, " more)")
+            })
   }
-
   return(result)
 }
