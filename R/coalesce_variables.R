@@ -130,8 +130,9 @@ coalesce_variables <- function(dataf, pattern_extract = NULL, var_groups = NULL,
 
 #' Coalesce groups into new columns
 #' @keywords internal
-.coalesce_groups <- function(dataf, groups, prefix) {
+.coalesce_groups <- function(dataf, groups, prefix, pattern_extract = NULL) {
   result_df <- dataf
+  coalesced_count <- 0
 
   for (base_name in names(groups)) {
     cols <- groups[[base_name]]
@@ -139,9 +140,19 @@ coalesce_variables <- function(dataf, pattern_extract = NULL, var_groups = NULL,
       new_name <- paste0(prefix, base_name)
       .warn_if_overwriting(new_name, result_df)
       result_df[[new_name]] <- do.call(dplyr::coalesce, result_df[cols])
-      message("Coalesced ", length(cols), " columns into '", new_name, "'")
+      coalesced_count <- coalesced_count + 1
     }
   }
+
+  # Different messages based on method
+  if (coalesced_count > 0) {
+    if (!is.null(pattern_extract)) {
+      message("Coalesced ", coalesced_count, " variable groups by pattern matching with '", prefix, "' prefix")
+    } else {
+      message("Coalesced ", coalesced_count, " manually specified variable groups with '", prefix, "' prefix")
+    }
+  }
+
   return(result_df)
 }
 
