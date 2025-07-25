@@ -6,7 +6,7 @@
 #' @import dplyr
 #' @importFrom magrittr %>%
 #' @importFrom tibble tibble as_tibble
-#' @importFrom stats setNames complete.cases
+#' @importFrom stats setNames complete.cases pnorm
 #' @importFrom rlang .data sym
 #' @importFrom stringr str_detect
 #' @importFrom readr read_csv
@@ -15,5 +15,6 @@
 #' @importFrom doParallel registerDoParallel
 #' @importFrom here here
 #' @importFrom utils head object.size
+
 NULL
 
