@@ -1,3 +1,17 @@
+# adRutils 0.3.0
+
+## New Features & Improvements
+* Added `fit_group_models()` function for fitting linear models across multiple outcomes and/or groups
+  - Supports flexible covariate specifications with outcome-specific and group-specific adjustments
+  - Returns tidy results with model objects, summaries, and diagnostics
+  - Supports both main and interaction models
+
+## Changes
+* Added internal helper functions `.build_predictors()` and `.fit_single_model()`
+
+## Breaking Changes
+* None
+
 # adRutils 0.2.0
 
 ## New Features
