@@ -1,7 +1,7 @@
 #' Fit Linear Models Across Outcomes and Groups
 #'
 #' Fits linear models for multiple outcomes across different groups (e.g., ancestry, sex,
-#' treatment groups, etc.) with flexible covariate specifications and model types (main & interaction).
+#' treatment groups, etc.) with flexible covariate specifications and model types.
 #' Allows for outcome-specific and group-specific covariates to be added to base predictors.
 #'
 #' @param data A data frame containing the variables for analysis
@@ -15,8 +15,6 @@
 #'   Can use R formula syntax: c("age*sex", "treatment*apoe") includes both main effects and interactions,
 #'   or c("age:sex", "treatment:apoe") for interaction-only terms, or "all_pairwise" for all pairwise interactions.
 #'   If NULL and model_type = "interaction", will include only main effects (no interactions).
-#' @param stop_on_error Logical. If TRUE, stops execution when any model fails to fit.
-#'   If FALSE (default), continues processing and returns NULL for failed models.
 #' @param outcome_covariates Optional named list of additional covariates specific to certain outcomes.
 #'   Keys should be outcome names, values should be character vectors of covariate names.
 #' @param group_covariates Optional named list of additional covariates specific to certain groups.
@@ -38,7 +36,7 @@
 #' \dontrun{
 #' # Main effects model
 #' main_results <- fit_group_models(
-#'   data = your_data,
+#'   data = proj_data,
 #'   outcomes = c("verbal_ability", "memory"),
 #'   base_predictors = c("age", "id_gender", "apoe_risk_group"),
 #'   groups = c("AFR", "EUR", "AMR"),
@@ -47,7 +45,7 @@
 #'
 #' # Interaction model with specific interactions
 #' int_results <- fit_group_models(
-#'   data = your_data,
+#'   data = proj_data,
 #'   outcomes = c("tau", "ab42_ab40"),
 #'   base_predictors = c("age", "id_gender", "apoe_risk_group"),
 #'   groups = c("AFR", "EUR", "AMR"),
@@ -58,24 +56,23 @@
 #' # Interaction model with all pairwise interactions
 #' full_int_results <- fit_group_models(
 #'   data = your_data,
-#'   outcomes = c("y_variable"),
-#'   base_predictors = c("X1", "X2", "X3"),
-#'   groups = c("group1", "group2"),
+#'   outcomes = c("y"),
+#'   base_predictors = c("x1", "x2", "x3"),
+#'   groups = c("placebo", "medication"),
 #'   model_type = "interaction",
 #'   interaction_terms = "all_pairwise"
 #' )
 #' }
 #' @export
 fit_models_by_group <- function(data,
-                             outcomes,
-                             base_predictors,
-                             group_col = "superpop",
-                             groups = "All",
-                             model_type = NULL,
-                             interaction_terms = NULL,
-                             stop_on_error = FALSE,
-                             outcome_covariates = NULL,
-                             group_covariates = NULL) {
+                                outcomes,
+                                base_predictors,
+                                group_col = "superpop",
+                                groups = "All",
+                                model_type = NULL,
+                                interaction_terms = NULL,
+                                outcome_covariates = NULL,
+                                group_covariates = NULL) {
 
   # Set default model_type if NULL
   if (is.null(model_type)) model_type <- "main"
@@ -130,14 +127,14 @@ fit_models_by_group <- function(data,
       interaction_terms
     )
 
-    .fit_single_model(curr_outcome, curr_group, predictors, data, group_col, model_type, stop_on_error)
+    .fit_single_model(curr_outcome, curr_group, predictors, data, group_col, model_type)
   }) %>%
     list_rbind()
 
   return(results)
 }
 
-# Helper functions build predictor string
+# Helper functions (not exported)
 #' @keywords internal
 .build_predictors <- function(base_predictors, outcome,
                               group, outcome_covariates = NULL,
@@ -167,12 +164,10 @@ fit_models_by_group <- function(data,
                               paste("(", main_effects, ")^2")
                             } else main_effects
                           } else {
-                            # Handle both * and : syntax
+                            # Handle both * and :
                             .process_interaction_terms(main_effects, interaction_terms, all_predictors)
                           }
-                        },
-                        # Default case - should never reach here due to validation
-                        stop("Invalid model_type: ", model_type)
+                        }
   )
 
   return(formula_str)
@@ -197,7 +192,7 @@ fit_models_by_group <- function(data,
   }
 
   # For * terms, adds the main effects automatically
-  # Just build the formula
+  # Just build  formula
   formula_parts <- c(main_effects)
 
   if (length(star_terms) > 0) {
@@ -211,10 +206,9 @@ fit_models_by_group <- function(data,
   paste(formula_parts, collapse = " + ")
 }
 
-#' Helper function to build a single model as a tibble
 #' @keywords internal
 .fit_single_model <- function(outcome, group, predictors,
-                              data, group_col, model_type, stop_on_error = FALSE) {
+                              data, group_col, model_type) {
 
   # Filter data for the specific group
   analysis_data <- if (group == "All") {
@@ -230,28 +224,35 @@ fit_models_by_group <- function(data,
   model_fit <- tryCatch({
     lm(as.formula(model_equation), data = analysis_data)
   }, error = function(e) {
-    error_msg <- paste("Model fitting failed for outcome:", outcome,
-                       "group:", group, "- Error:", e$message)
-
-    if (stop_on_error) {
-      stop(error_msg)
-    } else {
-      warning(error_msg)
-      return(NULL)
-    }
+    warning(paste("Model fitting failed for outcome:", outcome,
+                  "group:", group, "- Error:", e$message))
+    return(NULL)
   })
 
-  # Create results tibble (handles NULL model_fit gracefully)
-  model_res <- tibble(
-    outcome = outcome,
-    superpop = group,
-    model = model_type,
-    predictors = predictors,
-    model_equation = model_equation,
-    res = list(model_fit),
-    dataf = list(if (is.null(model_fit)) NULL else tidy(model_fit)),
-    n_obs = if (is.null(model_fit)) NA_integer_ else nobs(model_fit)
-  )
+  # Create results tibble, for models that failed, res,dataf,n_obs will be NA
+  if (is.null(model_fit)) {
+    model_res <- tibble(
+      outcome = outcome,
+      superpop = group,
+      model = model_type,
+      predictors = predictors,
+      model_equation = model_equation,
+      res = list(NULL),
+      dataf = list(NULL),
+      n_obs = NA_integer_
+    )
+  } else {
+    model_res <- tibble(
+      outcome = outcome,
+      superpop = group,
+      model = model_type,
+      predictors = predictors,
+      model_equation = model_equation,
+      res = list(model_fit),
+      dataf = list(tidy(model_fit)),
+      n_obs = nobs(model_fit)
+    )
+  }
 
   return(model_res)
 }

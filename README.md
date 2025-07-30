@@ -1,24 +1,26 @@
 # adRutils
 
-[![Version](https://img.shields.io/badge/version-0.2.0-blue.svg)](https://github.com/anaboeriu14/adRutils/releases)
+[![Version](https://img.shields.io/badge/version-0.3.0-blue.svg)](https://github.com/anaboeriu14/adRutils/releases)
 
-R utility functions for data cleaning, transformation, and file operations
+R utility functions for data cleaning, transformation, file operations and statistcal modeling
 
 ## Overview
 
-`adRutils` provides a collection of general-purpose functions to streamline common data processing tasks. 
+`adRutils` provides a collection of general-purpose functions to streamline common data processing tasks and statisitcal analyses. 
 
 ## Version Information
 
-**Current version:** 0.2.0
+**Current version:** 0.3.0
 
 See [Releases](https://github.com/anaboeriu14/adRutils/releases) for detailed changelog and release notes.
 
-### What's New in 0.2.0
+### What's New in 0.3.0
 
-- **New**: Added `coalesce_variables()` function for combining related variables based on a pattern or custom grouping
-- **New**: Added `validate_params()` function for comprehensive input validation with context-aware error messages.
-Streamlined validation patterns to reduce code duplication across functions
+- **New**: Added `fit_models_by_group()` function for fitting linear models across outcomes & groups
+    - supports multiple model types: main effects & interactions
+    - handles interaction terms with interaction-only syntax (:) or main + interaction syntax (*)
+    - returns results in a tibble including model objects, tidy summary and number of observations
+    - designed for group-stratified analysis (by ancestry, sex, treatment etc)
 
 ## Installation
 
@@ -51,6 +53,9 @@ devtools::install_github("anaboeriu14/adRutils")
 
 This package provides utility functions for data cleaning, transformation, and file operations 
 
+### Statistical Modeling
+- `fit_models_by_group()`: Fit linear models across multiple outcomes and groups.
+
 ### Input Validation
 - `validate_inputs()`: Comprehensive input validation for R functions with context-aware error messages
 
@@ -81,6 +86,7 @@ For full documentation, including function details and additional examples, run:
 ```r
 ?adRutils::read_pattern_csv
 ?adRutils::summarize_na
+?adRutils::fit_models_by_group
 # etc.
 ```
 

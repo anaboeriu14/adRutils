@@ -12,7 +12,6 @@ fit_models_by_group(
   groups = "All",
   model_type = NULL,
   interaction_terms = NULL,
-  stop_on_error = FALSE,
   outcome_covariates = NULL,
   group_covariates = NULL
 )
@@ -36,9 +35,6 @@ Can use R formula syntax: c("age\emph{sex", "treatment}apoe") includes both main
 or c("age:sex", "treatment:apoe") for interaction-only terms, or "all_pairwise" for all pairwise interactions.
 If NULL and model_type = "interaction", will include only main effects (no interactions).}
 
-\item{stop_on_error}{Logical. If TRUE, stops execution when any model fails to fit.
-If FALSE (default), continues processing and returns NULL for failed models.}
-
 \item{outcome_covariates}{Optional named list of additional covariates specific to certain outcomes.
 Keys should be outcome names, values should be character vectors of covariate names.}
 
@@ -60,14 +56,14 @@ A tibble with the following columns:
 }
 \description{
 Fits linear models for multiple outcomes across different groups (e.g., ancestry, sex,
-treatment groups, etc.) with flexible covariate specifications and model types (main & interaction).
+treatment groups, etc.) with flexible covariate specifications and model types.
 Allows for outcome-specific and group-specific covariates to be added to base predictors.
 }
 \examples{
 \dontrun{
 # Main effects model
 main_results <- fit_group_models(
-  data = your_data,
+  data = proj_data,
   outcomes = c("verbal_ability", "memory"),
   base_predictors = c("age", "id_gender", "apoe_risk_group"),
   groups = c("AFR", "EUR", "AMR"),
@@ -76,7 +72,7 @@ main_results <- fit_group_models(
 
 # Interaction model with specific interactions
 int_results <- fit_group_models(
-  data = your_data,
+  data = proj_data,
   outcomes = c("tau", "ab42_ab40"),
   base_predictors = c("age", "id_gender", "apoe_risk_group"),
   groups = c("AFR", "EUR", "AMR"),
@@ -87,9 +83,9 @@ int_results <- fit_group_models(
 # Interaction model with all pairwise interactions
 full_int_results <- fit_group_models(
   data = your_data,
-  outcomes = c("y_variable"),
-  base_predictors = c("X1", "X2", "X3"),
-  groups = c("group1", "group2"),
+  outcomes = c("y"),
+  base_predictors = c("x1", "x2", "x3"),
+  groups = c("placebo", "medication"),
   model_type = "interaction",
   interaction_terms = "all_pairwise"
 )
