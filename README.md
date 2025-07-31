@@ -16,11 +16,11 @@ See [Releases](https://github.com/anaboeriu14/adRutils/releases) for detailed ch
 
 ### What's New in 0.3.0
 
-- **New**: Added `fit_models_by_group()` function for fitting linear models across outcomes & groups
-    - supports multiple model types: main effects & interactions
-    - handles interaction terms with interaction-only syntax (:) or main + interaction syntax (*)
-    - returns results in a tibble including model objects, tidy summary and number of observations
-    - designed for group-stratified analysis (by ancestry, sex, treatment etc)
+- `fit_models_by_group()` - Fit linear models across multiple outcomes and groups
+- `extract_pairwise_pvalues()` - Extract formatted p-values from pairwise t-tests  
+- `create_pairwise_table()` - Create publication-ready pairwise comparison tables
+
+See [NEWS.md](NEWS.md) for detailed changelog and feature descriptions.
 
 ## Installation
 
@@ -55,6 +55,8 @@ This package provides utility functions for data cleaning, transformation, and f
 
 ### Statistical Modeling
 - `fit_models_by_group()`: Fit linear models across multiple outcomes and groups.
+- `extract_pairwise_pvalues()`: Extract formatted p-values from pairwise t-tests for individual variables
+- `create_pairwise_table()`: Create tables with pairwise comparisons for multiple variables
 
 ### Input Validation
 - `validate_inputs()`: Comprehensive input validation for R functions with context-aware error messages

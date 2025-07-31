@@ -1,13 +1,29 @@
 # adRutils 0.3.0
 
 ## New Features & Improvements
-* Added `fit_group_models()` function for fitting linear models across multiple outcomes and/or groups
-  - Supports flexible covariate specifications with outcome-specific and group-specific adjustments
-  - Returns tidy results with model objects, summaries, and diagnostics
-  - Supports both main and interaction models
+
+###  Statistical Modeling
+
+  - `fit_group_models()` function for fitting linear models across multiple outcomes and/or groups
+    - Supports flexible covariate specifications with outcome-specific and group-specific adjustments
+    - Returns tidy results with model objects, summaries, and diagnostics
+    - Supports both main and interaction models
+
+### Pairwise Comparison Functions
+
+  - `extract_pairwise_pvalues()` - Extract and format p-values from pairwise t-tests for individual variables
+    - Performs pairwise t-tests between groups with formatted p-value output
+    - Works with any categorical grouping variable (not limited to specific group names)
+    - Returns formatted p-values: "< 0.001" for very small values, rounded to 3 decimals otherwise
+
+  - `create_pairwise_table()` - Create tables with pairwise comparisons for multiple variables
+    - Processes multiple numeric variables at once against a grouping variable
+    - Returns results in wide table format suitable for reports and manuscripts
+    - Built on top of extract_pairwise_pvalues() for consistency
+
 
 ## Changes
-* Added internal helper functions `.build_predictors()` and `.fit_single_model()`
+* Added internal helper functions `.build_predictors()` and `.fit_single_model()` for `fit_group_models()`
 
 ## Breaking Changes
 * None

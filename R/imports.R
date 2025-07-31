@@ -6,7 +6,7 @@
 #' @import dplyr
 #' @importFrom magrittr %>%
 #' @importFrom tibble tibble as_tibble
-#' @importFrom stats setNames complete.cases pnorm lm nobs as.formula
+#' @importFrom stats setNames complete.cases pnorm lm nobs as.formula pairwise.t.test
 #' @importFrom rlang .data sym
 #' @importFrom stringr str_detect
 #' @importFrom readr read_csv
