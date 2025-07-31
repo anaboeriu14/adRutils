@@ -12,15 +12,14 @@ R utility functions for data cleaning, transformation, file operations and stati
 
 **Current version:** 0.3.0
 
-See [Releases](https://github.com/anaboeriu14/adRutils/releases) for detailed changelog and release notes.
+See [Releases](https://github.com/anaboeriu14/adRutils/releases) & [NEWS.md](NEWS.md)
+for detailed changelog and release notes.
 
 ### What's New in 0.3.0
 
 - `fit_models_by_group()` - Fit linear models across multiple outcomes and groups
 - `extract_pairwise_pvalues()` - Extract formatted p-values from pairwise t-tests  
 - `create_pairwise_table()` - Create publication-ready pairwise comparison tables
-
-See [NEWS.md](NEWS.md) for detailed changelog and feature descriptions.
 
 ## Installation
 
