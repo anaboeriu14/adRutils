@@ -10,7 +10,7 @@ fit_models_by_group(
   base_predictors,
   group_col = "superpop",
   groups = "All",
-  model_type = NULL,
+  model_type = "main",
   interaction_terms = NULL,
   outcome_covariates = NULL,
   group_covariates = NULL
@@ -23,71 +23,54 @@ fit_models_by_group(
 
 \item{base_predictors}{Character vector of predictor variable names to include in all models}
 
-\item{group_col}{Character string specifying the column name for grouping variable. Default is "superpop"}
+\item{group_col}{Character string specifying the grouping column. Default is "superpop"}
 
-\item{groups}{Character vector specifying which groups to analyze. Use "All" to include all data without grouping. Default is "All"}
+\item{groups}{Character vector specifying which groups to analyze. Use "All" for all data. Default is "All"}
 
-\item{model_type}{Character string specifying the model type. Must be one of: "main", "interaction", "nested", or "stratified".
-If NULL, defaults to "main". Default is NULL.}
+\item{model_type}{Character string: "main" or "interaction". Default is "main"}
 
-\item{interaction_terms}{Character vector specifying which interaction terms to include when model_type = "interaction".
-Can use R formula syntax: c("age\emph{sex", "treatment}apoe") includes both main effects and interactions,
-or c("age:sex", "treatment:apoe") for interaction-only terms, or "all_pairwise" for all pairwise interactions.
-If NULL and model_type = "interaction", will include only main effects (no interactions).}
+\item{interaction_terms}{Character vector of interaction terms when model_type = "interaction"}
 
-\item{outcome_covariates}{Optional named list of additional covariates specific to certain outcomes.
-Keys should be outcome names, values should be character vectors of covariate names.}
+\item{outcome_covariates}{Optional outcome-specific covariates. Can be:
+\itemize{
+\item Standard: list(outcome1 = c("cov1", "cov2"))
+\item Group-specific: list(group1 = list(outcome1 = c("cov1")))
+}}
 
-\item{group_covariates}{Optional named list of additional covariates specific to certain groups.
-Keys should be group names, values should be character vectors of covariate names.}
+\item{group_covariates}{Optional group-specific covariates: list(group1 = c("cov1"))}
 }
 \value{
-A tibble with the following columns:
-\describe{
-\item{outcome}{The outcome variable name}
-\item{superpop}{The group being analyzed}
-\item{model}{The model type specified}
-\item{predictors}{The full predictor formula string used}
-\item{model_equation}{The complete model equation (outcome ~ predictors)}
-\item{res}{List column containing the fitted lm objects}
-\item{dataf}{List column containing tidy model results from broom::tidy()}
-\item{n_obs}{Number of observations used in each model}
-}
+A tibble with columns: outcome, superpop, model, predictors, model_equation, res, dataf, n_obs
 }
 \description{
-Fits linear models for multiple outcomes across different groups (e.g., ancestry, sex,
-treatment groups, etc.) with flexible covariate specifications and model types.
-Allows for outcome-specific and group-specific covariates to be added to base predictors.
+Fits linear models (lm) for multiple outcomes across different groups with flexible
+covariate specifications. This function is specifically designed for linear regression
+and uses lm() internally.
+}
+\details{
+This function fits linear models using lm() only. For logistic regression,
+mixed models, or other model types, use appropriate specialized functions.
 }
 \examples{
 \dontrun{
-# Main effects model
-main_results <- fit_group_models(
-  data = proj_data,
-  outcomes = c("verbal_ability", "memory"),
-  base_predictors = c("age", "id_gender", "apoe_risk_group"),
-  groups = c("AFR", "EUR", "AMR"),
-  model_type = "main"
+# Basic usage
+results <- fit_models_by_group(
+  data = my_data,
+  outcomes = c("memory", "attention"),
+  base_predictors = c("age", "sex"),
+  groups = c("Group1", "Group2")
 )
 
-# Interaction model with specific interactions
-int_results <- fit_group_models(
-  data = proj_data,
-  outcomes = c("tau", "ab42_ab40"),
-  base_predictors = c("age", "id_gender", "apoe_risk_group"),
-  groups = c("AFR", "EUR", "AMR"),
-  model_type = "interaction",
-  interaction_terms = c("age:id_gender", "age:apoe_risk_group")
-)
-
-# Interaction model with all pairwise interactions
-full_int_results <- fit_group_models(
-  data = your_data,
-  outcomes = c("y"),
-  base_predictors = c("x1", "x2", "x3"),
-  groups = c("placebo", "medication"),
-  model_type = "interaction",
-  interaction_terms = "all_pairwise"
+# With group-specific outcome covariates
+results <- fit_models_by_group(
+  data = my_data,
+  outcomes = c("memory"),
+  base_predictors = c("age", "sex"),
+  groups = c("AFR", "EUR"),
+  outcome_covariates = list(
+    "AFR" = list("memory" = c("education")),
+    "EUR" = list("memory" = c("education", "language"))
+  )
 )
 }
 }

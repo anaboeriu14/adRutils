@@ -17,7 +17,8 @@ for detailed changelog and release notes.
 
 ### What's New in 0.3.0
 
-- `fit_models_by_group()` - Fit linear models across multiple outcomes and groups
+- **Enhanced `fit_models_by_group()`** - Now supports group-specific outcome covariates with automatic structure detection
+- **New `fit_single_lm()`** - Exported function for fitting individual linear models
 - `extract_pairwise_pvalues()` - Extract formatted p-values from pairwise t-tests  
 - `create_pairwise_table()` - Create publication-ready pairwise comparison tables
 
@@ -54,6 +55,7 @@ This package provides utility functions for data cleaning, transformation, and f
 
 ### Statistical Modeling
 - `fit_models_by_group()`: Fit linear models across multiple outcomes and groups.
+- `fit_single_lm()`: Fit individual linear models for single outcome-group combinations
 - `extract_pairwise_pvalues()`: Extract formatted p-values from pairwise t-tests for individual variables
 - `create_pairwise_table()`: Create tables with pairwise comparisons for multiple variables
 

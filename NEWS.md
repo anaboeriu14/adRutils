@@ -4,10 +4,16 @@
 
 ###  Statistical Modeling
 
-  - `fit_group_models()` function for fitting linear models across multiple outcomes and/or groups
-    - Supports flexible covariate specifications with outcome-specific and group-specific adjustments
-    - Returns tidy results with model objects, summaries, and diagnostics
-    - Supports both main and interaction models
+  - **Enhanced `fit_models_by_group()`**  function with major improvements:
+    - **Group-specific outcome covariates**: Support for different covariates per group (e.g., g1 vs g2 groups)
+    - **Automatic structure detection**:Handles both standard and group-specific covariate specifications
+    - **Backward compatible**: Existing code continues to work unchanged
+    - **Clearer scope**: Enhanced documentation emphasizing linear model (lm) focus
+    
+  - **New `fit_single_lm()`** exported function for fitting individual linear models
+    - Standalone function for single outcome-group combinations
+    - Same return format as main function for consistency
+    - Useful for custom modeling workflows
 
 ### Pairwise Comparison Functions
 
