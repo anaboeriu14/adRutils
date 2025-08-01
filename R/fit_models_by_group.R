@@ -64,7 +64,7 @@ fit_models_by_group <- function(data,
   validate_params(
     data = data,
     columns = c(group_col, outcomes, base_predictors, all_potential_covs),
-    grouping_vars = if(groups != "All") group_col else NULL,
+    grouping_vars = if(any(groups != "All")) group_col else NULL,
     method = model_type,
     valid_methods = c("main", "interaction"),
     custom_checks = list(
