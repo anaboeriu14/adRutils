@@ -40,7 +40,7 @@ fit_models_by_group(
 \item{group_covariates}{Optional group-specific covariates: list(group1 = c("cov1"))}
 }
 \value{
-A tibble with columns: outcome, superpop, model, predictors, model_equation, res, dataf, n_obs
+A tibble with columns: outcome, superpop, model, predictors, model_equation, model_res, dataf, n_obs
 }
 \description{
 Fits linear models (lm) for multiple outcomes across different groups with flexible

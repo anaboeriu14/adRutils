@@ -16,8 +16,8 @@
 #'   - Group-specific: list(group1 = list(outcome1 = c("cov1")))
 #' @param group_covariates Optional group-specific covariates: list(group1 = c("cov1"))
 #'
-#' @return A tibble with columns: outcome, superpop, model, predictors, model_equation, res, dataf, n_obs
-#'
+#' @return A tibble with columns: outcome, superpop, model, predictors, model_equation, model_res, dataf, n_obs
+
 #' @details This function fits linear models using lm() only. For logistic regression,
 #'   mixed models, or other model types, use appropriate specialized functions.
 #'
@@ -131,7 +131,7 @@ fit_models_by_group <- function(data,
 #' @param model_type Character string specifying model type ("main" or "interaction")
 #'
 #' @return A single-row tibble with columns: outcome, superpop, model, predictors,
-#'   model_equation, res (lm object), dataf (tidy results), n_obs
+#'   model_equation, model_res (tidy results), dataf (analysis data), n_obs
 #'
 #' @details This function only fits linear models using lm(). For other model types
 #'   (glm, mixed models, etc.), use other functions.

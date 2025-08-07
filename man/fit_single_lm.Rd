@@ -28,7 +28,7 @@ fit_single_lm(
 }
 \value{
 A single-row tibble with columns: outcome, superpop, model, predictors,
-model_equation, res (lm object), dataf (tidy results), n_obs
+model_equation, model_res (tidy results), dataf (analysis data), n_obs
 }
 \description{
 Fits a single linear model (lm) for a specific outcome within a specific group.
