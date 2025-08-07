@@ -4,11 +4,12 @@
 #' @name adRutils
 #'
 #' @import dplyr
+#' @import ggplot2
 #' @importFrom magrittr %>%
 #' @importFrom tibble tibble as_tibble
 #' @importFrom stats setNames complete.cases pnorm lm nobs as.formula pairwise.t.test
-#' @importFrom rlang .data sym
-#' @importFrom stringr str_detect
+#' @importFrom rlang .data sym  %||% .data
+#' @importFrom stringr str_detect str_extract str_split
 #' @importFrom readr read_csv
 #' @importFrom janitor clean_names
 #' @importFrom missForest missForest
@@ -17,8 +18,10 @@
 #' @importFrom utils head object.size
 #' @importFrom glue glue
 #' @importFrom broom tidy
-#' @importFrom tidyr expand_grid
-#' @importFrom purrr map map_int list_rbind
+#' @importFrom tidyr expand_grid unite
+#' @importFrom purrr map map_int list_rbind map_lgl
+#' @importFrom ggeffects predict_response
+#' @importFrom patchwork wrap_plots plot_layout plot_annotation
 
 
 NULL
