@@ -181,6 +181,7 @@ fit_single_lm <- function(outcome, group, predictors, data, group_col = "superpo
       predictors = predictors,
       model_equation = model_equation,
       model_res = list(NULL),
+      model_obj = list(NULL),
       dataf = list(NULL),
       n_obs = NA_integer_
     )
@@ -192,6 +193,7 @@ fit_single_lm <- function(outcome, group, predictors, data, group_col = "superpo
       predictors = predictors,
       model_equation = model_equation,
       model_res = list(tidy(model_fit)),
+      model_obj = list(model_fit),
       dataf = list(analysis_data),
       n_obs = nobs(model_fit)
     )
