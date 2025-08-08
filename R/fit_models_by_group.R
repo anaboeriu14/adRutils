@@ -1,6 +1,6 @@
 #' Fit Linear Models Across Outcomes and Groups
 #'
-#' Fits linear models (lm) for multiple outcomes across different groups with flexible
+#' Fits linear models for multiple outcomes across different groups with flexible
 #' covariate specifications. This function is specifically designed for linear regression
 #' and uses lm() internally.
 #'
@@ -12,9 +12,9 @@
 #' @param model_type Character string: "main" or "interaction". Default is "main"
 #' @param interaction_terms Character vector of interaction terms when model_type = "interaction"
 #' @param outcome_covariates Optional outcome-specific covariates. Can be:
-#'   - Standard: list(outcome1 = c("cov1", "cov2"))
-#'   - Group-specific: list(group1 = list(outcome1 = c("cov1")))
-#' @param group_covariates Optional group-specific covariates: list(group1 = c("cov1"))
+#'   - Standard: list(outcome1 = c("X1", "X2"))
+#'   - Group-specific: list(group1 = list(Y1 = c("X2")))
+#' @param group_covariates Optional group-specific covariates: list(group1 = c("X1"))
 #'
 #' @return A tibble with columns: outcome, superpop, model, predictors, model_equation, model_res, dataf, n_obs
 
