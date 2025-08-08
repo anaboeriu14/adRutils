@@ -1,3 +1,26 @@
+# adRutils 0.4.0
+
+## New Features - Interaction plotting functions
+
+- `create_interaction_plots()`  - Generates interaction plots from model results, 
+featuring customizable colors, themes, and optional confidence bands with
+significance highlighting.
+
+- `organize_interaction_plots()` - arranges interaction plots into publication-ready grids with 
+flexible ordering by outcomes and numeric variables, subset selection, and automatic legend collection and panel labeling
+
+-  `generate_interaction_plots()`  - streamlines the entire process by combining 
+plot creation and organization into a single pipeline function.  
+
+## Enhancements
+
+* **Enhanced model output**: Added `model_obj` column to `fit_single_lm()` and `fit_models_by_group()` 
+for direct model access
+
+## Changes
+* Interaction plotting functions are designed to work seamlessly with `fit_models_by_group()` output
+* Model fitting functions now provide both tidy results (`model_res`) and raw model objects (`model_obj`)
+
 # adRutils 0.3.0
 
 ## New Features & Improvements

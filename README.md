@@ -1,6 +1,6 @@
 # adRutils
 
-[![Version](https://img.shields.io/badge/version-0.3.0-blue.svg)](https://github.com/anaboeriu14/adRutils/releases)
+[![Version](https://img.shields.io/badge/version-0.4.0-blue.svg)](https://github.com/anaboeriu14/adRutils/releases)
 
 R utility functions for data cleaning, transformation, file operations and statistcal modeling
 
@@ -10,17 +10,16 @@ R utility functions for data cleaning, transformation, file operations and stati
 
 ## Version Information
 
-**Current version:** 0.3.0
+**Current version:** 0.4.0
 
 See [Releases](https://github.com/anaboeriu14/adRutils/releases) & [NEWS.md](NEWS.md)
 for detailed changelog and release notes.
 
-### What's New in 0.3.0
+### What's New in 0.4.0
 
-- **Enhanced `fit_models_by_group()`** - Now supports group-specific outcome covariates with automatic structure detection
-- **New `fit_single_lm()`** - Exported function for fitting individual linear models
-- `extract_pairwise_pvalues()` - Extract formatted p-values from pairwise t-tests  
-- `create_pairwise_table()` - Create publication-ready pairwise comparison tables
+**New plotting functions** -New plotting functions visualize interaction effects 
+from regression models, with enhanced model output access and direct
+integration with grouped model fitting.
 
 ## Installation
 
