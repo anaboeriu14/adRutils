@@ -12,6 +12,7 @@ flexible ordering by outcomes and numeric variables, subset selection, and autom
 -  `generate_interaction_plots()`  - streamlines the entire process by combining 
 plot creation and organization into a single pipeline function.  
 
+- `fit_models_by_group()` now supports `group_col = NULL` for analysis without grouping
 ## Enhancements
 
 * **Enhanced model output**: Added `model_obj` column to `fit_single_lm()` and `fit_models_by_group()` 

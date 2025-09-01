@@ -37,7 +37,7 @@ validate_params <- function(data = NULL,
     }
   }
 
-  # 3. Numeric column validation
+  # Numeric column validation
   if (!is.null(numeric_columns) && !is.null(data)) {
     non_numeric <- character()
     for (col in numeric_columns) {
@@ -51,7 +51,7 @@ validate_params <- function(data = NULL,
     }
   }
 
-  # 4. Grouping variables validation
+  # Grouping variables validation
   if (!is.null(grouping_vars) && !is.null(data)) {
     missing_groups <- grouping_vars[!grouping_vars %in% names(data)]
     if (length(missing_groups) > 0) {
@@ -60,14 +60,14 @@ validate_params <- function(data = NULL,
     }
   }
 
-  # 5. Method validation
+  # Method validation
   if (!is.null(method) && !is.null(valid_methods)) {
     if (!method %in% valid_methods) {
       stop("In ", context, "(): Method must be one of: ", paste(valid_methods, collapse = ", "), call. = FALSE)
     }
   }
 
-  # 6. Custom checks
+  # Custom checks
   if (length(custom_checks) > 0) {
     for (i in seq_along(custom_checks)) {
       check <- custom_checks[[i]]
@@ -79,4 +79,3 @@ validate_params <- function(data = NULL,
 
   invisible(TRUE)
 }
-

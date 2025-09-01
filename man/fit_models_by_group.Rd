@@ -8,7 +8,7 @@ fit_models_by_group(
   data,
   outcomes,
   base_predictors,
-  group_col = "superpop",
+  group_col = NULL,
   groups = "All",
   model_type = "main",
   interaction_terms = NULL,

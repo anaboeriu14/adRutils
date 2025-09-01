@@ -9,7 +9,7 @@ fit_single_lm(
   group,
   predictors,
   data,
-  group_col = "superpop",
+  group_col = NULL,
   model_type = "main"
 )
 }

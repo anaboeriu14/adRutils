@@ -47,24 +47,30 @@
 fit_models_by_group <- function(data,
                                 outcomes,
                                 base_predictors,
-                                group_col = "superpop",
+                                group_col = NULL,
                                 groups = "All",
                                 model_type = "main",
                                 interaction_terms = NULL,
                                 outcome_covariates = NULL,
                                 group_covariates = NULL) {
 
-  # Detect outcome_covariates structure first (needed for validation)
+  # Detect outcome_covariates structure first (need for validation)
   is_group_specific <- .is_group_specific_structure(outcome_covariates, groups)
 
-  # Get all potential covariate columns for validation
+  # Get all covariate columns for validation
   all_potential_covs <- .extract_all_covariates(outcome_covariates, group_covariates, is_group_specific)
 
-  # Comprehensive validation
+  # Build columns to validate - include group_col if it's not NULL
+  columns_to_validate <- c(outcomes, base_predictors, all_potential_covs)
+  if (!is.null(group_col)) {
+    columns_to_validate <- c(group_col, columns_to_validate)
+  }
+
+  # validation
   validate_params(
     data = data,
-    columns = c(group_col, outcomes, base_predictors, all_potential_covs),
-    grouping_vars = if(any(groups != "All")) group_col else NULL,
+    columns = columns_to_validate,
+    grouping_vars = if(!is.null(group_col) && any(groups != "All")) group_col else NULL,
     method = model_type,
     valid_methods = c("main", "interaction"),
     custom_checks = list(
@@ -98,7 +104,7 @@ fit_models_by_group <- function(data,
     curr_outcome <- combinations$outcome[i]
     curr_group <- combinations$group[i]
 
-    # Build predictors for this specific outcome-group combo
+    # Build predictors for specific outcome-group combo
     predictors <- .build_predictors(
       base_predictors = base_predictors,
       outcome = curr_outcome,
@@ -152,10 +158,10 @@ fit_models_by_group <- function(data,
 #' summary(model)
 #' }
 #' @export
-fit_single_lm <- function(outcome, group, predictors, data, group_col = "superpop", model_type = "main") {
+fit_single_lm <- function(outcome, group, predictors, data, group_col = NULL, model_type = "main") {
 
   # Filter data for the group
-  if (group == "All") {
+  if (is.null(group_col) || group == "All") {
     analysis_data <- data
   } else {
     analysis_data <- data %>% filter(.data[[group_col]] == group)
