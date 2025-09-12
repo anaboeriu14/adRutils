@@ -4,10 +4,10 @@
 \alias{bin_and_categorize_variables}
 \title{Bin and Categorize Variables into Groups}
 \usage{
-bin_and_categorize_variables(data, groups, filter_missing = FALSE)
+bin_and_categorize_variables(dataf, groups, filter_missing = FALSE)
 }
 \arguments{
-\item{data}{A data frame containing demographic variables}
+\item{dataf}{A data frame containing demographic variables}
 
 \item{groups}{List of group specifications. Each element should be a list with:
 - 'col': String. Column name in the data

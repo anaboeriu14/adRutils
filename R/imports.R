@@ -4,6 +4,7 @@
 #' @name adRutils
 #'
 #' @import dplyr
+#' @import cli
 #' @import ggplot2
 #' @importFrom magrittr %>%
 #' @importFrom tibble tibble as_tibble

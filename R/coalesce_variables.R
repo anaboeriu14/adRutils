@@ -39,25 +39,25 @@ coalesce_variables <- function(dataf, pattern_extract = NULL, var_groups = NULL,
     custom_checks = list(
       list(
         condition = !is.null(pattern_extract) || !is.null(var_groups),
-        message = "Either pattern_extract or var_groups must be provided"
+        message = "Either {.arg pattern_extract} or {.arg var_groups} must be provided"
       ),
       list(
         condition = is.null(pattern_extract) || is.null(var_groups),
-        message = "Provide either pattern_extract OR var_groups, not both"
+        message = "Provide either {.arg pattern_extract} OR {.arg var_groups}, not both"
       ),
       list(
         condition = is.null(pattern_extract) || (is.character(pattern_extract) && length(pattern_extract) == 1 && nchar(pattern_extract) > 0),
-        message = "pattern_extract must be a single non-empty character string"
+        message = "{.arg pattern_extract} must be a single non-empty character string"
       ),
       list(
         condition = is.null(var_groups) || (is.list(var_groups) && length(names(var_groups)) > 0),
-        message = "var_groups must be a named list with at least one element"
+        message = "{.arg var_groups} must be a named list with at least one element"
       ),
       list(
         condition = is.character(prefix) && length(prefix) == 1 &&
           is.logical(force) && length(force) == 1 &&
           is.logical(check_processed) && length(check_processed) == 1,
-        message = "prefix must be character, force and check_processed must be single logical values"
+        message = "{.arg prefix} must be character, {.arg force} and {.arg check_processed} must be single logical values"
       )
     ),
     context = "coalesce_variables"
@@ -70,7 +70,7 @@ coalesce_variables <- function(dataf, pattern_extract = NULL, var_groups = NULL,
   matching_cols <- grep(pattern_extract, names(dataf), value = TRUE)
 
   if (length(matching_cols) == 0) {
-    warning("No columns found matching pattern: ", pattern_extract)
+    cli::cli_alert_warning("No columns found matching pattern: {.val {pattern_extract}}")
     return(list())
   }
 
@@ -112,7 +112,7 @@ coalesce_variables <- function(dataf, pattern_extract = NULL, var_groups = NULL,
 .should_skip_processing <- function(groups, dataf, force, check_processed) {
   # No groups found
   if (length(groups) == 0) {
-    warning("No groups found for coalescing")
+    cli::cli_alert_warning("No groups found for coalescing")
     return(TRUE)
   }
 
@@ -120,7 +120,7 @@ coalesce_variables <- function(dataf, pattern_extract = NULL, var_groups = NULL,
   if (check_processed && !force) {
     all_cols <- unlist(groups)
     if (adRutils::is_processed("coalesce_variables", all_cols, error_if_exists = FALSE)) {
-      message("Variables already coalesced. Use force=TRUE to override.")
+      cli::cli_alert_info("Variables already coalesced. Use {.arg force} = TRUE to override")
       return(TRUE)
     }
   }
@@ -147,9 +147,9 @@ coalesce_variables <- function(dataf, pattern_extract = NULL, var_groups = NULL,
   # Different messages based on method
   if (coalesced_count > 0) {
     if (!is.null(pattern_extract)) {
-      message("Coalesced ", coalesced_count, " variable groups by pattern matching with '", prefix, "' prefix")
+      cli::cli_alert_success("Coalesced {coalesced_count} variable group{?s} by pattern matching with {.val {prefix}} prefix")
     } else {
-      message("Coalesced ", coalesced_count, " manually specified variable groups with '", prefix, "' prefix")
+      cli::cli_alert_success("Coalesced {coalesced_count} manually specified variable group{?s} with {.val {prefix}} prefix")
     }
   }
 
@@ -160,7 +160,7 @@ coalesce_variables <- function(dataf, pattern_extract = NULL, var_groups = NULL,
 #' @keywords internal
 .warn_if_overwriting <- function(new_name, dataf) {
   if (new_name %in% names(dataf)) {
-    warning("Column '", new_name, "' will be overwritten.")
+    cli::cli_alert_warning("Column {.val {new_name}} will be overwritten")
   }
 }
 

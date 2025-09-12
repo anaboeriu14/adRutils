@@ -25,15 +25,14 @@ validate_params <- function(data = NULL,
 
   # Data frame validation with context
   if (!is.null(data) && !is.data.frame(data)) {
-    stop("In ", context, "(): Input 'data' must be a data frame.", call. = FALSE)
+    cli::cli_abort("In {.fn {context}()}: Input {.arg data} must be a data frame")
   }
 
   # Column existence with context
   if (!is.null(columns) && !is.null(data)) {
     missing_cols <- columns[!columns %in% names(data)]
     if (length(missing_cols) > 0) {
-      stop("In ", context, "(): The following columns do not exist in the data: ",
-           paste(missing_cols, collapse = ", "), call. = FALSE)
+      cli::cli_abort("In {.fn {context}()}: The following column{?s} do not exist in the data: {.val {missing_cols}}")
     }
   }
 
@@ -46,8 +45,7 @@ validate_params <- function(data = NULL,
       }
     }
     if (length(non_numeric) > 0) {
-      stop("In ", context, "(): The following columns are not numeric: ",
-           paste(non_numeric, collapse = ", "), call. = FALSE)
+      cli::cli_abort("In {.fn {context}()}: The following column{?s} {?is/are} not numeric: {.val {non_numeric}}")
     }
   }
 
@@ -55,15 +53,14 @@ validate_params <- function(data = NULL,
   if (!is.null(grouping_vars) && !is.null(data)) {
     missing_groups <- grouping_vars[!grouping_vars %in% names(data)]
     if (length(missing_groups) > 0) {
-      stop("In ", context, "(): The following grouping variables do not exist in the data: ",
-           paste(missing_groups, collapse = ", "), call. = FALSE)
+      cli::cli_abort("In {.fn {context}()}: The following grouping variable{?s} do not exist in the data: {.val {missing_groups}}")
     }
   }
 
   # Method validation
   if (!is.null(method) && !is.null(valid_methods)) {
     if (!method %in% valid_methods) {
-      stop("In ", context, "(): Method must be one of: ", paste(valid_methods, collapse = ", "), call. = FALSE)
+      cli::cli_abort("In {.fn {context}()}: {.arg method} must be one of: {.val {valid_methods}}")
     }
   }
 
@@ -72,7 +69,7 @@ validate_params <- function(data = NULL,
     for (i in seq_along(custom_checks)) {
       check <- custom_checks[[i]]
       if (!check$condition) {
-        stop("In ", context, "(): ", check$message, call. = FALSE)
+        cli::cli_abort("In {.fn {context}()}: {check$message}")
       }
     }
   }

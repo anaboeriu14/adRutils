@@ -26,41 +26,42 @@ convert_columns_to_factors <- function(dataf, patterns, exclude = NULL, ordered 
                                        quiet = FALSE) {
   # Input validation
   if (!is.data.frame(dataf)) {
-    stop("Input 'dataf' must be a data frame or tibble.")
+    cli::cli_abort("Input {.arg dataf} must be a data frame or tibble")
   }
   if (!is.character(patterns) || length(patterns) == 0) {
-    stop("'patterns' must be a non-empty character vector of column name patterns.")
+    cli::cli_abort("{.arg patterns} must be a non-empty character vector of column name patterns")
   }
-  
+
   # Combine patterns into a single regex pattern for matching
   combined_pattern <- paste(patterns, collapse = "|")
-  
+
   # Find columns that match the pattern
   all_cols <- names(dataf)
   matching_cols <- grep(combined_pattern, all_cols, value = TRUE)
-  
+
   # Apply exclusion patterns if provided
   if (!is.null(exclude) && length(exclude) > 0) {
     exclude_pattern <- paste(exclude, collapse = "|")
     matching_cols <- matching_cols[!grepl(exclude_pattern, matching_cols)]
   }
-  
+
   # Check if any columns match after exclusions
   if (length(matching_cols) == 0) {
-    warning("No columns found matching the patterns: ",
-            paste(patterns, collapse = ", "),
-            if (!is.null(exclude)) paste(" (after excluding: ",
-                                         paste(exclude, collapse = ", "), ")", sep = ""))
+    if (!is.null(exclude)) {
+      cli::cli_alert_warning("No columns found matching patterns {.val {patterns}} after excluding {.val {exclude}}")
+    } else {
+      cli::cli_alert_warning("No columns found matching patterns {.val {patterns}}")
+    }
     return(dataf)  # Return unchanged data if no match
   }
-  
+
   # Create a result data frame
   result <- dataf
-  
+
   # Perform the conversion for each matching column
   for (col in matching_cols) {
     x <- dataf[[col]]
-    
+
     # Different conversion logic based on current column type
     if (is.factor(x)) {
       if (ordered && !is.ordered(x)) {
@@ -73,16 +74,16 @@ convert_columns_to_factors <- function(dataf, patterns, exclude = NULL, ordered 
       result[[col]] <- factor(x, ordered = ordered)
     }
   }
-  
-  # Just the essential info (after conversion so we know it succeeded)
+
+  # Summarize
   if (!quiet) {
-    message("Converted ", length(matching_cols), " columns to factors",
-            if (length(matching_cols) <= 8) {
-              paste0(": ", paste(matching_cols, collapse = ", "))
-            } else {
-              paste0(" (", paste(head(matching_cols, 5), collapse = ", "), " and ",
-                     length(matching_cols) - 5, " more)")
-            })
+    if (length(matching_cols) <= 8) {
+      cli::cli_alert_success("Converted {length(matching_cols)} column{?s} to factor{?s}: {.val {matching_cols}}")
+    } else {
+      first_cols <- head(matching_cols, 5)
+      remaining <- length(matching_cols) - 5
+      cli::cli_alert_success("Converted {length(matching_cols)} columns to factors: {.val {first_cols}} and {remaining} more")
+    }
   }
   return(result)
 }

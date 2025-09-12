@@ -26,15 +26,14 @@ read_csvs_by_pattern <- function(directory_path,
 
   # Input validation
   if (!dir.exists(directory_path)) {
-    stop("Directory does not exist: ", directory_path)
+    cli::cli_abort("Directory does not exist: {.path {directory_path}}")
   }
-
   if (missing(missing_vals)) {
-    stop("'missing_vals' parameter is required")
+    cli::cli_abort(" {.arg missing_vals} parameter is required")
   }
 
   if (!is.character(missing_vals) && !is.factor(missing_vals)) {
-    stop("'missing_vals' must be a character vector")
+    cli::cli_abort("{.arg missing_vals} must be a character vector")
   }
 
   # File path collection
@@ -61,16 +60,16 @@ read_csvs_by_pattern <- function(directory_path,
     # Remove duplicates
     file_paths <- unique(file_paths)
   } else {
-    stop("Either provide patterns or set all_files = TRUE")
+    cli::cli_abort("Either provide {.arg patterns} or set {.arg all_files} = TRUE")
   }
 
   # Check if files were found
   if (length(file_paths) == 0) {
-    warning("No files found matching the specified patterns")
+    cli::cli_alert_warning("No files found matching the specified patterns")
     return(NULL)
   }
 
-  if (verbose) message(paste("Found", length(file_paths), "files matching patterns"))
+  if (verbose) cli::cli_alert_success(paste("Found {length(file_paths)} file{?s} matching patterns"))
 
   # Create containers
   df_list <- list()
@@ -82,7 +81,7 @@ read_csvs_by_pattern <- function(directory_path,
     file_name <- basename(file_path)
     names_list <- c(names_list, file_name)
 
-    if (verbose) message(paste("Reading file:", file_name))
+    if (verbose) cli::cli_alert("Reading file: {.file {file_name}}")
 
     # Read CSV
     df <- readr::read_csv(file_path, guess_max = guess_max, na = missing_vals)
@@ -95,20 +94,20 @@ read_csvs_by_pattern <- function(directory_path,
     # Store dataframe
     df_list[[i]] <- df
   }
-
   # Return results
   if (length(df_list) > 0) {
     if (combine) {
-      if (verbose) message("Combining all dataframes")
+      if (verbose) cli::cli_alert_success("Combining all dataframes")
       combined_df <- do.call(rbind, df_list)
       return(combined_df)
     } else {
-      if (verbose) message("Returning list of dataframes")
+      if (verbose) cli::cli_alert_success("Returning list of dataframes")
       names(df_list) <- names_list
       return(df_list)
     }
   } else {
-    warning("No files could be read successfully")
+    cli::cli_abort("No files could be read successfully")
     return(NULL)
   }
 }
+

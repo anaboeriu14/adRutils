@@ -3,7 +3,7 @@
 #' Transforms variables into categorical groups using cutpoints for continuous variables
 #'  and value mappings for categorical variables.
 #'
-#' @param data A data frame containing demographic variables
+#' @param dataf A data frame containing demographic variables
 #' @param groups List of group specifications. Each element should be a list with:
 #'        - 'col': String. Column name in the data
 #'        - 'name': String. Name for the new grouping variable (optional, defaults to col_group)
@@ -17,19 +17,19 @@
 #' @return A data frame with added grouping variables
 #'
 #' @export
-bin_and_categorize_variables <- function(data, groups, filter_missing = FALSE) {
+bin_and_categorize_variables <- function(dataf, groups, filter_missing = FALSE) {
   # Check if input is a data frame
-  if (!is.data.frame(data)) {
-    stop("Input 'data' must be a data frame")
+  if (!is.data.frame(dataf)) {
+    cli::cli_abort("Input {.ard dataf} must be a data frame")
   }
 
   # Check if groups is a list
   if (!is.list(groups)) {
-    stop("'groups' must be a list of group specifications")
+    cli::cli_abort("{.arg groups} must be a list of group specifications")
   }
 
   # Make a copy of the data
-  result <- data
+  result <- dataf
 
   # Track created group columns
   created_columns <- character(0)
@@ -38,12 +38,11 @@ bin_and_categorize_variables <- function(data, groups, filter_missing = FALSE) {
   for (group in groups) {
     # Check required fields
     if (is.null(group$col) || is.null(group$type)) {
-      stop("Each group must have 'col' and 'type' specified")
+      cli::cli_abort("Each group must have {.field col} and {.field type} specified")
     }
 
-    # Check if column exists
-    if (!group$col %in% names(data)) {
-      stop("Column '", group$col, "' not found in data")
+    if (!group$col %in% names(dataf)) {
+      cli::cli_abort("Column {.val {group$col}} not found in data")
     }
 
     # Set output column name
@@ -53,7 +52,7 @@ bin_and_categorize_variables <- function(data, groups, filter_missing = FALSE) {
     if (group$type == "cutpoints") {
       # Check for cutpoints
       if (is.null(group$cutpoints)) {
-        stop("'cutpoints' required for type 'cutpoints'")
+        cli::cli_abort("{.field cutpoints} required for type {.val cutpoints}")
       }
 
       # Add negative and positive infinity to create complete ranges
@@ -74,7 +73,7 @@ bin_and_categorize_variables <- function(data, groups, filter_missing = FALSE) {
       } else {
         labels <- group$labels
         if (length(labels) != length(breaks) - 1) {
-          stop("Number of labels must match number of groups (cutpoints + 1)")
+          cli::cli_abort("Number of labels must match number of groups (cutpoints + 1)")
         }
       }
 
@@ -87,7 +86,7 @@ bin_and_categorize_variables <- function(data, groups, filter_missing = FALSE) {
     } else if (group$type == "categorical") {
       # Check for values mapping
       if (is.null(group$values)) {
-        stop("'values' required for type 'categorical'")
+        cli::cli_abort("{.field values} required for type {.val categorical}")
       }
 
       # Create a character vector first
@@ -104,7 +103,7 @@ bin_and_categorize_variables <- function(data, groups, filter_missing = FALSE) {
     } else if (group$type == "custom") {
       # Check for custom function
       if (is.null(group$custom_fn) || !is.function(group$custom_fn)) {
-        stop("'custom_fn' required for type 'custom'")
+        cli::cli_abort("{.field custom_fn} required for type {.val custom}")
       }
 
       # Apply custom function
@@ -115,7 +114,7 @@ bin_and_categorize_variables <- function(data, groups, filter_missing = FALSE) {
         result[[out_name]] <- factor(result[[out_name]])
       }
     } else {
-      stop("Unknown group type: ", group$type)
+      cli::cli_abort("Unknown group type: {.val {group$type}}")
     }
 
     # Add to list of created columns
