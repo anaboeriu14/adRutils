@@ -23,11 +23,11 @@ get_cache_path <- function(cache_name, cache_dir = "cache", extension = ".rds",
 
   # Input validation
   if (!is.character(cache_name) || length(cache_name) != 1 || nchar(cache_name) == 0) {
-    stop("cache_name must be a non-empty character string")
+    cli_abort("{.arg cache_name} must be a non-empty character string")
   }
 
   if (!is.character(cache_dir) || length(cache_dir) != 1) {
-    stop("cache_dir must be a character string")
+    cli_abort("{.arg cache_dir} must be a character string")
   }
 
   # Ensure extension starts with a dot
@@ -42,8 +42,7 @@ get_cache_path <- function(cache_name, cache_dir = "cache", extension = ".rds",
     cache_name <- gsub("[^a-zA-Z0-9_\\-\\.]", "_", cache_name)
 
     if (cache_name != original_name) {
-      warning(sprintf("Cache name contained invalid characters and was sanitized: '%s' -> '%s'",
-                      original_name, cache_name))
+      cli_alert_warning("Cache name cleaned: {original_name} -> {cache_name}")
     }
   }
 
@@ -53,7 +52,7 @@ get_cache_path <- function(cache_name, cache_dir = "cache", extension = ".rds",
   # Create directory if it doesn't exist and create_dir is TRUE
   if (create_dir && !dir.exists(full_cache_dir)) {
     dir.create(full_cache_dir, recursive = TRUE)
-    message(sprintf("Created cache directory: %s", full_cache_dir))
+    cli_alert_info("Created cache directory: {.file full_cache_dir}")
   }
 
   # Generate full cache path
@@ -73,13 +72,14 @@ get_cache_path <- function(cache_name, cache_dir = "cache", extension = ".rds",
 #' @returns A list containing the cache data
 #' @export
 initialize_cache <- function(cache_name, cache_dir = "cache", extension = ".rds") {
+
   cache_path <- get_cache_path(cache_name, cache_dir, extension)
 
   if (file.exists(cache_path)) {
-    message("Loading existing cache from: ", cache_path)
+    cli_alert_info("Loading existing cache from: {.path cache_path}")
     return(readRDS(cache_path))
   } else {
-    message("No existing cache found. Creating new cache.")
+    cli_alert_info("No existing cache found. Creating new cache.")
     return(list(
       created = Sys.time(),
       last_updated = Sys.time(),
@@ -122,7 +122,7 @@ save_cache <- function(cache, cache_name, cache_dir = "cache", extension = ".rds
     dir_path <- dirname(cache_path)
     if (!dir.exists(dir_path)) {
       dir.create(dir_path, recursive = TRUE)
-      message("Created cache directory: ", dir_path)
+      cli_alert_info("Created cache directory: {.path dir_path} ")
     }
 
     # Use compression if requested
@@ -134,9 +134,9 @@ save_cache <- function(cache, cache_name, cache_dir = "cache", extension = ".rds
     }
 
     if (!is.null(counter)) {
-      message("Cache saved at iteration ", counter)
+      cli_alert_success("Cache saved at iteration {counter} ")
     } else {
-      message("Cache saved")
+      cli_alert_success("Cache saved")
     }
     return(TRUE)
   }
@@ -255,10 +255,9 @@ clean_cache <- function(cache, max_age_days = 30) {
 
   # Remove expired entries
   if (length(expired_keys) > 0) {
-    message("Removing ", length(expired_keys), " expired cache entries")
+    cli_alert_info("Removing {length(expired_keys)} expired cache entries")
     cache$entries[expired_keys] <- NULL
   }
-
   return(cache)
 }
 
@@ -316,7 +315,7 @@ remove_from_cache_by_pattern <- function(cache, pattern) {
 
   matches <- grep(pattern, names(cache$entries), value = TRUE)
   if (length(matches) > 0) {
-    message("Removing ", length(matches), " entries matching pattern '", pattern, "'")
+    cli_alert_info("Removing {length(matches)} entries matching pattern {.arg pattern}")
     cache$entries[matches] <- NULL
   }
 
@@ -337,7 +336,7 @@ export_cache <- function(cache, format = c("csv", "dataframe"), file_path = NULL
   format <- match.arg(format)
 
   if (!("entries" %in% names(cache)) || !is.list(cache$entries)) {
-    warning("Cache has no entries to export")
+    cli_alert_warning("Cache has no entries to export")
     return(data.frame())
   }
 
@@ -365,10 +364,10 @@ export_cache <- function(cache, format = c("csv", "dataframe"), file_path = NULL
   # Export based on format
   if (format == "csv") {
     if (is.null(file_path)) {
-      stop("file_path must be provided when format='csv'")
+      cli_abort("{.arg file_path} must be provided when format='csv'")
     }
     utils::write.csv(cache_df, file = file_path, row.names = FALSE)
-    message("Exported cache to CSV: ", file_path)
+    cli_alert_success("Exported cache to CSV: {.path file_path}")
     return(invisible(NULL))
   } else if (format == "dataframe") {
     return(cache_df)
