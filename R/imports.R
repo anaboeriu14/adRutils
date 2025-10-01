@@ -19,10 +19,12 @@
 #' @importFrom utils head object.size
 #' @importFrom glue glue
 #' @importFrom broom tidy
-#' @importFrom tidyr expand_grid unite
+#' @importFrom tidyr expand_grid unite replace_na
 #' @importFrom purrr map map_int list_rbind map_lgl
 #' @importFrom ggeffects predict_response
 #' @importFrom patchwork wrap_plots plot_layout plot_annotation
+#' @importFrom emmeans emmeans
+
 
 
 NULL
