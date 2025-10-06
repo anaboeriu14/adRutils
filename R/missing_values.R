@@ -41,11 +41,11 @@ summarize_na <- function(data,
                          include_count = TRUE) {
   # Input validation
   if (!is.data.frame(data)) {
-    stop("Input 'data' must be a data frame or tibble.")
+    cli_abort("Input {.arg data} must be a data frame or tibble.")
   }
 
   if (!is.null(threshold) && (!is.numeric(threshold) || threshold < 0 || threshold > 100)) {
-    stop("Threshold must be a numeric value between 0 and 100.")
+    cli_abort("{.arg threshold} must be a numeric value between 0 and 100.")
   }
 
   # Calculate total number of rows
@@ -88,13 +88,13 @@ summarize_na <- function(data,
 #' Remove columns with high percentages of NA values
 #'
 #' This function identifies and removes columns from a data frame that have
-#' a percentage of NA values exceeding the specified threshold.
+#' a percentage of NA values greater than or equal to the specified threshold.
 #'
 #' @param data A data frame or tibble to process
-#' @param threshold Numeric; columns with NA percentage greater than this value will be removed (default: 99)
+#' @param threshold Numeric; columns with NA percentage greater than or equal to this value will be removed (default: 99)
 #' @param quiet Logical; if TRUE, suppresses messages about which columns are being removed
 #' @param return_info Logical; if TRUE, returns a list containing the processed data frame and information
-#'                  about removed columns
+#'                  about removed columns.
 #'
 #' @return If return_info=FALSE (default), returns the data frame with high-NA columns removed.
 #'         If return_info=TRUE, returns a list with elements:
@@ -106,7 +106,7 @@ summarize_na <- function(data,
 #'
 #' @examples
 #' # Create a sample data frame with some columns having high NA percentages
-#' df <- data.frame(
+#' testD <- data.frame(
 #'   id = 1:100,
 #'   almost_empty = c(rep(NA, 99), 1),
 #'   completely_empty = rep(NA, 100),
@@ -114,10 +114,10 @@ summarize_na <- function(data,
 #' )
 #'
 #' # Remove columns with more than 90% NA values
-#' drop_sparse_na_cols(df, threshold = 90)
+#' drop_sparse_na_cols(testD, threshold = 90)
 #'
 #' # Get information about what was removed
-#' result <- drop_sparse_na_cols(df, threshold = 90, return_info = TRUE)
+#' result <- drop_sparse_na_cols(testD, threshold = 90, return_info = TRUE)
 #' result$removed_cols
 #' result$na_summary
 #'
@@ -125,11 +125,11 @@ summarize_na <- function(data,
 drop_sparse_na_cols <- function(data, threshold = 99, quiet = FALSE, return_info = FALSE) {
   # Input validation
   if (!is.data.frame(data)) {
-    stop("Input 'data' must be a data frame or tibble.")
+    cli_abort("Input {.arg data} must be a data frame or tibble.")
   }
 
   if (!is.numeric(threshold) || threshold < 0 || threshold > 100) {
-    stop("Threshold must be a numeric value between 0 and 100.")
+    cli_abort("{.arg threshold}} must be a numeric value between 0 and 100.")
   }
 
   # Get NA information for all columns
@@ -147,19 +147,18 @@ drop_sparse_na_cols <- function(data, threshold = 99, quiet = FALSE, return_info
   }
 
   # Identify columns to remove
-  cols_to_remove <- na_info$column[na_info$percent_na > threshold]
+  cols_to_remove <- na_info$column[na_info$percent_na >= threshold]
 
   # Process the data frame
   if (length(cols_to_remove) > 0) {
     if (!quiet) {
-      message("Removing ", length(cols_to_remove), " column(s) with >", threshold,
-              "% missing values: ", paste(cols_to_remove, collapse = ", "))
+      cli::cli_alert_info("Removing {.val {length(cols_to_remove)}} column{?s} with >= {.val {threshold}}% missing values")
     }
     # Remove columns
     data_clean <- data[, !(names(data) %in% cols_to_remove), drop = FALSE]
   } else {
     if (!quiet) {
-      message("No columns with >", threshold, "% missing values found.")
+      cli_alert_success("No columns with >= {.val {threshold}}% missing values found.")
     }
     data_clean <- data
   }

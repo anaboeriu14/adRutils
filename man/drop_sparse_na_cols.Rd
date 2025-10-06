@@ -9,12 +9,12 @@ drop_sparse_na_cols(data, threshold = 99, quiet = FALSE, return_info = FALSE)
 \arguments{
 \item{data}{A data frame or tibble to process}
 
-\item{threshold}{Numeric; columns with NA percentage greater than this value will be removed (default: 99)}
+\item{threshold}{Numeric; columns with NA percentage greater than or equal to this value will be removed (default: 99)}
 
 \item{quiet}{Logical; if TRUE, suppresses messages about which columns are being removed}
 
 \item{return_info}{Logical; if TRUE, returns a list containing the processed data frame and information
-about removed columns}
+about removed columns.}
 }
 \value{
 If return_info=FALSE (default), returns the data frame with high-NA columns removed.
@@ -25,11 +25,11 @@ If return_info=TRUE, returns a list with elements:
 }
 \description{
 This function identifies and removes columns from a data frame that have
-a percentage of NA values exceeding the specified threshold.
+a percentage of NA values greater than or equal to the specified threshold.
 }
 \examples{
 # Create a sample data frame with some columns having high NA percentages
-df <- data.frame(
+testD <- data.frame(
   id = 1:100,
   almost_empty = c(rep(NA, 99), 1),
   completely_empty = rep(NA, 100),
@@ -37,10 +37,10 @@ df <- data.frame(
 )
 
 # Remove columns with more than 90\% NA values
-drop_sparse_na_cols(df, threshold = 90)
+drop_sparse_na_cols(testD, threshold = 90)
 
 # Get information about what was removed
-result <- drop_sparse_na_cols(df, threshold = 90, return_info = TRUE)
+result <- drop_sparse_na_cols(testD, threshold = 90, return_info = TRUE)
 result$removed_cols
 result$na_summary
 
