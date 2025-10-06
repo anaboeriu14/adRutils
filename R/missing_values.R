@@ -152,7 +152,7 @@ drop_sparse_na_cols <- function(data, threshold = 99, quiet = FALSE, return_info
   # Process the data frame
   if (length(cols_to_remove) > 0) {
     if (!quiet) {
-      cli::cli_alert_info("Removing {.val {length(cols_to_remove)}} column{?s} with >= {.val {threshold}}% missing values")
+      cli::cli_alert_info("Removing {.val {length(cols_to_remove)}} column{?s} with >= {.val {threshold* 100}}% missing values")
     }
     # Remove columns
     data_clean <- data[, !(names(data) %in% cols_to_remove), drop = FALSE]
