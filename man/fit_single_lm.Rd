@@ -22,13 +22,16 @@ fit_single_lm(
 
 \item{data}{A data frame containing the variables}
 
-\item{group_col}{Character string specifying the grouping column name}
+\item{group_col}{Character string specifying the grouping column name. If NULL,
+the output will use "group" as the column name. Default is NULL}
 
 \item{model_type}{Character string specifying model type ("main" or "interaction")}
 }
 \value{
-A single-row tibble with columns: outcome, superpop, model, predictors,
-model_equation, model_res (tidy results), dataf (analysis data), n_obs
+A single-row tibble with columns: outcome, (group_col name or "group"),
+model, predictors, model_equation, model_res (tidy results), model_obj (model object),
+dataf (analysis data), n_obs. The grouping column name matches the \code{group_col}
+parameter, or is named "group" if group_col is NULL.
 }
 \description{
 Fits a single linear model (lm) for a specific outcome within a specific group.
@@ -41,7 +44,7 @@ This function only fits linear models using lm(). For other model types
 }
 \examples{
 \dontrun{
-# Fit single model
+# Fit single model with ancestry grouping
 result <- fit_single_lm(
   outcome = "memory_score",
   group = "EUR",
@@ -51,7 +54,10 @@ result <- fit_single_lm(
 )
 
 # Extract the fitted model
-model <- result$res[[1]]
+model <- result$model_obj[[1]]
 summary(model)
+
+# Access the grouping column (will be named "ancestry")
+result$ancestry
 }
 }

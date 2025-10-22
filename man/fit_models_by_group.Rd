@@ -23,7 +23,8 @@ fit_models_by_group(
 
 \item{base_predictors}{Character vector of predictor variable names to include in all models}
 
-\item{group_col}{Character string specifying the grouping column. Default is "superpop"}
+\item{group_col}{Character string specifying the grouping column name.
+If NULL, no grouping is applied and output will have a "group" column. Default is NULL}
 
 \item{groups}{Character vector specifying which groups to analyze. Use "All" for all data. Default is "All"}
 
@@ -40,7 +41,10 @@ fit_models_by_group(
 \item{group_covariates}{Optional group-specific covariates: list(group1 = c("X1"))}
 }
 \value{
-A tibble with columns: outcome, superpop, model, predictors, model_equation, model_res, dataf, n_obs
+A tibble with columns: outcome, (group_col name or "group"), model, predictors,
+model_equation, model_res (tidy results), model_obj (model object), dataf (analysis data),
+n_obs. The grouping column will be named according to the \code{group_col} parameter,
+or "group" if group_col is NULL.
 }
 \description{
 Fits linear models for multiple outcomes across different groups with flexible
@@ -53,24 +57,39 @@ mixed models, or other model types, use appropriate specialized functions.
 }
 \examples{
 \dontrun{
-# Basic usage
+# Basic usage with ancestry grouping
 results <- fit_models_by_group(
   data = my_data,
   outcomes = c("memory", "attention"),
   base_predictors = c("age", "sex"),
-  groups = c("Group1", "Group2")
+  group_col = "ancestry",
+  groups = c("AFR", "EUR")
 )
+
+# Access the ancestry column
+results$ancestry
+
+# Without grouping (uses all data)
+results <- fit_models_by_group(
+  data = my_data,
+  outcomes = c("memory", "attention"),
+  base_predictors = c("age", "sex"),
+  groups = "All"
+)
+# Output will have a "group" column with value "All"
 
 # With group-specific outcome covariates
 results <- fit_models_by_group(
   data = my_data,
   outcomes = c("memory"),
   base_predictors = c("age", "sex"),
+  group_col = "superpop",
   groups = c("AFR", "EUR"),
   outcome_covariates = list(
     "AFR" = list("memory" = c("education")),
     "EUR" = list("memory" = c("education", "language"))
   )
 )
+# Output will have a "superpop" column
 }
 }

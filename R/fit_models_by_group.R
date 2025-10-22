@@ -7,7 +7,8 @@
 #' @param data A data frame containing the variables for analysis
 #' @param outcomes Character vector of outcome variable names to model
 #' @param base_predictors Character vector of predictor variable names to include in all models
-#' @param group_col Character string specifying the grouping column. Default is "superpop"
+#' @param group_col Character string specifying the grouping column name.
+#'   If NULL, no grouping is applied and output will have a "group" column. Default is NULL
 #' @param groups Character vector specifying which groups to analyze. Use "All" for all data. Default is "All"
 #' @param model_type Character string: "main" or "interaction". Default is "main"
 #' @param interaction_terms Character vector of interaction terms when model_type = "interaction"
@@ -16,32 +17,50 @@
 #'   - Group-specific: list(group1 = list(Y1 = c("X2")))
 #' @param group_covariates Optional group-specific covariates: list(group1 = c("X1"))
 #'
-#' @return A tibble with columns: outcome, superpop, model, predictors, model_equation, model_res, dataf, n_obs
-
+#' @return A tibble with columns: outcome, (group_col name or "group"), model, predictors,
+#'   model_equation, model_res (tidy results), model_obj (model object), dataf (analysis data),
+#'   n_obs. The grouping column will be named according to the \code{group_col} parameter,
+#'   or "group" if group_col is NULL.
+#'
 #' @details This function fits linear models using lm() only. For logistic regression,
 #'   mixed models, or other model types, use appropriate specialized functions.
 #'
 #' @examples
 #' \dontrun{
-#' # Basic usage
+#' # Basic usage with ancestry grouping
 #' results <- fit_models_by_group(
 #'   data = my_data,
 #'   outcomes = c("memory", "attention"),
 #'   base_predictors = c("age", "sex"),
-#'   groups = c("Group1", "Group2")
+#'   group_col = "ancestry",
+#'   groups = c("AFR", "EUR")
 #' )
+#'
+#' # Access the ancestry column
+#' results$ancestry
+#'
+#' # Without grouping (uses all data)
+#' results <- fit_models_by_group(
+#'   data = my_data,
+#'   outcomes = c("memory", "attention"),
+#'   base_predictors = c("age", "sex"),
+#'   groups = "All"
+#' )
+#' # Output will have a "group" column with value "All"
 #'
 #' # With group-specific outcome covariates
 #' results <- fit_models_by_group(
 #'   data = my_data,
 #'   outcomes = c("memory"),
 #'   base_predictors = c("age", "sex"),
+#'   group_col = "superpop",
 #'   groups = c("AFR", "EUR"),
 #'   outcome_covariates = list(
 #'     "AFR" = list("memory" = c("education")),
 #'     "EUR" = list("memory" = c("education", "language"))
 #'   )
 #' )
+#' # Output will have a "superpop" column
 #' }
 #' @export
 fit_models_by_group <- function(data,
@@ -133,18 +152,21 @@ fit_models_by_group <- function(data,
 #' @param group Character string specifying the group value, or "All" for all data
 #' @param predictors Character string containing the predictor formula (e.g., "age + sex + treatment")
 #' @param data A data frame containing the variables
-#' @param group_col Character string specifying the grouping column name
+#' @param group_col Character string specifying the grouping column name. If NULL,
+#'   the output will use "group" as the column name. Default is NULL
 #' @param model_type Character string specifying model type ("main" or "interaction")
 #'
-#' @return A single-row tibble with columns: outcome, superpop, model, predictors,
-#'   model_equation, model_res (tidy results), dataf (analysis data), n_obs
+#' @return A single-row tibble with columns: outcome, (group_col name or "group"),
+#'   model, predictors, model_equation, model_res (tidy results), model_obj (model object),
+#'   dataf (analysis data), n_obs. The grouping column name matches the \code{group_col}
+#'   parameter, or is named "group" if group_col is NULL.
 #'
 #' @details This function only fits linear models using lm(). For other model types
 #'   (glm, mixed models, etc.), use other functions.
 #'
 #' @examples
 #' \dontrun{
-#' # Fit single model
+#' # Fit single model with ancestry grouping
 #' result <- fit_single_lm(
 #'   outcome = "memory_score",
 #'   group = "EUR",
@@ -154,8 +176,11 @@ fit_models_by_group <- function(data,
 #' )
 #'
 #' # Extract the fitted model
-#' model <- result$res[[1]]
+#' model <- result$model_obj[[1]]
 #' summary(model)
+#'
+#' # Access the grouping column (will be named "ancestry")
+#' result$ancestry
 #' }
 #' @export
 fit_single_lm <- function(outcome, group, predictors, data, group_col = NULL, model_type = "main") {
@@ -178,11 +203,13 @@ fit_single_lm <- function(outcome, group, predictors, data, group_col = NULL, mo
     return(NULL)
   })
 
+  col_name <- if(is.null(group_col)) "group" else group_col
+
   # Return results
   if (is.null(model_fit)) {
     tibble(
       outcome = outcome,
-      superpop = group,
+      !!rlang::sym(col_name) := group,
       model = model_type,
       predictors = predictors,
       model_equation = model_equation,
@@ -194,7 +221,7 @@ fit_single_lm <- function(outcome, group, predictors, data, group_col = NULL, mo
   } else {
     tibble(
       outcome = outcome,
-      superpop = group,
+      !!rlang::sym(col_name) := group,
       model = model_type,
       predictors = predictors,
       model_equation = model_equation,
