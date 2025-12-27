@@ -13,37 +13,42 @@ rf_impute_data(
 )
 }
 \arguments{
-\item{dataf}{A data frame containing the data to be imputed.}
+\item{dataf}{A data frame containing the data to be imputed}
 
-\item{vars_to_impute}{A character vector of column names to impute.}
+\item{vars_to_impute}{Character vector of column names to impute}
 
-\item{helper_vars}{A character vector of additional column names used to improve imputation but not returned in the imputed columns.}
+\item{helper_vars}{Character vector of additional column names used to improve imputation
+but not returned in the imputed columns}
 
-\item{parallel}{Logical or character. If TRUE, uses parallel processing with 'forests' method. Default is TRUE.
-Note: Requires setting up parallel backend first (see Examples).}
+\item{parallel}{Logical. If TRUE, uses parallel processing with 'forests' method. Default is TRUE.
+Note: Requires setting up parallel backend first (see Examples)}
 
-\item{verbose}{Logical. If TRUE, shows progress during imputation. Default is TRUE.}
+\item{verbose}{Logical. If TRUE, shows progress during imputation. Default is TRUE}
 }
 \value{
 A list containing:
-\item{newD_imputed}{Original data frame with imputed columns added (prefixed with "i_")}
+\item{data_imputed}{Original data frame with imputed columns added (prefixed with "i_")}
 \item{error_mse}{Data frame with out-of-bag imputation error for each variable}
 }
 \description{
-This function imputes missing values in specified variables using the missForest
-algorithm, which is a non-parametric imputation method based on Random Forest.
+Imputes missing values in specified variables using the missForest
+algorithm, a non-parametric imputation method based on Random Forest.
 }
 \examples{
 \dontrun{
 # Set up parallel processing (do this before calling the function)
 doParallel::registerDoParallel(cores = 3)
-testD <- data.frame(BMI = c(22.5, NA, 24.0, 25.5, NA, 23.0, 28.0, NA, 21.5, 26.0),
-height = c(1.75, 1.80, 1.70, NA, 1.85, 1.65, 1.90, 1.78, NA, 1.68),
-weight = c(70, 80, NA, 85, 90, 60, 100, 75, 55, NA)
+
+testD <- data.frame(
+  BMI = c(22.5, NA, 24.0, 25.5, NA, 23.0, 28.0, NA, 21.5, 26.0),
+  height = c(1.75, 1.80, 1.70, NA, 1.85, 1.65, 1.90, 1.78, NA, 1.68),
+  weight = c(70, 80, NA, 85, 90, 60, 100, 75, 55, NA)
 )
-res <-  rf_impute_data(testD, "BMI", c("weight", "height"))
+
+result <- rf_impute_data(testD, "BMI", c("weight", "height"))
+
 # Access imputed data
-imputed_data <- result$newD_imputed
+imputed_data <- result$data_imputed
 
 # Check imputation errors
 errors <- result$error_mse

@@ -12,7 +12,7 @@ read_csvs_by_pattern(
   clean_col_names = TRUE,
   guess_max = 5000,
   combine = TRUE,
-  verbose = TRUE
+  verbose = FALSE
 )
 }
 \arguments{
@@ -20,15 +20,10 @@ read_csvs_by_pattern(
 
 \item{missing_vals}{Character vector. Values to be treated as NA (required)}
 
-\item{patterns}{List or character vector. Patterns to match files against.
-Each pattern will match any file containing that string.
-\itemize{
-\item Single pattern: "dataf_version_" will match all files containing this exact phrase
-\item Multiple patterns: c("genetics", "clean_") will match ANY file containing EITHER "genetics" OR "clean_"
-\item Regular expressions can be used: "Genetic_v\\d+" will match files "Genetic_v1", "Genetic_v2", etc
-}}
+\item{patterns}{Character vector. Patterns to match files against (regex supported).
+Use NULL with all_files = TRUE to read all CSVs}
 
-\item{all_files}{Logical. If TRUE, reads all CSV files in directory regardless of patterns}
+\item{all_files}{Logical. If TRUE, reads all CSV files regardless of patterns}
 
 \item{clean_col_names}{Logical. If TRUE, cleans column names using janitor::clean_names()}
 
@@ -36,7 +31,7 @@ Each pattern will match any file containing that string.
 
 \item{combine}{Logical. If TRUE, combines all dataframes into one. If FALSE, returns a named list}
 
-\item{verbose}{Logical. If TRUE, prints progress messages}
+\item{verbose}{Logical. If TRUE, prints progress messages (default: FALSE)}
 }
 \value{
 A combined dataframe or a named list of dataframes

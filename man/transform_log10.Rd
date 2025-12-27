@@ -4,7 +4,7 @@
 \alias{transform_log10}
 \title{Transform numeric variables to log10 scale}
 \usage{
-transform_log10(dataf, vars, force = FALSE)
+transform_log10(dataf, vars, force = FALSE, quiet = FALSE)
 }
 \arguments{
 \item{dataf}{A data frame containing the variables to transform}
@@ -12,21 +12,31 @@ transform_log10(dataf, vars, force = FALSE)
 \item{vars}{Character vector of column names to transform}
 
 \item{force}{Logical. If TRUE, bypasses the check for previous processing}
+
+\item{quiet}{Logical. If TRUE, suppresses warning messages}
 }
 \value{
 A data frame with the original columns plus new log10-transformed columns
 }
 \description{
-This function transforms specified numeric variables to log10 scale and adds them
-as new columns with "log10_" prefix. It includes several validation checks to ensure
-proper transformation. Prevents double transformation ie log10(log10(x))
+Transforms specified numeric variables to log10 scale and adds them
+as new columns with "log10_" prefix. Includes validation checks to ensure
+proper transformation and prevents double transformation.
 }
 \examples{
- \dontrun{
-test_df <- data.frame(id = 1:3, biomarker1 = c(10, 20, 30),
-biomarker2 = c(5, 15, 25), age = c(67,97,34), biomarker3 = c(1.2, -0.23, 3)
+\dontrun{
+test_df <- data.frame(
+  id = 1:3,
+  biomarker1 = c(10, 20, 30),
+  biomarker2 = c(5, 15, 25),
+  age = c(67, 97, 34),
+  biomarker3 = c(1.2, -0.23, 3)
 )
+
+# Valid transformation
 test_df2 <- transform_log10(test_df, c("biomarker1", "biomarker2"))
-err_result = transform_log10(test_df, c("age", "biomarker3"))
+
+# This will error (negative values)
+err_result <- transform_log10(test_df, c("age", "biomarker3"))
 }
 }

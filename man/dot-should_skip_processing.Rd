@@ -4,7 +4,7 @@
 \alias{.should_skip_processing}
 \title{Check if processing should be skipped}
 \usage{
-.should_skip_processing(groups, dataf, force, check_processed)
+.should_skip_processing(groups, force, check_processed, quiet)
 }
 \description{
 Check if processing should be skipped

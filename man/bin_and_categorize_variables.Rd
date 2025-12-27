@@ -4,7 +4,12 @@
 \alias{bin_and_categorize_variables}
 \title{Bin and Categorize Variables into Groups}
 \usage{
-bin_and_categorize_variables(dataf, groups, filter_missing = FALSE)
+bin_and_categorize_variables(
+  dataf,
+  groups,
+  filter_missing = FALSE,
+  quiet = FALSE
+)
 }
 \arguments{
 \item{dataf}{A data frame containing demographic variables}
@@ -19,6 +24,8 @@ bin_and_categorize_variables(dataf, groups, filter_missing = FALSE)
 - 'custom_fn': For custom grouping, a function that takes a vector and returns grouped values}
 
 \item{filter_missing}{Logical. Whether to filter rows with NA in any group column (default: FALSE)}
+
+\item{quiet}{Logical. Whether to suppress informational messages (default: FALSE)}
 }
 \value{
 A data frame with added grouping variables

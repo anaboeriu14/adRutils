@@ -27,8 +27,8 @@ convert_columns_to_factors(
 A data frame with specified columns converted to factors
 }
 \description{
-This function converts columns in a data frame to factors based on matching patterns
-in their names. It can create either regular or ordered factors.
+Converts columns in a data frame to factors based on matching patterns
+in their names. Can create either regular or ordered factors.
 }
 \examples{
 testDf <- data.frame(

@@ -2,112 +2,127 @@
 #'
 #' @param directory_path Character. Path to the directory containing CSV files
 #' @param missing_vals Character vector. Values to be treated as NA (required)
-#' @param patterns List or character vector. Patterns to match files against.
-#'    Each pattern will match any file containing that string.
-#'    - Single pattern: "dataf_version_" will match all files containing this exact phrase
-#'   - Multiple patterns: c("genetics", "clean_") will match ANY file containing EITHER "genetics" OR "clean_"
-#'   - Regular expressions can be used: "Genetic_v\\d+" will match files "Genetic_v1", "Genetic_v2", etc
-#' @param all_files Logical. If TRUE, reads all CSV files in directory regardless of patterns
+#' @param patterns Character vector. Patterns to match files against (regex supported).
+#'   Use NULL with all_files = TRUE to read all CSVs
+#' @param all_files Logical. If TRUE, reads all CSV files regardless of patterns
 #' @param clean_col_names Logical. If TRUE, cleans column names using janitor::clean_names()
 #' @param guess_max Integer. Maximum number of rows to use for guessing column types
 #' @param combine Logical. If TRUE, combines all dataframes into one. If FALSE, returns a named list
-#' @param verbose Logical. If TRUE, prints progress messages
+#' @param verbose Logical. If TRUE, prints progress messages (default: FALSE)
 #'
 #' @return A combined dataframe or a named list of dataframes
 #' @export
 read_csvs_by_pattern <- function(directory_path,
-                             missing_vals,
-                             patterns = NULL,
-                             all_files = FALSE,
-                             clean_col_names = TRUE,
-                             guess_max = 5000,
-                             combine = TRUE,
-                             verbose = TRUE) {
+                                 missing_vals,
+                                 patterns = NULL,
+                                 all_files = FALSE,
+                                 clean_col_names = TRUE,
+                                 guess_max = 5000,
+                                 combine = TRUE,
+                                 verbose = FALSE) {
 
-  # Input validation
-  if (!dir.exists(directory_path)) {
-    cli::cli_abort("Directory does not exist: {.path {directory_path}}")
-  }
-  if (missing(missing_vals)) {
-    cli::cli_abort(" {.arg missing_vals} parameter is required")
-  }
+  .validate_csv_inputs(directory_path, missing_vals, patterns, all_files)
 
-  if (!is.character(missing_vals) && !is.factor(missing_vals)) {
-    cli::cli_abort("{.arg missing_vals} must be a character vector")
-  }
+  file_paths <- .find_csv_files(directory_path, patterns, all_files)
 
-  # File path collection
-  if (all_files) {
-    if (verbose) message("Reading all CSV files in directory")
-    file_paths <- list.files(directory_path, pattern = "\\.csv$", full.names = TRUE)
-  } else if (!is.null(patterns)) {
-    if (verbose) message("Creating pattern-based file list")
-    file_paths <- c()
-
-    # Convert to list if needed
-    if (!is.list(patterns)) {
-      patterns <- as.list(patterns)
-    }
-
-    # Process each pattern
-    for (pattern in patterns) {
-      if (verbose) message(paste("Processing pattern:", pattern))
-      regex_pattern <- paste0(".*", pattern, ".*\\.csv$")
-      matched_files <- list.files(directory_path, pattern = regex_pattern, full.names = TRUE)
-      file_paths <- c(file_paths, matched_files)
-    }
-
-    # Remove duplicates
-    file_paths <- unique(file_paths)
-  } else {
-    cli::cli_abort("Either provide {.arg patterns} or set {.arg all_files} = TRUE")
-  }
-
-  # Check if files were found
   if (length(file_paths) == 0) {
     cli::cli_alert_warning("No files found matching the specified patterns")
     return(NULL)
   }
 
-  if (verbose) cli::cli_alert_success(paste("Found {length(file_paths)} file{?s} matching patterns"))
-
-  # Create containers
-  df_list <- list()
-  names_list <- c()
-
-  # Process each file
-  for (i in seq_along(file_paths)) {
-    file_path <- file_paths[i]
-    file_name <- basename(file_path)
-    names_list <- c(names_list, file_name)
-
-    if (verbose) cli::cli_alert("Reading file: {.file {file_name}}")
-
-    # Read CSV
-    df <- readr::read_csv(file_path, guess_max = guess_max, na = missing_vals)
-
-    # Clean column names if requested
-    if (clean_col_names) {
-      df <- janitor::clean_names(df)
-    }
-
-    # Store dataframe
-    df_list[[i]] <- df
+  if (verbose) {
+    cli::cli_alert_info("Reading {length(file_paths)} file{?s}")
   }
-  # Return results
-  if (length(df_list) > 0) {
-    if (combine) {
-      if (verbose) cli::cli_alert_success("Combining all dataframes")
-      combined_df <- do.call(rbind, df_list)
-      return(combined_df)
-    } else {
-      if (verbose) cli::cli_alert_success("Returning list of dataframes")
-      names(df_list) <- names_list
-      return(df_list)
-    }
-  } else {
-    cli::cli_abort("No files could be read successfully")
-    return(NULL)
-  }
+
+  df_list <- .load_csv_files(file_paths, missing_vals, clean_col_names,
+                             guess_max, verbose)
+
+  .format_csv_output(df_list, file_paths, combine, verbose)
 }
 
+#' Validate input parameters for read_csvs_by_pattern
+#' @keywords internal
+.validate_csv_inputs <- function(directory_path, missing_vals, patterns, all_files) {
+  validate_params(
+    custom_checks = list(
+      list(
+        condition = dir.exists(directory_path),
+        message = "Directory does not exist: {directory_path}"
+      ),
+      list(
+        condition = !missing(missing_vals),
+        message = "{.arg missing_vals} parameter is required"
+      ),
+      list(
+        condition = is.character(missing_vals) || is.factor(missing_vals),
+        message = "{.arg missing_vals} must be a character vector"
+      ),
+      list(
+        condition = !is.null(patterns) || all_files,
+        message = "Either provide {.arg patterns} or set {.arg all_files} = TRUE"
+      )
+    ),
+    context = "read_csvs_by_pattern"
+  )
+}
+
+#' Find CSV files matching patterns
+#' @keywords internal
+.find_csv_files <- function(directory_path, patterns, all_files) {
+  if (all_files) {
+    return(list.files(directory_path, pattern = "\\.csv$", full.names = TRUE))
+  }
+
+  regex_pattern <- paste0(".*(?:", paste(patterns, collapse = "|"), ").*\\.csv$")
+  matched_files <- list.files(directory_path, pattern = regex_pattern,
+                              full.names = TRUE)
+  return(unique(matched_files))
+}
+
+#' Load CSV files into data frames
+#' @keywords internal
+.load_csv_files <- function(file_paths, missing_vals, clean_col_names,
+                            guess_max, verbose) {
+
+  n_files <- length(file_paths)
+
+  purrr::map(seq_along(file_paths), function(i) {
+    file_path <- file_paths[i]
+    file_name <- basename(file_path)
+
+    if (verbose) {
+      # Show progress for many files, individual messages for few
+      if (n_files > 10) {
+        if (i == 1) cli::cli_progress_bar("Reading files", total = n_files)
+        cli::cli_progress_update()
+      } else {
+        cli::cli_alert("Reading file {i}/{n_files}: {.file {file_name}}")
+      }
+    }
+
+    df <- readr::read_csv(file_path, guess_max = guess_max, na = missing_vals,
+                          show_col_types = FALSE)
+
+    if (clean_col_names) df <- janitor::clean_names(df)
+
+    return(df)
+  })
+}
+
+#' Format CSV results for output
+#' @keywords internal
+.format_csv_output <- function(df_list, file_paths, combine, verbose) {
+  if (length(df_list) == 0) {
+    cli::cli_abort("No files could be read successfully")
+  }
+
+  if (combine) {
+    if (verbose) cli::cli_alert_success("Combining all dataframes")
+    return(dplyr::bind_rows(df_list))
+  }
+
+  if (verbose) cli::cli_alert_success("Returning list of dataframes")
+  names(df_list) <- basename(file_paths)
+
+  return(df_list)
+}

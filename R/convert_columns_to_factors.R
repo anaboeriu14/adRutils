@@ -1,7 +1,7 @@
 #' Convert columns to factors based on name patterns
 #'
-#' This function converts columns in a data frame to factors based on matching patterns
-#' in their names. It can create either regular or ordered factors.
+#' Converts columns in a data frame to factors based on matching patterns
+#' in their names. Can create either regular or ordered factors.
 #'
 #' @param dataf A data frame containing the columns to convert
 #' @param patterns Character vector of patterns to match column names against
@@ -22,68 +22,110 @@
 #' str(newD)
 #'
 #' @export
-convert_columns_to_factors <- function(dataf, patterns, exclude = NULL, ordered = FALSE,
-                                       quiet = FALSE) {
-  # Input validation
-  if (!is.data.frame(dataf)) {
-    cli::cli_abort("Input {.arg dataf} must be a data frame or tibble")
-  }
-  if (!is.character(patterns) || length(patterns) == 0) {
-    cli::cli_abort("{.arg patterns} must be a non-empty character vector of column name patterns")
+convert_columns_to_factors <- function(dataf, patterns, exclude = NULL,
+                                       ordered = FALSE, quiet = FALSE) {
+
+  # Validate inputs
+  validate_params(
+    data = dataf,
+    custom_checks = list(
+      list(
+        condition = is.character(patterns) && length(patterns) > 0,
+        message = "{.arg patterns} must be a non-empty character vector"
+      ),
+      list(
+        condition = is.logical(ordered) && length(ordered) == 1,
+        message = "{.arg ordered} must be a single logical value"
+      )
+    ),
+    context = "convert_columns_to_factors"
+  )
+
+  # Find matching columns
+  matching_cols <- .find_matching_columns(dataf, patterns, exclude)
+
+  if (length(matching_cols) == 0) {
+    if (!quiet) {
+      .warn_no_matches(patterns, exclude)
+    }
+    return(dataf)
   }
 
-  # Combine patterns into a single regex pattern for matching
+  # Apply factor conversion to each matching column
+  result <- dataf
+  for (col in matching_cols) {
+    result[[col]] <- .to_factor(dataf[[col]], ordered)
+  }
+
+  # Report success
+  if (!quiet) {
+    .report_conversion(matching_cols)
+  }
+
+  return(result)
+}
+
+#' Find columns matching patterns with optional exclusions
+#' @keywords internal
+.find_matching_columns <- function(dataf, patterns, exclude) {
+  # Build combined regex pattern
   combined_pattern <- paste(patterns, collapse = "|")
+  matching_cols <- grep(combined_pattern, names(dataf), value = TRUE)
 
-  # Find columns that match the pattern
-  all_cols <- names(dataf)
-  matching_cols <- grep(combined_pattern, all_cols, value = TRUE)
-
-  # Apply exclusion patterns if provided
+  # Apply exclusions if provided
   if (!is.null(exclude) && length(exclude) > 0) {
     exclude_pattern <- paste(exclude, collapse = "|")
     matching_cols <- matching_cols[!grepl(exclude_pattern, matching_cols)]
   }
 
-  # Check if any columns match after exclusions
-  if (length(matching_cols) == 0) {
-    if (!is.null(exclude)) {
-      cli::cli_alert_warning("No columns found matching patterns {.val {patterns}} after excluding {.val {exclude}}")
-    } else {
-      cli::cli_alert_warning("No columns found matching patterns {.val {patterns}}")
+  return(matching_cols)
+}
+
+#' Convert a single column to factor
+#' @keywords internal
+.to_factor <- function(x, ordered) {
+  if (is.factor(x)) {
+    # Convert existing factor to ordered if needed
+    if (ordered && !is.ordered(x)) {
+      return(factor(x, levels = levels(x), ordered = TRUE))
     }
-    return(dataf)  # Return unchanged data if no match
+    return(x)  # Already correct type
   }
 
-  # Create a result data frame
-  result <- dataf
+  # Convert non-factor to factor
+  return(factor(x, ordered = ordered))
+}
 
-  # Perform the conversion for each matching column
-  for (col in matching_cols) {
-    x <- dataf[[col]]
-
-    # Different conversion logic based on current column type
-    if (is.factor(x)) {
-      if (ordered && !is.ordered(x)) {
-        # Convert regular factor to ordered
-        result[[col]] <- factor(x, levels = levels(x), ordered = TRUE)
-      }
-      # If it's already the right kind of factor, do nothing
-    } else {
-      # Convert non-factor to factor
-      result[[col]] <- factor(x, ordered = ordered)
-    }
+#' Warn when no columns match patterns
+#' @keywords internal
+.warn_no_matches <- function(patterns, exclude) {
+  if (!is.null(exclude)) {
+    cli::cli_alert_warning(
+      "No columns matching {.val {patterns}} after excluding {.val {exclude}}"
+    )
+  } else {
+    cli::cli_alert_warning("No columns matching {.val {patterns}}")
   }
 
-  # Summarize
-  if (!quiet) {
-    if (length(matching_cols) <= 8) {
-      cli::cli_alert_success("Converted {length(matching_cols)} column{?s} to factor{?s}: {.val {matching_cols}}")
-    } else {
-      first_cols <- head(matching_cols, 5)
-      remaining <- length(matching_cols) - 5
-      cli::cli_alert_success("Converted {length(matching_cols)} columns to factors: {.val {first_cols}} and {remaining} more")
-    }
+  invisible(NULL)
+}
+
+#' Report successful conversion
+#' @keywords internal
+.report_conversion <- function(cols) {
+  n_cols <- length(cols)
+
+  if (n_cols <= 8) {
+    cli::cli_alert_success(
+      "Converted {n_cols} column{?s} to factor{?s}: {.field {cols}}"
+    )
+  } else {
+    first_cols <- head(cols, 5)
+    remaining <- n_cols - 5
+    cli::cli_alert_success(
+      "Converted {n_cols} columns to factors: {.field {first_cols}} and {remaining} more"
+    )
   }
-  return(result)
+
+  invisible(NULL)
 }

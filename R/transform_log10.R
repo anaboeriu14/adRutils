@@ -1,77 +1,128 @@
 #' Transform numeric variables to log10 scale
 #'
-#' This function transforms specified numeric variables to log10 scale and adds them
-#' as new columns with "log10_" prefix. It includes several validation checks to ensure
-#' proper transformation. Prevents double transformation ie log10(log10(x))
+#' Transforms specified numeric variables to log10 scale and adds them
+#' as new columns with "log10_" prefix. Includes validation checks to ensure
+#' proper transformation and prevents double transformation.
 #'
 #' @param dataf A data frame containing the variables to transform
 #' @param vars Character vector of column names to transform
 #' @param force Logical. If TRUE, bypasses the check for previous processing
+#' @param quiet Logical. If TRUE, suppresses warning messages
+#'
 #' @return A data frame with the original columns plus new log10-transformed columns
-#' @export
 #'
 #' @examples
-#'  \dontrun{
-#' test_df <- data.frame(id = 1:3, biomarker1 = c(10, 20, 30),
-#' biomarker2 = c(5, 15, 25), age = c(67,97,34), biomarker3 = c(1.2, -0.23, 3)
+#' \dontrun{
+#' test_df <- data.frame(
+#'   id = 1:3,
+#'   biomarker1 = c(10, 20, 30),
+#'   biomarker2 = c(5, 15, 25),
+#'   age = c(67, 97, 34),
+#'   biomarker3 = c(1.2, -0.23, 3)
 #' )
+#'
+#' # Valid transformation
 #' test_df2 <- transform_log10(test_df, c("biomarker1", "biomarker2"))
-#' err_result = transform_log10(test_df, c("age", "biomarker3"))
+#'
+#' # This will error (negative values)
+#' err_result <- transform_log10(test_df, c("age", "biomarker3"))
 #' }
-transform_log10 <- function(dataf, vars, force = FALSE) {
-  # Input validation
-  if (!is.data.frame(dataf)) {
-    stop("The 'dataf' argument must be a data frame.")
+#' @export
+transform_log10 <- function(dataf, vars, force = FALSE, quiet = FALSE) {
+
+  # Validate inputs
+  .validate_log10_params(dataf, vars)
+
+  # Check for already log-transformed column names
+  if (!quiet) {
+    .warn_if_log_named(vars)
   }
 
-  # Check if all columns exist in the data
-  missing_columns <- vars[!vars %in% names(dataf)]
-  if (length(missing_columns) > 0) {
-    stop("Some specified columns do not exist in the data: ",
-         paste(missing_columns, collapse = ", "))
-  }
-
-  # Check if all columns are numeric
-  non_numeric_cols <- vars[!sapply(dataf[vars], is.numeric)]
-  if (length(non_numeric_cols) > 0) {
-    stop("The following columns are NOT numeric: ",
-         paste(non_numeric_cols, collapse = ", "))
-  }
-
-  # Check for negative or zero values
-  neg_values <- vars[sapply(dataf[vars], function(x) any(x <= 0, na.rm = TRUE))]
-  if (length(neg_values) > 0) {
-    stop("The following columns contain negative or zero values: ",
-         paste(neg_values, collapse = ", "))
-  }
-
-  # Check if columns have names suggesting they might be already log-transformed
-  potential_log_cols <- vars[grepl("^log10_", vars)]
-  if (length(potential_log_cols) > 0) {
-    warning("Some columns appear to already have log10 naming convention: ",
-            paste(potential_log_cols, collapse = ", "))
-  }
-
-  # Check if these variables have already been processed with transform_log10
+  # Check if already processed
   if (!force) {
     is_processed("transform_log10", vars, error_if_exists = TRUE)
   }
 
-  # Perform log10 transformation
-  data_add_log10 <- dataf
+  # Perform transformation
+  result <- .apply_log10_transform(dataf, vars, quiet)
+
+  # Register as processed
+  register_processed("transform_log10", vars)
+
+  return(result)
+}
+
+#' Validate transform_log10 parameters
+#' @keywords internal
+.validate_log10_params <- function(dataf, vars) {
+  validate_params(
+    data = dataf,
+    columns = vars,
+    numeric_columns = vars,
+    custom_checks = list(
+      list(
+        condition = is.character(vars) && length(vars) > 0,
+        message = "{.arg vars} must be a non-empty character vector"
+      )
+    ),
+    context = "transform_log10"
+  )
+
+  # Check for negative or zero values
+  invalid_vars <- .find_invalid_values(dataf, vars)
+  if (length(invalid_vars) > 0) {
+    cli::cli_abort(
+      c(
+        "Cannot apply log10 transformation:",
+        "x" = "The following column{?s} contain{?/s} negative or zero values: {.field {invalid_vars}}"
+      )
+    )
+  }
+
+  invisible(TRUE)
+}
+
+#' Find variables with invalid values for log transformation
+#' @keywords internal
+.find_invalid_values <- function(dataf, vars) {
+  vars[vapply(dataf[vars], function(x) any(x <= 0, na.rm = TRUE), logical(1))]
+}
+
+#' Warn if variables already have log10 naming convention
+#' @keywords internal
+.warn_if_log_named <- function(vars) {
+  potential_log_cols <- vars[grepl("^log10_", vars)]
+
+  if (length(potential_log_cols) > 0) {
+    cli::cli_alert_warning(
+      "Column{?s} already ha{?s/ve} log10 naming convention: {.field {potential_log_cols}}"
+    )
+  }
+
+  invisible(NULL)
+}
+
+#' Apply log10 transformation to variables
+#' @keywords internal
+.apply_log10_transform <- function(dataf, vars, quiet) {
+  result <- dataf
+  overwritten <- character()
+
   for (var in vars) {
     log_col_name <- paste0("log10_", var)
 
-    # This handles the case where somehow the column already exists without error
+    # Track if overwriting
     if (log_col_name %in% names(dataf)) {
-      warning("Column ", log_col_name, " already exists. Overwriting.")
+      overwritten <- c(overwritten, log_col_name)
     }
 
-    data_add_log10[[log_col_name]] <- log10(dataf[[var]])
+    result[[log_col_name]] <- log10(dataf[[var]])
   }
 
-  # Register these variables as processed
-  register_processed("transform_log10", vars)
+  # Warn about overwrites
+  if (length(overwritten) > 0 && !quiet) {
+    cli::cli_alert_warning("Overwriting existing column{?s}: {.field {overwritten}}")
+  }
 
-  return(data_add_log10)
+  return(result)
 }

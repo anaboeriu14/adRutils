@@ -24,7 +24,7 @@ A tibble with columns:
 }
 \description{
 Creates a tidy summary of missing values in each column of a data frame.
-The function calculates the count and percentage of NA values for each column
+Calculates the count and percentage of NA values for each column
 and returns a sorted tibble.
 }
 \examples{

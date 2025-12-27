@@ -16,7 +16,7 @@ remove_duplicates_if_exists(
 
 \item{id_col}{Column name or expression specifying the ID to check for duplicates}
 
-\item{keep}{One of "first" (default), "last", "none", or "most_complete".
+\item{keep}{One of "first", "last", "none", or "most_complete" (default: "first").
 "most_complete" keeps the row with fewest NAs.}
 
 \item{quiet}{Logical; if TRUE, suppresses messages about duplicate IDs}
@@ -25,20 +25,16 @@ remove_duplicates_if_exists(
 A data frame with duplicates removed according to the 'keep' parameter
 }
 \description{
-This function identifies and removes duplicate rows based on a specified ID column.
-It provides information about which IDs have duplicates and whether the duplicate
-rows are identical or have conflicting values. When duplicates exist, it keeps
-the row with the fewest NA values (most complete information).
-}
-\details{
-The keep argument will match full or partially,
-ie "la" = "last", "al" = "all", "fi", "fir" = "first", "mo" = "most_complete"
+Identifies and removes duplicate rows based on a specified ID column.
+Provides information about duplicate patterns and keeps the row with
+the fewest NA values (most complete information) when duplicates exist.
 }
 \examples{
 testDF <- data.frame(
-id_num = c(1, 1, 2, 2, 3, 4, 5, 5, 6),
-value = c(100, NA, 200, 250, 300, 400, 500, 500, 600),
-group = c("A", "A", "B", NA, "C", "D", "E", "F", "G")
+  id_num = c(1, 1, 2, 2, 3, 4, 5, 5, 6),
+  value = c(100, NA, 200, 250, 300, 400, 500, 500, 600),
+  group = c("A", "A", "B", NA, "C", "D", "E", "F", "G")
 )
 remove_duplicates_if_exists(testDF, "id_num", "most_complete")
+
 }

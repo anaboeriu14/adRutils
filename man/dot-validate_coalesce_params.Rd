@@ -10,7 +10,8 @@
   var_groups,
   prefix,
   force,
-  check_processed
+  check_processed,
+  quiet
 )
 }
 \description{

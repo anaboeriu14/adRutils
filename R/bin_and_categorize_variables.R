@@ -1,7 +1,7 @@
 #' Bin and Categorize Variables into Groups
 #'
 #' Transforms variables into categorical groups using cutpoints for continuous variables
-#'  and value mappings for categorical variables.
+#' and value mappings for categorical variables.
 #'
 #' @param dataf A data frame containing demographic variables
 #' @param groups List of group specifications. Each element should be a list with:
@@ -13,117 +13,191 @@
 #'        - 'values': For categorical variables, named vector mapping codes to labels (required for "categorical" type)
 #'        - 'custom_fn': For custom grouping, a function that takes a vector and returns grouped values
 #' @param filter_missing Logical. Whether to filter rows with NA in any group column (default: FALSE)
+#' @param quiet Logical. Whether to suppress informational messages (default: FALSE)
 #'
 #' @return A data frame with added grouping variables
 #'
 #' @export
-bin_and_categorize_variables <- function(dataf, groups, filter_missing = FALSE) {
-  # Check if input is a data frame
-  if (!is.data.frame(dataf)) {
-    cli::cli_abort("Input {.ard dataf} must be a data frame")
-  }
+bin_and_categorize_variables <- function(dataf, groups, filter_missing = FALSE,
+                                         quiet = FALSE) {
 
-  # Check if groups is a list
-  if (!is.list(groups)) {
-    cli::cli_abort("{.arg groups} must be a list of group specifications")
-  }
+  .validate_binning_params(dataf, groups)
 
-  # Make a copy of the data
   result <- dataf
+  created_columns <- character()
+  overwritten_columns <- character()
 
-  # Track created group columns
-  created_columns <- character(0)
-
-  # Process each group
   for (group in groups) {
-    # Check required fields
-    if (is.null(group$col) || is.null(group$type)) {
-      cli::cli_abort("Each group must have {.field col} and {.field type} specified")
+    .validate_group_spec(group, dataf)
+
+    out_name <- group$name %||% paste0(group$col, "_group")
+
+    # Track overwrites
+    if (out_name %in% names(result)) {
+      overwritten_columns <- c(overwritten_columns, out_name)
     }
 
-    if (!group$col %in% names(dataf)) {
-      cli::cli_abort("Column {.val {group$col}} not found in data")
-    }
-
-    # Set output column name
-    out_name <- ifelse(is.null(group$name), paste0(group$col, "_group"), group$name)
-
-    # Create grouping based on type
-    if (group$type == "cutpoints") {
-      # Check for cutpoints
-      if (is.null(group$cutpoints)) {
-        cli::cli_abort("{.field cutpoints} required for type {.val cutpoints}")
-      }
-
-      # Add negative and positive infinity to create complete ranges
-      breaks <- c(-Inf, group$cutpoints, Inf)
-
-      # Create default labels if not provided
-      if (is.null(group$labels)) {
-        labels <- character(length(breaks) - 1)
-        for (i in 1:(length(breaks) - 1)) {
-          if (i == 1) {
-            labels[i] <- paste0("<=", group$cutpoints[i])
-          } else if (i == length(breaks) - 1) {
-            labels[i] <- paste0(">=", (group$cutpoints[i-1] + 1))
-          } else {
-            labels[i] <- paste0("[", (group$cutpoints[i-1] + 1), ",", group$cutpoints[i], "]")
-          }
-        }
-      } else {
-        labels <- group$labels
-        if (length(labels) != length(breaks) - 1) {
-          cli::cli_abort("Number of labels must match number of groups (cutpoints + 1)")
-        }
-      }
-
-      # Create groups
-      result[[out_name]] <- cut(result[[group$col]],
-                                breaks = breaks,
-                                labels = labels,
-                                include.lowest = TRUE)
-
-    } else if (group$type == "categorical") {
-      # Check for values mapping
-      if (is.null(group$values)) {
-        cli::cli_abort("{.field values} required for type {.val categorical}")
-      }
-
-      # Create a character vector first
-      result[[out_name]] <- as.character(result[[group$col]])
-
-      # Apply mappings
-      for (val in names(group$values)) {
-        result[[out_name]][result[[out_name]] == val] <- group$values[val]
-      }
-
-      # Convert to factor
-      result[[out_name]] <- factor(result[[out_name]])
-
-    } else if (group$type == "custom") {
-      # Check for custom function
-      if (is.null(group$custom_fn) || !is.function(group$custom_fn)) {
-        cli::cli_abort("{.field custom_fn} required for type {.val custom}")
-      }
-
-      # Apply custom function
-      result[[out_name]] <- group$custom_fn(result[[group$col]])
-
-      # Convert to factor if result is character
-      if (is.character(result[[out_name]])) {
-        result[[out_name]] <- factor(result[[out_name]])
-      }
-    } else {
-      cli::cli_abort("Unknown group type: {.val {group$type}}")
-    }
-
-    # Add to list of created columns
+    result[[out_name]] <- .create_grouped_variable(result[[group$col]], group)
     created_columns <- c(created_columns, out_name)
+  }
+
+  # Warn about overwrites
+  if (!quiet && length(overwritten_columns) > 0) {
+    cli::cli_alert_warning(
+      "Overwriting existing column{?s}: {.field {overwritten_columns}}"
+    )
   }
 
   # Filter missing values if requested
   if (filter_missing && length(created_columns) > 0) {
+    n_before <- nrow(result)
     result <- result[complete.cases(result[created_columns]), ]
+    n_removed <- n_before - nrow(result)
+
+    if (!quiet && n_removed > 0) {
+      cli::cli_alert_info("Filtered {n_removed} row{?s} with missing values")
+    }
+  }
+
+  # Report success
+  if (!quiet && length(created_columns) > 0) {
+    cli::cli_alert_success(
+      "Created {length(created_columns)} grouped variable{?s}"
+    )
+  }
+
+  return(result)
+}
+
+
+#' Validate bin_and_categorize_variables parameters
+#' @keywords internal
+.validate_binning_params <- function(dataf, groups) {
+  validate_params(
+    data = dataf,
+    custom_checks = list(
+      list(
+        condition = is.list(groups) && length(groups) > 0,
+        message = "{.arg groups} must be a non-empty list of group specifications"
+      )
+    ),
+    context = "bin_and_categorize_variables"
+  )
+
+  invisible(TRUE)
+}
+
+#' Validate individual group specification
+#' @keywords internal
+.validate_group_spec <- function(group, dataf) {
+  # Check required fields
+  if (is.null(group$col) || is.null(group$type)) {
+    cli::cli_abort("Each group must have {.field col} and {.field type} specified")
+  }
+
+  if (!group$col %in% names(dataf)) {
+    cli::cli_abort("Column {.field {group$col}} not found in data")
+  }
+
+  # Validate type-specific requirements
+  if (group$type == "cutpoints" && is.null(group$cutpoints)) {
+    cli::cli_abort("{.field cutpoints} required for type {.val cutpoints}")
+  }
+
+  if (group$type == "categorical" && is.null(group$values)) {
+    cli::cli_abort("{.field values} required for type {.val categorical}")
+  }
+
+  if (group$type == "custom" && (is.null(group$custom_fn) || !is.function(group$custom_fn))) {
+    cli::cli_abort("{.field custom_fn} (function) required for type {.val custom}")
+  }
+
+  if (!group$type %in% c("cutpoints", "categorical", "custom")) {
+    cli::cli_abort("Unknown group type: {.val {group$type}}")
+  }
+
+  invisible(TRUE)
+}
+
+#' Create grouped variable based on type
+#' @keywords internal
+.create_grouped_variable <- function(column_data, group) {
+  switch(group$type,
+         cutpoints = .bin_by_cutpoints(column_data, group$cutpoints, group$labels),
+         categorical = .recode_categorical(column_data, group$values),
+         custom = .apply_custom_function(column_data, group$custom_fn)
+  )
+}
+
+#' Bin continuous variable using cutpoints
+#' @keywords internal
+.bin_by_cutpoints <- function(column_data, cutpoints, labels = NULL) {
+  breaks <- c(-Inf, cutpoints, Inf)
+
+  # Generate default labels if not provided
+  if (is.null(labels)) {
+    labels <- .generate_cutpoint_labels(cutpoints, breaks)
+  } else {
+    .validate_label_count(labels, breaks)
+  }
+
+  cut(column_data, breaks = breaks, labels = labels, include.lowest = TRUE)
+}
+
+#' Generate default labels for cutpoints
+#' @keywords internal
+.generate_cutpoint_labels <- function(cutpoints, breaks) {
+  n_groups <- length(breaks) - 1
+  labels <- character(n_groups)
+
+  for (i in seq_len(n_groups)) {
+    if (i == 1) {
+      labels[i] <- paste0("<=", cutpoints[i])
+    } else if (i == n_groups) {
+      labels[i] <- paste0(">=", cutpoints[i - 1] + 1)
+    } else {
+      labels[i] <- paste0("[", cutpoints[i - 1] + 1, ",", cutpoints[i], "]")
+    }
+  }
+
+  return(labels)
+}
+
+#' Validate label count matches number of groups
+#' @keywords internal
+.validate_label_count <- function(labels, breaks) {
+  expected_count <- length(breaks) - 1
+  if (length(labels) != expected_count) {
+    cli::cli_abort(
+      "Number of labels ({length(labels)}) must match number of groups ({expected_count})"
+    )
+  }
+  invisible(TRUE)
+}
+
+#' Recode categorical variable using value mapping
+#' @keywords internal
+.recode_categorical <- function(column_data, value_map) {
+  # Convert to character for mapping
+  recoded <- as.character(column_data)
+
+  # Apply each mapping
+  for (old_val in names(value_map)) {
+    recoded[recoded == old_val] <- value_map[[old_val]]
+  }
+
+  # Convert to factor
+  factor(recoded)
+}
+
+#' Apply custom grouping function
+#' @keywords internal
+.apply_custom_function <- function(column_data, custom_fn) {
+  result <- custom_fn(column_data)
+
+  # Convert to factor if character
+  if (is.character(result)) {
+    result <- factor(result)
   }
 
   return(result)

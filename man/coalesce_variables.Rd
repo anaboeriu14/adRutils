@@ -10,7 +10,8 @@ coalesce_variables(
   var_groups = NULL,
   prefix = "",
   force = FALSE,
-  check_processed = TRUE
+  check_processed = TRUE,
+  quiet = FALSE
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ coalesce_variables(
 \item{force}{Logical, whether to reprocess if already completed (default: FALSE)}
 
 \item{check_processed}{Logical, whether to check/register processing status (default: TRUE)}
+
+\item{quiet}{Logical, whether to suppress informational messages (default: FALSE)}
 }
 \value{
 Data frame with additional coalesced columns

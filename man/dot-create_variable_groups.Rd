@@ -2,11 +2,11 @@
 % Please edit documentation in R/coalesce_variables.R
 \name{.create_variable_groups}
 \alias{.create_variable_groups}
-\title{Create variable groups from pattern or manual specification}
+\title{Build variable groups from pattern or manual specification}
 \usage{
 .create_variable_groups(dataf, pattern_extract, var_groups)
 }
 \description{
-Create variable groups from pattern or manual specification
+Build variable groups from pattern or manual specification
 }
 \keyword{internal}
