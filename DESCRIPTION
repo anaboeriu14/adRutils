@@ -1,6 +1,6 @@
 Package: adRutils
 Type: Package
-Version: 0.4.0
+Version: 1.0.0
 Title: Utility Functions for Data Processing in R
 Authors@R: c(person("Ana", "Boeriu", email = "ana.boeriu@ucsf.edu",role = c("aut", "cre")))
 Description: Provides a collection of general-purpose functions to streamline 
@@ -19,7 +19,7 @@ Imports:
   readr, janitor, missForest,  doParallel, 
    here,  utils,
    broom, glue, purrr,
-   ggplot2, ggeffects, patchwork, cli, emmeans
+   patchwork, cli
  
  
  

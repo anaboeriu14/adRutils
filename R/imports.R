@@ -5,7 +5,6 @@
 #'
 #' @import dplyr
 #' @import cli
-#' @import ggplot2
 #' @import purrr
 #' @importFrom magrittr %>%
 #' @importFrom tibble tibble as_tibble
@@ -21,9 +20,7 @@
 #' @importFrom glue glue
 #' @importFrom broom tidy
 #' @importFrom tidyr expand_grid unite replace_na
-#' @importFrom ggeffects predict_response
 #' @importFrom patchwork wrap_plots plot_layout plot_annotation
-#' @importFrom emmeans emmeans
 
 
 
