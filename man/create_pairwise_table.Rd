@@ -4,7 +4,14 @@
 \alias{create_pairwise_table}
 \title{Create Pairwise Comparison Table for Multiple Variables}
 \usage{
-create_pairwise_table(dataf, variables, group_var, p_adjust = "bonferroni")
+create_pairwise_table(
+  dataf,
+  variables,
+  group_var,
+  p_digits,
+  p_adjust = "bonferroni",
+  p_format = c("auto", "threshold", "exact", "scientific")
+)
 }
 \arguments{
 \item{dataf}{A data frame containing the data}
@@ -13,9 +20,14 @@ create_pairwise_table(dataf, variables, group_var, p_adjust = "bonferroni")
 
 \item{group_var}{Character string specifying the name of the grouping variable}
 
-\item{p_adjust}{Character string specifying the p-value adjustment method.
-Default is "bonferroni". Options include "bonferroni", "holm", "hochberg",
+\item{p_digits}{Integer specifying number of decimal places}
+
+\item{p_adjust}{Character string specifying the p-value adjustment method
+(default: "bonferroni"). Options include "bonferroni", "holm", "hochberg",
 "hommel", "BH", "BY", "fdr", "none"}
+
+\item{p_format}{Character string specifying p-value display format (default: "auto").
+See \code{\link{extract_pairwise_pvalues}} for format options}
 }
 \value{
 A tibble with variables as rows and pairwise comparisons as columns.
@@ -26,21 +38,28 @@ Performs pairwise t-tests for multiple numeric variables against a grouping vari
 and returns results in a wide table format suitable for reporting.
 }
 \details{
-This function is a wrapper around \code{extract_pairwise_pvalues()} that processes
+This function is a wrapper around \code{\link{extract_pairwise_pvalues}} that processes
 multiple variables at once and formats the results in a publication-ready table.
-P-values < 0.001 are displayed as "< 0.001", others are rounded to 3 decimal places.
 }
 \examples{
 \dontrun{
-# Test multiple variables
-variables <- c("mpg", "hp", "wt")
-results <- create_pairwise_table(mtcars, variables, "cyl")
+# Auto format (default - smart)
+results <- create_pairwise_table(mtcars, c("mpg", "hp", "wt"), "cyl")
 
-# With custom p-value adjustment
+# Threshold format (publication style)
+results <- create_pairwise_table(mtcars, c("mpg", "hp"), "cyl",
+                                 p_format = "threshold")
+
+# With custom adjustment and formatting
 results <- create_pairwise_table(iris,
                                  c("Sepal.Length", "Sepal.Width"),
                                  "Species",
-                                 p_adjust = "holm")
+                                 p_adjust = "holm",
+                                 p_format = "scientific",
+                                 p_digits = 2)
 }
 
+}
+\seealso{
+\code{\link{extract_pairwise_pvalues}} for analyzing a single variable
 }

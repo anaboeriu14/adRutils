@@ -4,7 +4,12 @@
 \alias{.format_imputation_results}
 \title{Format imputation results into return list}
 \usage{
-.format_imputation_results(dataf, imputation_result, helper_vars)
+.format_imputation_results(
+  dataf,
+  imputation_result,
+  vars_to_impute,
+  helper_vars
+)
 }
 \description{
 Format imputation results into return list

@@ -8,7 +8,7 @@
 #' @param outcomes Character vector of outcome variable names to model
 #' @param base_predictors Character vector of predictor variable names to include in all models
 #' @param group_col Character string specifying the grouping column name.
-#'   If NULL, no grouping is applied and output will have a "group" column. Default is NULL
+#'   If NULL, no grouping is applied. Default is NULL
 #' @param groups Character vector specifying which groups to analyze. Use "All" for all data. Default is "All"
 #' @param model_type Character string: "main" or "interaction". Default is "main"
 #' @param interaction_terms Character vector of interaction terms when model_type = "interaction"
@@ -16,14 +16,17 @@
 #'   - Standard: list(outcome1 = c("X1", "X2"))
 #'   - Group-specific: list(group1 = list(Y1 = c("X2")))
 #' @param group_covariates Optional group-specific covariates: list(group1 = c("X1"))
+#' @param verbose Logical. If TRUE, shows progress during model fitting. Default is FALSE
 #'
 #' @return A tibble with columns: outcome, (group_col name or "group"), model, predictors,
 #'   model_equation, model_res (tidy results), model_obj (model object), dataf (analysis data),
 #'   n_obs. The grouping column will be named according to the \code{group_col} parameter,
 #'   or "group" if group_col is NULL.
 #'
-#' @details This function fits linear models using lm() only. For logistic regression,
-#'   mixed models, or other model types, use appropriate specialized functions.
+#' @details This function fits linear models using lm() only. It calls
+#'   \code{\link{fit_single_lm}} internally for each outcome-group combination.
+#'
+#' @seealso \code{\link{fit_single_lm}} for fitting individual models
 #'
 #' @examples
 #' \dontrun{
@@ -36,94 +39,74 @@
 #'   groups = c("AFR", "EUR")
 #' )
 #'
-#' # Access the ancestry column
-#' results$ancestry
-#'
-#' # Without grouping (uses all data)
+#' # With outcome-specific covariates
 #' results <- fit_models_by_group(
 #'   data = my_data,
 #'   outcomes = c("memory", "attention"),
 #'   base_predictors = c("age", "sex"),
-#'   groups = "All"
+#'   outcome_covariates = list(
+#'     memory = c("education"),
+#'     attention = c("language")
+#'   )
 #' )
-#' # Output will have a "group" column with value "All"
 #'
 #' # With group-specific outcome covariates
 #' results <- fit_models_by_group(
 #'   data = my_data,
 #'   outcomes = c("memory"),
 #'   base_predictors = c("age", "sex"),
-#'   group_col = "superpop",
+#'   group_col = "ancestry",
 #'   groups = c("AFR", "EUR"),
 #'   outcome_covariates = list(
-#'     "AFR" = list("memory" = c("education")),
-#'     "EUR" = list("memory" = c("education", "language"))
+#'     AFR = list(memory = c("education")),
+#'     EUR = list(memory = c("education", "language"))
 #'   )
 #' )
-#' # Output will have a "superpop" column
+#'
+#' # With progress reporting
+#' results <- fit_models_by_group(
+#'   data = my_data,
+#'   outcomes = paste0("cog_", 1:20),
+#'   base_predictors = c("age", "sex"),
+#'   group_col = "ancestry",
+#'   groups = c("AFR", "EUR", "EAS"),
+#'   verbose = TRUE
+#' )
 #' }
 #' @export
-fit_models_by_group <- function(data,
-                                outcomes,
-                                base_predictors,
-                                group_col = NULL,
-                                groups = "All",
-                                model_type = "main",
-                                interaction_terms = NULL,
-                                outcome_covariates = NULL,
-                                group_covariates = NULL) {
+fit_models_by_group <- function(data, outcomes, base_predictors,
+                                group_col = NULL, groups = "All",
+                                model_type = "main", interaction_terms = NULL,
+                                outcome_covariates = NULL, group_covariates = NULL,
+                                verbose = FALSE) {
 
-  # Detect outcome_covariates structure first (need for validation)
-  is_group_specific <- .is_group_specific_structure(outcome_covariates, groups)
+  # Validate basic inputs
+  .validate_model_inputs(data, outcomes, base_predictors, groups,
+                         model_type, interaction_terms, verbose)
 
-  # Get all covariate columns for validation
-  all_potential_covs <- .extract_all_covariates(outcome_covariates, group_covariates, is_group_specific)
+  # Process and validate covariates
+  covariate_info <- .prepare_covariates(outcome_covariates, group_covariates,
+                                        groups, data, group_col)
 
-  # Build columns to validate - include group_col if it's not NULL
-  columns_to_validate <- c(outcomes, base_predictors, all_potential_covs)
-  if (!is.null(group_col)) {
-    columns_to_validate <- c(group_col, columns_to_validate)
-  }
-
-  # validation
-  validate_params(
-    data = data,
-    columns = columns_to_validate,
-    grouping_vars = if(!is.null(group_col) && any(groups != "All")) group_col else NULL,
-    method = model_type,
-    valid_methods = c("main", "interaction"),
-    custom_checks = list(
-      list(
-        condition = is.character(outcomes) && length(outcomes) > 0,
-        message = "outcomes must be a non-empty character vector"
-      ),
-      list(
-        condition = is.character(base_predictors) && length(base_predictors) > 0,
-        message = "base_predictors must be a non-empty character vector"
-      ),
-      list(
-        condition = is.character(groups) && length(groups) > 0,
-        message = "groups must be a non-empty character vector"
-      ),
-      list(
-        condition = if(model_type == "interaction") {
-          is.null(interaction_terms) || is.character(interaction_terms)
-        } else TRUE,
-        message = "interaction_terms must be NULL or a character vector when model_type = 'interaction'"
-      )
-    ),
-    context = "fit_models_by_group"
-  )
-
-  # Create all outcome-group combinations
+  # Create outcome-group combinations
   combinations <- expand_grid(outcome = outcomes, group = groups)
 
-  # Fit models for each combination
+  # Progress setup
+  if (verbose) {
+    cli::cli_progress_bar(
+      "Fitting models",
+      total = nrow(combinations),
+      format = "{cli::pb_spin} Fitting {cli::pb_current}/{cli::pb_total} models"
+    )
+  }
+
+  # Fit models
   results <- map(1:nrow(combinations), function(i) {
+    if (verbose) cli::cli_progress_update()
+
     curr_outcome <- combinations$outcome[i]
     curr_group <- combinations$group[i]
 
-    # Build predictors for specific outcome-group combo
     predictors <- .build_predictors(
       base_predictors = base_predictors,
       outcome = curr_outcome,
@@ -132,12 +115,19 @@ fit_models_by_group <- function(data,
       group_covariates = group_covariates,
       model_type = model_type,
       interaction_terms = interaction_terms,
-      is_group_specific = is_group_specific
+      is_group_specific = covariate_info$is_group_specific
     )
 
-    # Fit the model
-    fit_single_lm(curr_outcome, curr_group, predictors, data, group_col, model_type)
+    fit_single_lm(curr_outcome, curr_group, predictors, data,
+                  group_col, model_type)
   }) %>% list_rbind()
+
+  if (verbose) {
+    cli::cli_progress_done()
+    cli::cli_alert_success(
+      "Fitted {nrow(results)} model{?s} across {length(outcomes)} outcome{?s} and {length(groups)} group{?s}"
+    )
+  }
 
   return(results)
 }
@@ -161,8 +151,10 @@ fit_models_by_group <- function(data,
 #'   dataf (analysis data), n_obs. The grouping column name matches the \code{group_col}
 #'   parameter, or is named "group" if group_col is NULL.
 #'
-#' @details This function only fits linear models using lm(). For other model types
-#'   (glm, mixed models, etc.), use other functions.
+#' @details This function only fits linear models using lm(). It is called internally
+#'   by \code{\link{fit_models_by_group}} but is also exported for standalone use.
+#'
+#' @seealso \code{\link{fit_models_by_group}} for fitting multiple models at once
 #'
 #' @examples
 #' \dontrun{
@@ -181,14 +173,56 @@ fit_models_by_group <- function(data,
 #'
 #' # Access the grouping column (will be named "ancestry")
 #' result$ancestry
+#'
+#' # Fit model on all data (no grouping)
+#' result <- fit_single_lm(
+#'   outcome = "memory_score",
+#'   group = "All",
+#'   predictors = "age + sex",
+#'   data = my_data
+#' )
+#' # Output will have a "group" column with value "All"
 #' }
 #' @export
-fit_single_lm <- function(outcome, group, predictors, data, group_col = NULL, model_type = "main") {
+fit_single_lm <- function(outcome, group, predictors, data,
+                          group_col = NULL, model_type = "main") {
+
+  # Validate inputs
+  validate_params(
+    data = data,
+    columns = outcome,
+    custom_checks = list(
+      list(
+        condition = is.character(outcome) && length(outcome) == 1,
+        message = "{.arg outcome} must be a single character string"
+      ),
+      list(
+        condition = is.character(group) && length(group) == 1,
+        message = "{.arg group} must be a single character string"
+      ),
+      list(
+        condition = is.character(predictors) && length(predictors) == 1,
+        message = "{.arg predictors} must be a single character string"
+      ),
+      list(
+        condition = is.null(group_col) || (is.character(group_col) && length(group_col) == 1),
+        message = "{.arg group_col} must be NULL or a single character string"
+      )
+    ),
+    context = "fit_single_lm"
+  )
 
   # Filter data for the group
   if (is.null(group_col) || group == "All") {
     analysis_data <- data
   } else {
+    # Validate group_col exists
+    validate_params(
+      data = data,
+      columns = group_col,
+      context = "fit_single_lm (group_col)"
+    )
+
     analysis_data <- data %>% filter(.data[[group_col]] == group)
   }
 
@@ -199,15 +233,16 @@ fit_single_lm <- function(outcome, group, predictors, data, group_col = NULL, mo
   model_fit <- tryCatch({
     lm(as.formula(model_equation), data = analysis_data)
   }, error = function(e) {
-    warning("Model failed for ", outcome, " in group ", group, ": ", e$message)
+    cli::cli_alert_warning("Model failed for {outcome} in group {group}: {e$message}")
     return(NULL)
   })
 
+  # Determine column name for grouping variable
   col_name <- if(is.null(group_col)) "group" else group_col
 
   # Return results
   if (is.null(model_fit)) {
-    tibble(
+    return(tibble(
       outcome = outcome,
       !!rlang::sym(col_name) := group,
       model = model_type,
@@ -217,9 +252,9 @@ fit_single_lm <- function(outcome, group, predictors, data, group_col = NULL, mo
       model_obj = list(NULL),
       dataf = list(NULL),
       n_obs = NA_integer_
-    )
+    ))
   } else {
-    tibble(
+    return(tibble(
       outcome = outcome,
       !!rlang::sym(col_name) := group,
       model = model_type,
@@ -229,14 +264,92 @@ fit_single_lm <- function(outcome, group, predictors, data, group_col = NULL, mo
       model_obj = list(model_fit),
       dataf = list(analysis_data),
       n_obs = nobs(model_fit)
-    )
+    ))
   }
 }
 
+#' Validate basic model inputs
+#' @keywords internal
+.validate_model_inputs <- function(data, outcomes, base_predictors, groups,
+                                   model_type, interaction_terms, verbose) {
+  validate_params(
+    data = data,
+    columns = c(outcomes, base_predictors),
+    method = model_type,
+    valid_methods = c("main", "interaction"),
+    custom_checks = list(
+      list(
+        condition = is.character(outcomes) && length(outcomes) > 0,
+        message = "{.arg outcomes} must be a non-empty character vector"
+      ),
+      list(
+        condition = is.character(base_predictors) && length(base_predictors) > 0,
+        message = "{.arg base_predictors} must be a non-empty character vector"
+      ),
+      list(
+        condition = is.character(groups) && length(groups) > 0,
+        message = "{.arg groups} must be a non-empty character vector"
+      ),
+      list(
+        condition = if(model_type == "interaction") {
+          is.null(interaction_terms) || is.character(interaction_terms)
+        } else TRUE,
+        message = "{.arg interaction_terms} must be NULL or character vector when model_type = 'interaction'"
+      ),
+      list(
+        condition = is.logical(verbose) && length(verbose) == 1,
+        message = "{.arg verbose} must be a single logical value"
+      )
+    ),
+    context = "fit_models_by_group"
+  )
+
+  invisible(TRUE)
+}
+
+#' Prepare and validate covariate specifications
+#' @keywords internal
+.prepare_covariates <- function(outcome_covariates, group_covariates,
+                                groups, data, group_col) {
+
+  # Detect covariate structure
+  is_group_specific <- .is_group_specific_structure(outcome_covariates, groups)
+
+  # Extract all covariate columns
+  all_covs <- .extract_all_covariates(outcome_covariates, group_covariates)
+
+  # Validate all columns exist in data
+  if (length(all_covs) > 0) {
+    validate_params(
+      data = data,
+      columns = all_covs,
+      context = "fit_models_by_group (covariates)"
+    )
+  }
+
+  return(list(
+    is_group_specific = is_group_specific,
+    all_covariates = all_covs
+  ))
+}
+
+#' Check if outcome_covariates uses group-specific structure
+#' @keywords internal
+.is_group_specific_structure <- function(outcome_covariates, groups) {
+  if (is.null(outcome_covariates)) {
+    return(FALSE)
+  }
+
+  # Check if structure is group-specific (nested by group then outcome)
+  names_are_groups <- all(names(outcome_covariates) %in% groups)
+  values_are_lists <- all(sapply(outcome_covariates, is.list))
+
+  return(names_are_groups && values_are_lists)
+}
 
 #' Extract all covariate names for validation
 #' @keywords internal
-.extract_all_covariates <- function(outcome_covariates, group_covariates, is_group_specific) {
+.extract_all_covariates <- function(outcome_covariates, group_covariates) {
   all_covs <- character(0)
 
   # Extract from outcome_covariates
@@ -250,15 +363,6 @@ fit_single_lm <- function(outcome, group, predictors, data, group_col = NULL, mo
   }
 
   return(unique(all_covs))
-}
-
-#' Check if outcome_covariates uses group-specific structure
-#' @keywords internal
-.is_group_specific_structure <- function(outcome_covariates, groups) {
-  if (is.null(outcome_covariates)) return(FALSE)
-
-  # Group-specific if: all names are groups AND all values are lists
-  all(names(outcome_covariates) %in% groups) && all(sapply(outcome_covariates, is.list))
 }
 
 #' Build predictor formula string
@@ -310,4 +414,3 @@ fit_single_lm <- function(outcome, group, predictors, data, group_col = NULL, mo
     }
   }
 }
-

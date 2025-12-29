@@ -4,31 +4,29 @@
 #' @param pattern_extract Regular expression identifying the varying part to remove
 #' @param var_groups Named list of column groups to coalesce
 #' @param prefix Character string to prepend to new column names (default: "")
-#' @param force Logical, whether to reprocess if already completed (default: FALSE)
-#' @param check_processed Logical, whether to check/register processing status (default: TRUE)
-#' @param quiet Logical, whether to suppress informational messages (default: FALSE)
+#' @param overwrite Logical. If TRUE, overwrites existing coalesced columns (default: FALSE)
+#' @param quiet Logical. If TRUE, suppresses messages (default: FALSE)
 #'
 #' @return Data frame with additional coalesced columns
 #' @export
 coalesce_variables <- function(dataf, pattern_extract = NULL, var_groups = NULL,
-                               prefix = "", force = FALSE, check_processed = TRUE,
-                               quiet = FALSE) {
+                               prefix = "", overwrite = FALSE, quiet = FALSE) {
 
   # Validate inputs
   .validate_coalesce_params(dataf, pattern_extract, var_groups,
-                            prefix, force, check_processed, quiet)
+                            prefix, overwrite, quiet)
 
   # Create groups
   groups <- .create_variable_groups(dataf, pattern_extract, var_groups)
 
   # Check if should skip
-  if (.should_skip_processing(groups, force, check_processed, quiet)) {
+  if (length(groups) == 0) {
+    if (!quiet) cli::cli_alert_warning("No matching columns found for coalescing")
     return(dataf)
   }
 
-  # Coalesce and register
-  result_df <- .coalesce_groups(dataf, groups, prefix, quiet)
-  .register_if_enabled(groups, check_processed)
+  # Coalesce
+  result_df <- .coalesce_groups(dataf, groups, prefix, overwrite, quiet)
 
   return(result_df)
 }
@@ -36,7 +34,7 @@ coalesce_variables <- function(dataf, pattern_extract = NULL, var_groups = NULL,
 #' Validate coalesce_variables parameters
 #' @keywords internal
 .validate_coalesce_params <- function(dataf, pattern_extract, var_groups,
-                                      prefix, force, check_processed, quiet) {
+                                      prefix, overwrite, quiet) {  # ← Removed check_processed
   validate_params(
     data = dataf,
     custom_checks = list(
@@ -61,9 +59,8 @@ coalesce_variables <- function(dataf, pattern_extract = NULL, var_groups = NULL,
       ),
       list(
         condition = is.character(prefix) && length(prefix) == 1 &&
-          is.logical(force) && length(force) == 1 &&
-          is.logical(check_processed) && length(check_processed) == 1 &&
-          is.logical(quiet) && length(quiet) == 1,
+          is.logical(overwrite) && length(overwrite) == 1 &&
+          is.logical(quiet) && length(quiet) == 1,  # ← Removed check_processed
         message = "All parameters must be scalar values of correct type"
       )
     ),
@@ -111,31 +108,13 @@ coalesce_variables <- function(dataf, pattern_extract = NULL, var_groups = NULL,
   return(groups)
 }
 
-#' Check if processing should be skipped
-#' @keywords internal
-.should_skip_processing <- function(groups, force, check_processed, quiet) {
-  if (length(groups) == 0) {
-    if (!quiet) cli::cli_alert_warning("No matching columns found for coalescing")
-    return(TRUE)
-  }
-
-  if (check_processed && !force) {
-    if (is_processed("coalesce_variables", unlist(groups), error_if_exists = FALSE)) {
-      if (!quiet) {
-        cli::cli_alert_info("Variables already coalesced. Use {.code force = TRUE} to override")
-      }
-      return(TRUE)
-    }
-  }
-
-  return(FALSE)
-}
-
 #' Coalesce groups into new columns
 #' @keywords internal
-.coalesce_groups <- function(dataf, groups, prefix, quiet) {
+.coalesce_groups <- function(dataf, groups, prefix, overwrite, quiet) {
   result_df <- dataf
-  new_cols <- character()
+  created_cols <- character()
+  overwritten_cols <- character()
+  skipped_cols <- character()
 
   for (base_name in names(groups)) {
     cols <- groups[[base_name]]
@@ -143,30 +122,42 @@ coalesce_variables <- function(dataf, pattern_extract = NULL, var_groups = NULL,
     if (length(cols) > 1) {
       new_name <- paste0(prefix, base_name)
 
-      if (new_name %in% names(result_df) && !quiet) {
-        cli::cli_alert_warning("Overwriting existing column: {.field {new_name}}")
+      # Check if column already exists
+      if (new_name %in% names(result_df)) {
+        if (!overwrite) {
+          skipped_cols <- c(skipped_cols, new_name)
+          next  # Skip this one
+        }
+        overwritten_cols <- c(overwritten_cols, new_name)
+      } else {
+        created_cols <- c(created_cols, new_name)
       }
 
       result_df[[new_name]] <- do.call(dplyr::coalesce, as.list(result_df[cols]))
-      new_cols <- c(new_cols, new_name)
     }
   }
 
-  if (length(new_cols) > 0 && !quiet) {
+  # Report what happened
+  if (length(skipped_cols) > 0 && !quiet) {
+    cli::cli_alert_warning(
+      "Skipped {length(skipped_cols)} column{?s} that already exist{?s}: {.field {skipped_cols}}"
+    )
+    cli::cli_alert_info("Use {.code overwrite = TRUE} to replace existing columns")
+  }
+
+  if (length(overwritten_cols) > 0 && !quiet) {
+    cli::cli_alert_warning(
+      "Overwriting existing column{?s}: {.field {overwritten_cols}}"
+    )
+  }
+
+  total_created <- length(created_cols) + length(overwritten_cols)
+  if (total_created > 0 && !quiet) {
     prefix_msg <- if (prefix != "") paste0(' with prefix "', prefix, '"') else ""
     cli::cli_alert_success(
-      "Created {length(new_cols)} coalesced column{?s}{prefix_msg}"
+      "Created {total_created} coalesced column{?s}{prefix_msg}"
     )
   }
 
   return(result_df)
-}
-
-#' Register processing if enabled
-#' @keywords internal
-.register_if_enabled <- function(groups, check_processed) {
-  if (check_processed) {
-    register_processed("coalesce_variables", unlist(groups))
-  }
-  invisible(NULL)
 }

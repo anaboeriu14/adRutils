@@ -4,7 +4,7 @@
 \alias{.apply_log10_transform}
 \title{Apply log10 transformation to variables}
 \usage{
-.apply_log10_transform(dataf, vars, quiet)
+.apply_log10_transform(dataf, vars, overwrite, quiet)
 }
 \description{
 Apply log10 transformation to variables

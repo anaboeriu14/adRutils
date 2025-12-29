@@ -15,33 +15,43 @@ find_sibling_repo(
 \arguments{
 \item{repo_name}{Character. Primary name of the repository to find.}
 
-\item{alternative_names}{Character vector. Alternative names to search for if primary name not found.}
+\item{alternative_names}{Character vector. Alternative names to search for if
+primary name not found (optional).}
 
-\item{parent_levels}{Integer. How many levels up to go to find parent directory (default: 1).}
+\item{parent_levels}{Integer. How many directory levels to go up from the
+project root to find siblings (default: 1).}
 
-\item{current_repo_name}{Character. Name of current repository for error messages (optional).}
+\item{current_repo_name}{Character. Name of current repository, used in error
+messages for clarity (optional).}
 
-\item{stop_on_missing}{Logical. Whether to stop with error if repo not found (default: TRUE).}
+\item{stop_on_missing}{Logical. If TRUE, throws error when repo not found.
+If FALSE, returns NULL silently (default: TRUE).}
 }
 \value{
-Character path to the found repository, or NULL if not found and stop_on_missing = FALSE.
+Character path to the found repository, or NULL if not found and
+stop_on_missing = FALSE.
 }
 \description{
 Locate a sibling repository in the same parent directory as the current project.
-Useful for multi-repo projects where one repo depends on data/code from another.
+Uses the \code{here} package to reliably find the project root, ensuring consistent
+behavior regardless of working directory.
 }
 \examples{
 \dontrun{
-# Find apoeDatabase repo from apoeAncestry
-db_path <- find_sibling_repo("apoeDatabase",
-                             c("apoeD", "apoe-database", "apoe_database"))
+# Basic usage - find sibling repo
+db_path <- find_sibling_repo("apoeDatabase")
 
-# Find data repo with custom error message
-data_path <- find_sibling_repo("myproject-data",
-                               current_repo_name = "myproject-analysis")
+# With alternatives if repo name varies
+db_path <- find_sibling_repo(
+  "apoeDatabase",
+  alternative_names = c("apoe-database", "apoe_db")
+)
 
-# Don't error if not found
-optional_repo <- find_sibling_repo("optional-repo", stop_on_missing = FALSE)
+# Non-failing version
+optional_repo <- find_sibling_repo("optional-data", stop_on_missing = FALSE)
+if (!is.null(optional_repo)) {
+  # Use the repo
+}
 }
 
 }

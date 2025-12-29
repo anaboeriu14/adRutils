@@ -9,7 +9,7 @@
 #' @param grouping_vars Character vector of grouping variables (optional)
 #' @param method Character string for method validation (optional)
 #' @param valid_methods Character vector of allowed methods
-#' @param custom_checks List of custom validation checks
+#' @param custom_checks List of custom validation checks. Must be in the form condition, message
 #' @param context Character string describing the calling function
 #'
 #' @return Invisibly returns TRUE if all validations pass, stops with error otherwise

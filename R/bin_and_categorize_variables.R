@@ -21,7 +21,16 @@
 bin_and_categorize_variables <- function(dataf, groups, filter_missing = FALSE,
                                          quiet = FALSE) {
 
-  .validate_binning_params(dataf, groups)
+  validate_params(
+    data = dataf,
+    custom_checks = list(
+      list(
+        condition = is.list(groups) && length(groups) > 0,
+        message = "{.arg groups} must be a non-empty list of group specifications"
+      )
+    ),
+    context = "bin_and_categorize_variables"
+  )
 
   result <- dataf
   created_columns <- character()
@@ -67,24 +76,6 @@ bin_and_categorize_variables <- function(dataf, groups, filter_missing = FALSE,
   }
 
   return(result)
-}
-
-
-#' Validate bin_and_categorize_variables parameters
-#' @keywords internal
-.validate_binning_params <- function(dataf, groups) {
-  validate_params(
-    data = dataf,
-    custom_checks = list(
-      list(
-        condition = is.list(groups) && length(groups) > 0,
-        message = "{.arg groups} must be a non-empty list of group specifications"
-      )
-    ),
-    context = "bin_and_categorize_variables"
-  )
-
-  invisible(TRUE)
 }
 
 #' Validate individual group specification

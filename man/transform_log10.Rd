@@ -4,16 +4,16 @@
 \alias{transform_log10}
 \title{Transform numeric variables to log10 scale}
 \usage{
-transform_log10(dataf, vars, force = FALSE, quiet = FALSE)
+transform_log10(dataf, vars, overwrite = FALSE, quiet = FALSE)
 }
 \arguments{
 \item{dataf}{A data frame containing the variables to transform}
 
 \item{vars}{Character vector of column names to transform}
 
-\item{force}{Logical. If TRUE, bypasses the check for previous processing}
+\item{overwrite}{Logical. If TRUE, bypasses the check for previous processing (default: FALSE)}
 
-\item{quiet}{Logical. If TRUE, suppresses warning messages}
+\item{quiet}{Logical. If TRUE, suppresses informational messages (default: FALSE)}
 }
 \value{
 A data frame with the original columns plus new log10-transformed columns
@@ -22,6 +22,18 @@ A data frame with the original columns plus new log10-transformed columns
 Transforms specified numeric variables to log10 scale and adds them
 as new columns with "log10_" prefix. Includes validation checks to ensure
 proper transformation and prevents double transformation.
+}
+\details{
+The function performs several validation checks:
+\itemize{
+\item All variables must be numeric
+\item No values can be negative or zero (log10 undefined)
+\item Warns if variables already have "log10_" prefix
+\item Prevents double transformation (unless overwrite = TRUE)
+}
+
+New columns are named with "log10_" prefix. For example, transforming
+"biomarker1" creates a new column "log10_biomarker1".
 }
 \examples{
 \dontrun{
@@ -36,7 +48,16 @@ test_df <- data.frame(
 # Valid transformation
 test_df2 <- transform_log10(test_df, c("biomarker1", "biomarker2"))
 
-# This will error (negative values)
-err_result <- transform_log10(test_df, c("age", "biomarker3"))
+# Check results
+summary(test_df2$log10_biomarker1)
+
+# This will error (negative values in biomarker3)
+err_result <- transform_log10(test_df, "biomarker3")
+
+# overwrite re-transformation
+test_df3 <- transform_log10(test_df2, "biomarker1", overwrite = TRUE)
+
+# Quiet mode (suppress messages)
+test_df4 <- transform_log10(test_df, "biomarker1", quiet = TRUE)
 }
 }

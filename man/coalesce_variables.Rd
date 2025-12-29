@@ -9,8 +9,7 @@ coalesce_variables(
   pattern_extract = NULL,
   var_groups = NULL,
   prefix = "",
-  force = FALSE,
-  check_processed = TRUE,
+  overwrite = FALSE,
   quiet = FALSE
 )
 }
@@ -23,11 +22,9 @@ coalesce_variables(
 
 \item{prefix}{Character string to prepend to new column names (default: "")}
 
-\item{force}{Logical, whether to reprocess if already completed (default: FALSE)}
+\item{overwrite}{Logical. If TRUE, overwrites existing coalesced columns (default: FALSE)}
 
-\item{check_processed}{Logical, whether to check/register processing status (default: TRUE)}
-
-\item{quiet}{Logical, whether to suppress informational messages (default: FALSE)}
+\item{quiet}{Logical. If TRUE, suppresses messages (default: FALSE)}
 }
 \value{
 Data frame with additional coalesced columns

@@ -4,7 +4,7 @@
 \alias{compare_coefs}
 \title{Compare Two Coefficients Using Z-Score Method}
 \usage{
-compare_coefs(b1, b2, se1, se2, return_pval = FALSE)
+compare_coefs(b1, b2, se1, se2)
 }
 \arguments{
 \item{b1}{Numeric. First coefficient/effect estimate}
@@ -14,11 +14,13 @@ compare_coefs(b1, b2, se1, se2, return_pval = FALSE)
 \item{se1}{Numeric. Standard error of first estimate}
 
 \item{se2}{Numeric. Standard error of second estimate}
-
-\item{return_pval}{Logical. If TRUE, returns p-value instead of z-score}
 }
 \value{
-Numeric z-score or p-value for testing difference between coefficients
+A named list with components:
+\item{z_score}{The z-score testing the difference}
+\item{p_value}{Two-tailed p-value}
+\item{difference}{Difference between coefficients (b1 - b2)}
+\item{se_difference}{Standard error of the difference \eqn{\sqrt{se1^2 + se2^2}}}
 }
 \description{
 Compares two effect estimates using their standard errors via z-score calculation.
@@ -26,9 +28,9 @@ This implements the method described in doi: 10.1038/s41380-019-0596-9
 }
 \examples{
 # Get z-score
-compare_coefs(0.5, 0.3, 0.1, 0.12)
+res <- compare_coefs(0.5, 0.3, 0.1, 0.12)
+res$z_statistic
 
 # Get p-value
-compare_coefs(0.5, 0.3, 0.1, 0.12, return_pval = TRUE)
-
+res$p_value
 }

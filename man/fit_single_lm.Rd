@@ -39,8 +39,8 @@ This is the core modeling function used by fit_models_by_group(), but can also
 be used standalone for individual model fitting.
 }
 \details{
-This function only fits linear models using lm(). For other model types
-(glm, mixed models, etc.), use other functions.
+This function only fits linear models using lm(). It is called internally
+by \code{\link{fit_models_by_group}} but is also exported for standalone use.
 }
 \examples{
 \dontrun{
@@ -59,5 +59,17 @@ summary(model)
 
 # Access the grouping column (will be named "ancestry")
 result$ancestry
+
+# Fit model on all data (no grouping)
+result <- fit_single_lm(
+  outcome = "memory_score",
+  group = "All",
+  predictors = "age + sex",
+  data = my_data
+)
+# Output will have a "group" column with value "All"
 }
+}
+\seealso{
+\code{\link{fit_models_by_group}} for fitting multiple models at once
 }

@@ -4,7 +4,13 @@
 \alias{.validate_imputation_params}
 \title{Validate rf_impute_data parameters}
 \usage{
-.validate_imputation_params(dataf, vars_to_impute, helper_vars)
+.validate_imputation_params(
+  dataf,
+  vars_to_impute,
+  helper_vars,
+  parallel,
+  verbose
+)
 }
 \description{
 Validate rf_impute_data parameters

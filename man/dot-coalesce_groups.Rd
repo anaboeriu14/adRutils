@@ -4,7 +4,7 @@
 \alias{.coalesce_groups}
 \title{Coalesce groups into new columns}
 \usage{
-.coalesce_groups(dataf, groups, prefix, quiet)
+.coalesce_groups(dataf, groups, prefix, overwrite, quiet)
 }
 \description{
 Coalesce groups into new columns

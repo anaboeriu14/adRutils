@@ -4,7 +4,14 @@
 \alias{extract_pairwise_pvalues}
 \title{Extract and Format Pairwise T-Test P-values for One Variable}
 \usage{
-extract_pairwise_pvalues(dataf, numeric_var, group_var, p_adjust)
+extract_pairwise_pvalues(
+  dataf,
+  numeric_var,
+  group_var,
+  p_adjust,
+  p_digits,
+  p_format = c("auto", "threshold", "exact", "scientific")
+)
 }
 \arguments{
 \item{dataf}{A data frame containing the data}
@@ -15,10 +22,20 @@ extract_pairwise_pvalues(dataf, numeric_var, group_var, p_adjust)
 
 \item{p_adjust}{Character string specifying the p-value adjustment method.
 Options include "bonferroni", "holm", "hochberg", "hommel", "BH", "BY", "fdr", "none"}
+
+\item{p_digits}{Integer specifying number of decimal places.
+For scientific format, specifies significant figures}
+
+\item{p_format}{Character string specifying p-value display format (default: "auto"):
+\describe{
+\item{auto}{Smart format: decimals for p >= 0.001, scientific for p < 0.001}
+\item{threshold}{Shows "< 0.001" for very small p-values, decimals otherwise}
+\item{exact}{Always shows decimals (may display "0.000" for very small p-values)}
+\item{scientific}{Always shows scientific notation (e.g., 4.50e-02)}
+}}
 }
 \value{
 A named list where each element contains a formatted p-value string.
-P-values < 0.001 are displayed as "< 0.001", others are rounded to 3 decimal places.
 Returns NULL if no valid comparisons can be made.
 }
 \description{
@@ -31,11 +48,22 @@ between groups. Comparison names are formatted as "Group1 vs Group2".
 }
 \examples{
 \dontrun{
-# Basic usage
+# Auto format (smart default)
 results <- extract_pairwise_pvalues(mtcars, "mpg", "cyl", "bonferroni")
+# Returns: "0.045" for readable values, "3.00e-04" for tiny values
 
-# With different adjustment method
-results <- extract_pairwise_pvalues(iris, "Sepal.Length", "Species", "holm")
+# Threshold format (publication style)
+results <- extract_pairwise_pvalues(mtcars, "mpg", "cyl", "bonferroni",
+                                    p_format = "threshold")
+# Returns: "< 0.001", "0.023", "0.156"
+
+# Scientific notation (exact magnitude)
+results <- extract_pairwise_pvalues(iris, "Sepal.Length", "Species", "holm",
+                                    p_format = "scientific", p_digits = 2)
+# Returns: "4.5e-02", "3.0e-04", "1.6e-01"
 }
 
+}
+\seealso{
+\code{\link{create_pairwise_table}} for multiple variables at once
 }

@@ -6,45 +6,71 @@
 #'
 #' @param dataf A data frame to check for duplicates
 #' @param id_col Column name or expression specifying the ID to check for duplicates
-#' @param keep One of "first", "last", "none", or "most_complete" (default: "first").
-#'        "most_complete" keeps the row with fewest NAs.
-#' @param quiet Logical; if TRUE, suppresses messages about duplicate IDs
+#' @param keep One of "first", "last", "none", or "most_complete" (default: "most_complete").
+#'   "most_complete" keeps the row with fewest NAs
+#' @param quiet Logical. If TRUE, suppresses messages about duplicates (default: FALSE)
 #'
 #' @return A data frame with duplicates removed according to the 'keep' parameter
 #'
 #' @examples
+#' \dontrun{
 #' testDF <- data.frame(
 #'   id_num = c(1, 1, 2, 2, 3, 4, 5, 5, 6),
 #'   value = c(100, NA, 200, 250, 300, 400, 500, 500, 600),
 #'   group = c("A", "A", "B", NA, "C", "D", "E", "F", "G")
 #' )
-#' remove_duplicates_if_exists(testDF, "id_num", "most_complete")
+#'
+#' # Keep most complete row (default)
+#' remove_duplicates_if_exists(testDF, "id_num")
+#'
+#' # Keep first occurrence
+#' remove_duplicates_if_exists(testDF, "id_num", keep = "first")
+#'
+#' # Silently remove duplicates
+#' remove_duplicates_if_exists(testDF, "id_num", quiet = TRUE)
+#' }
 #'
 #' @export
 remove_duplicates_if_exists <- function(dataf, id_col,
-                                        keep = c("first", "last", "none", "most_complete"),
+                                        keep = c("most_complete", "first", "last", "none"),
                                         quiet = FALSE) {
 
-  # Validate and extract ID values
-  id_values <- .extract_id_column(dataf, id_col)
+  # Validate and match keep argument
   keep <- match.arg(keep)
 
-  # Check for duplicates
+  # Validate inputs
+  validate_params(
+    data = dataf,
+    custom_checks = list(
+      list(
+        condition = is.logical(quiet) && length(quiet) == 1,
+        message = "{.arg quiet} must be a single logical value"
+      )
+    ),
+    context = "remove_duplicates_if_exists"
+  )
+
+  # Extract and validate ID column
+  id_values <- .extract_id_column(dataf, id_col)
+
+  # Identify duplicates
   dupe_info <- .identify_duplicates(id_values)
 
+  # No duplicates found
   if (dupe_info$n_unique == 0) {
     if (!quiet) cli::cli_alert_info("No duplicates found")
     return(dataf)
   }
 
-  # Analyze and report duplicate patterns
+  # Report duplicate information
   if (!quiet) {
-    .analyze_duplicate_patterns(dataf, id_values, dupe_info$unique_ids)
+    .report_duplicate_info(dataf, id_values, dupe_info)
   }
 
   # Remove duplicates based on strategy
-  result <- .remove_duplicates(dataf, id_values, dupe_info, keep, id_col)
+  result <- .remove_duplicates_by_strategy(dataf, id_values, dupe_info, keep, id_col)
 
+  # Report results
   if (!quiet) {
     n_removed <- nrow(dataf) - nrow(result)
     cli::cli_alert_success("Removed {n_removed} duplicate row{?s}")
@@ -53,17 +79,13 @@ remove_duplicates_if_exists <- function(dataf, id_col,
   return(result)
 }
 
+
 #' Extract and validate ID column
 #' @keywords internal
 .extract_id_column <- function(dataf, id_col) {
-  validate_params(
-    data = dataf,
-    context = "remove_duplicates_if_exists"
-  )
-
   id_expr <- substitute(id_col)
 
-  # Handle string or NSE
+  # Handle string input
   if (is.character(id_expr)) {
     if (!id_expr %in% names(dataf)) {
       cli::cli_abort("Column {.field {id_expr}} not found in data")
@@ -80,7 +102,7 @@ remove_duplicates_if_exists <- function(dataf, id_col,
   )
 }
 
-#' Identify duplicate IDs
+#' Identify duplicate IDs and their unique values
 #' @keywords internal
 .identify_duplicates <- function(id_values) {
   dupe_mask <- duplicated(id_values) | duplicated(id_values, fromLast = TRUE)
@@ -93,11 +115,32 @@ remove_duplicates_if_exists <- function(dataf, id_col,
   )
 }
 
-#' Analyze duplicate patterns (identical vs conflicting)
+#' Report information about duplicates
 #' @keywords internal
-.analyze_duplicate_patterns <- function(dataf, id_values, unique_ids) {
-  cli::cli_alert_info("Found {length(unique_ids)} unique ID{?s} with duplicates")
+.report_duplicate_info <- function(dataf, id_values, dupe_info) {
+  cli::cli_alert_info("Found {dupe_info$n_unique} unique ID{?s} with duplicates")
 
+  # Categorize duplicates
+  categorized <- .categorize_duplicates(dataf, id_values, dupe_info$unique_ids)
+
+  # Report identical duplicates
+  if (length(categorized$identical) > 0) {
+    preview <- .preview_list(categorized$identical, max_show = 10)
+    cli::cli_alert_info("IDs with identical duplicate rows: {.val {preview}}")
+  }
+
+  # Report conflicting duplicates
+  if (length(categorized$conflicting) > 0) {
+    preview <- .preview_list(categorized$conflicting, max_show = 10)
+    cli::cli_alert_warning("IDs with conflicting values across rows: {.val {preview}}")
+  }
+
+  invisible(NULL)
+}
+
+#' Categorize duplicates as identical or conflicting
+#' @keywords internal
+.categorize_duplicates <- function(dataf, id_values, unique_ids) {
   identical_ids <- character()
   conflicting_ids <- character()
 
@@ -105,7 +148,6 @@ remove_duplicates_if_exists <- function(dataf, id_col,
     rows_with_id <- which(id_values == dup_id)
     rows_data <- dataf[rows_with_id, , drop = FALSE]
 
-    # Check if all rows are identical
     if (.all_rows_identical(rows_data)) {
       identical_ids <- c(identical_ids, as.character(dup_id))
     } else {
@@ -113,18 +155,10 @@ remove_duplicates_if_exists <- function(dataf, id_col,
     }
   }
 
-  # Report findings
-  if (length(identical_ids) > 0) {
-    preview <- .preview_list(identical_ids, max_show = 10)
-    cli::cli_alert_info("IDs with identical duplicate rows: {.val {preview}}")
-  }
-
-  if (length(conflicting_ids) > 0) {
-    preview <- .preview_list(conflicting_ids, max_show = 10)
-    cli::cli_alert_warning("IDs with conflicting values across rows: {.val {preview}}")
-  }
-
-  invisible(NULL)
+  list(
+    identical = identical_ids,
+    conflicting = conflicting_ids
+  )
 }
 
 #' Check if all rows in a dataframe are identical
@@ -133,6 +167,7 @@ remove_duplicates_if_exists <- function(dataf, id_col,
   if (nrow(rows_data) <= 1) return(TRUE)
 
   first_row <- as.list(rows_data[1, , drop = FALSE])
+
   for (i in 2:nrow(rows_data)) {
     if (!identical(first_row, as.list(rows_data[i, , drop = FALSE]))) {
       return(FALSE)
@@ -151,15 +186,17 @@ remove_duplicates_if_exists <- function(dataf, id_col,
   c(head(items, max_show), "...")
 }
 
-#' Remove duplicates based on keep strategy
+#' Remove duplicates based on selected strategy
 #' @keywords internal
-.remove_duplicates <- function(dataf, id_values, dupe_info, keep, id_col) {
-  switch(keep,
-         first = .keep_first(dataf, id_values),
-         last = .keep_last(dataf, id_values),
-         none = .keep_none(dataf, dupe_info$mask),
-         most_complete = .keep_most_complete(dataf, id_values, dupe_info$unique_ids, id_col)
+.remove_duplicates_by_strategy <- function(dataf, id_values, dupe_info, keep, id_col) {
+  result <- switch(keep,
+                   first = .keep_first(dataf, id_values),
+                   last = .keep_last(dataf, id_values),
+                   none = .keep_none(dataf, dupe_info$mask),
+                   most_complete = .keep_most_complete(dataf, id_values, dupe_info$unique_ids, id_col)
   )
+
+  return(result)
 }
 
 #' Keep first occurrence of each ID
@@ -189,9 +226,10 @@ remove_duplicates_if_exists <- function(dataf, id_col,
   non_dupes <- !(duplicated(id_values) | duplicated(id_values, fromLast = TRUE))
   rows_to_keep[non_dupes] <- TRUE
 
-  # For each duplicate ID, find the most complete row
+  # Get ID column name
   id_col_name <- .get_id_col_name(id_col)
 
+  # For each duplicate ID, find the most complete row
   for (dup_id in unique_ids) {
     best_row <- .find_most_complete_row(dataf, id_values, dup_id, id_col_name)
     if (!is.null(best_row)) {
@@ -206,9 +244,11 @@ remove_duplicates_if_exists <- function(dataf, id_col,
 #' @keywords internal
 .get_id_col_name <- function(id_col) {
   id_expr <- substitute(id_col)
+
   if (is.character(id_expr)) {
     return(id_expr)
   }
+
   deparse(id_expr)
 }
 
@@ -221,8 +261,12 @@ remove_duplicates_if_exists <- function(dataf, id_col,
     return(if (length(na_rows) > 0) na_rows[1] else NULL)
   }
 
+  # Find rows with this ID
   rows_with_id <- which(id_values == dup_id & !is.na(id_values))
-  if (length(rows_with_id) == 0) return(NULL)
+
+  if (length(rows_with_id) == 0) {
+    return(NULL)
+  }
 
   # Count NAs in each row (excluding ID column)
   na_counts <- .count_nas_excluding_id(dataf, rows_with_id, id_col_name)
@@ -235,7 +279,11 @@ remove_duplicates_if_exists <- function(dataf, id_col,
   min_nas <- min(na_counts, na.rm = TRUE)
   best_rows <- rows_with_id[na_counts == min_nas & !is.na(na_counts)]
 
-  if (length(best_rows) > 0) best_rows[1] else rows_with_id[1]
+  if (length(best_rows) > 0) {
+    return(best_rows[1])
+  } else {
+    return(rows_with_id[1])
+  }
 }
 
 #' Count NAs in rows excluding ID column

@@ -9,7 +9,7 @@ rf_impute_data(
   vars_to_impute,
   helper_vars,
   parallel = TRUE,
-  verbose = TRUE
+  verbose = FALSE
 )
 }
 \arguments{
@@ -20,10 +20,10 @@ rf_impute_data(
 \item{helper_vars}{Character vector of additional column names used to improve imputation
 but not returned in the imputed columns}
 
-\item{parallel}{Logical. If TRUE, uses parallel processing with 'forests' method. Default is TRUE.
+\item{parallel}{Logical. If TRUE, uses parallel processing with 'forests' method (default: TRUE).
 Note: Requires setting up parallel backend first (see Examples)}
 
-\item{verbose}{Logical. If TRUE, shows progress during imputation. Default is TRUE}
+\item{verbose}{Logical. If TRUE, shows progress during imputation (default: FALSE)}
 }
 \value{
 A list containing:
@@ -34,23 +34,48 @@ A list containing:
 Imputes missing values in specified variables using the missForest
 algorithm, a non-parametric imputation method based on Random Forest.
 }
+\details{
+This function uses the missForest package, which iteratively imputes missing values
+using Random Forest models. The algorithm is particularly useful for:
+\itemize{
+\item Mixed data types (numeric and categorical)
+\item Non-linear relationships
+\item Complex interactions between variables
+}
+
+The function adds imputed columns with "i_" prefix, preserving original columns
+for comparison.
+}
 \examples{
 \dontrun{
-# Set up parallel processing (do this before calling the function)
+# Set up parallel processing (recommended for large datasets)
 doParallel::registerDoParallel(cores = 3)
 
-testD <- data.frame(
-  BMI = c(22.5, NA, 24.0, 25.5, NA, 23.0, 28.0, NA, 21.5, 26.0),
-  height = c(1.75, 1.80, 1.70, NA, 1.85, 1.65, 1.90, 1.78, NA, 1.68),
-  weight = c(70, 80, NA, 85, 90, 60, 100, 75, 55, NA)
+# Simple imputation
+result <- rf_impute_data(
+  dataf = mydata,
+  vars_to_impute = "BMI",
+  helper_vars = c("weight", "height")
 )
-
-result <- rf_impute_data(testD, "BMI", c("weight", "height"))
 
 # Access imputed data
 imputed_data <- result$data_imputed
 
 # Check imputation errors
 errors <- result$error_mse
+
+# Multiple variables with verbose output
+result <- rf_impute_data(
+  dataf = mydata,
+  vars_to_impute = c("BMI", "glucose", "cholesterol"),
+  helper_vars = c("age", "sex", "weight", "height"),
+  parallel = TRUE,
+  verbose = TRUE
+)
+
+# Compare original vs imputed
+summary(mydata$BMI)           # Original with NAs
+summary(result$data_imputed$i_BMI)  # Imputed values
 }
+
 }

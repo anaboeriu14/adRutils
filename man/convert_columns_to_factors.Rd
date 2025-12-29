@@ -19,9 +19,9 @@ convert_columns_to_factors(
 
 \item{exclude}{Optional character vector of patterns to exclude from matching}
 
-\item{ordered}{Logical indicating whether to create ordered factors. Default is FALSE}
+\item{ordered}{Logical indicating whether to create ordered factors (default: FALSE)}
 
-\item{quiet}{Logical indicating whether to suppress messages. Default is FALSE}
+\item{quiet}{Logical indicating whether to suppress messages (default: FALSE)}
 }
 \value{
 A data frame with specified columns converted to factors

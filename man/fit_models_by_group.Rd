@@ -13,7 +13,8 @@ fit_models_by_group(
   model_type = "main",
   interaction_terms = NULL,
   outcome_covariates = NULL,
-  group_covariates = NULL
+  group_covariates = NULL,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -24,7 +25,7 @@ fit_models_by_group(
 \item{base_predictors}{Character vector of predictor variable names to include in all models}
 
 \item{group_col}{Character string specifying the grouping column name.
-If NULL, no grouping is applied and output will have a "group" column. Default is NULL}
+If NULL, no grouping is applied. Default is NULL}
 
 \item{groups}{Character vector specifying which groups to analyze. Use "All" for all data. Default is "All"}
 
@@ -39,6 +40,8 @@ If NULL, no grouping is applied and output will have a "group" column. Default i
 }}
 
 \item{group_covariates}{Optional group-specific covariates: list(group1 = c("X1"))}
+
+\item{verbose}{Logical. If TRUE, shows progress during model fitting. Default is FALSE}
 }
 \value{
 A tibble with columns: outcome, (group_col name or "group"), model, predictors,
@@ -52,8 +55,8 @@ covariate specifications. This function is specifically designed for linear regr
 and uses lm() internally.
 }
 \details{
-This function fits linear models using lm() only. For logistic regression,
-mixed models, or other model types, use appropriate specialized functions.
+This function fits linear models using lm() only. It calls
+\code{\link{fit_single_lm}} internally for each outcome-group combination.
 }
 \examples{
 \dontrun{
@@ -66,30 +69,41 @@ results <- fit_models_by_group(
   groups = c("AFR", "EUR")
 )
 
-# Access the ancestry column
-results$ancestry
-
-# Without grouping (uses all data)
+# With outcome-specific covariates
 results <- fit_models_by_group(
   data = my_data,
   outcomes = c("memory", "attention"),
   base_predictors = c("age", "sex"),
-  groups = "All"
+  outcome_covariates = list(
+    memory = c("education"),
+    attention = c("language")
+  )
 )
-# Output will have a "group" column with value "All"
 
 # With group-specific outcome covariates
 results <- fit_models_by_group(
   data = my_data,
   outcomes = c("memory"),
   base_predictors = c("age", "sex"),
-  group_col = "superpop",
+  group_col = "ancestry",
   groups = c("AFR", "EUR"),
   outcome_covariates = list(
-    "AFR" = list("memory" = c("education")),
-    "EUR" = list("memory" = c("education", "language"))
+    AFR = list(memory = c("education")),
+    EUR = list(memory = c("education", "language"))
   )
 )
-# Output will have a "superpop" column
+
+# With progress reporting
+results <- fit_models_by_group(
+  data = my_data,
+  outcomes = paste0("cog_", 1:20),
+  base_predictors = c("age", "sex"),
+  group_col = "ancestry",
+  groups = c("AFR", "EUR", "EAS"),
+  verbose = TRUE
+)
 }
+}
+\seealso{
+\code{\link{fit_single_lm}} for fitting individual models
 }

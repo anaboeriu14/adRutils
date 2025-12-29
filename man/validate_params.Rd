@@ -28,7 +28,7 @@ validate_params(
 
 \item{valid_methods}{Character vector of allowed methods}
 
-\item{custom_checks}{List of custom validation checks}
+\item{custom_checks}{List of custom validation checks. Must be in the form condition, message}
 
 \item{context}{Character string describing the calling function}
 }

@@ -4,7 +4,7 @@
 \alias{.validate_log10_params}
 \title{Validate transform_log10 parameters}
 \usage{
-.validate_log10_params(dataf, vars)
+.validate_log10_params(dataf, vars, overwrite, quiet)
 }
 \description{
 Validate transform_log10 parameters

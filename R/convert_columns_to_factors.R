@@ -6,8 +6,8 @@
 #' @param dataf A data frame containing the columns to convert
 #' @param patterns Character vector of patterns to match column names against
 #' @param exclude Optional character vector of patterns to exclude from matching
-#' @param ordered Logical indicating whether to create ordered factors. Default is FALSE
-#' @param quiet Logical indicating whether to suppress messages. Default is FALSE
+#' @param ordered Logical indicating whether to create ordered factors (default: FALSE)
+#' @param quiet Logical indicating whether to suppress messages (default: FALSE)
 #'
 #' @return A data frame with specified columns converted to factors
 #'
@@ -36,13 +36,17 @@ convert_columns_to_factors <- function(dataf, patterns, exclude = NULL,
       list(
         condition = is.logical(ordered) && length(ordered) == 1,
         message = "{.arg ordered} must be a single logical value"
+      ),
+      list(
+        condition = is.logical(quiet) && length(quiet) == 1,
+        message = "{.arg quiet} must be a single logical value"
       )
     ),
     context = "convert_columns_to_factors"
   )
 
   # Find matching columns
-  matching_cols <- .find_matching_columns(dataf, patterns, exclude)
+  matching_cols <- .find_cols_for_conversion(dataf, patterns, exclude)
 
   if (length(matching_cols) == 0) {
     if (!quiet) {
@@ -65,17 +69,21 @@ convert_columns_to_factors <- function(dataf, patterns, exclude = NULL,
   return(result)
 }
 
-#' Find columns matching patterns with optional exclusions
+#' Find columns for factor conversion (case-insensitive)
 #' @keywords internal
-.find_matching_columns <- function(dataf, patterns, exclude) {
+.find_cols_for_conversion <- function(dataf, patterns, exclude) {
   # Build combined regex pattern
   combined_pattern <- paste(patterns, collapse = "|")
-  matching_cols <- grep(combined_pattern, names(dataf), value = TRUE)
+
+  # Case-insensitive matching by default
+  matching_cols <- grep(combined_pattern, names(dataf),
+                        value = TRUE, ignore.case = TRUE)
 
   # Apply exclusions if provided
   if (!is.null(exclude) && length(exclude) > 0) {
     exclude_pattern <- paste(exclude, collapse = "|")
-    matching_cols <- matching_cols[!grepl(exclude_pattern, matching_cols)]
+    matching_cols <- matching_cols[!grepl(exclude_pattern, matching_cols,
+                                          ignore.case = TRUE)]
   }
 
   return(matching_cols)

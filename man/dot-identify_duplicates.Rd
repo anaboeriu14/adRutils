@@ -2,11 +2,11 @@
 % Please edit documentation in R/remove_duplicates.R
 \name{.identify_duplicates}
 \alias{.identify_duplicates}
-\title{Identify duplicate IDs}
+\title{Identify duplicate IDs and their unique values}
 \usage{
 .identify_duplicates(id_values)
 }
 \description{
-Identify duplicate IDs
+Identify duplicate IDs and their unique values
 }
 \keyword{internal}

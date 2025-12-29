@@ -9,8 +9,7 @@
   pattern_extract,
   var_groups,
   prefix,
-  force,
-  check_processed,
+  overwrite,
   quiet
 )
 }

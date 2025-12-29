@@ -7,7 +7,7 @@
 remove_duplicates_if_exists(
   dataf,
   id_col,
-  keep = c("first", "last", "none", "most_complete"),
+  keep = c("most_complete", "first", "last", "none"),
   quiet = FALSE
 )
 }
@@ -16,10 +16,10 @@ remove_duplicates_if_exists(
 
 \item{id_col}{Column name or expression specifying the ID to check for duplicates}
 
-\item{keep}{One of "first", "last", "none", or "most_complete" (default: "first").
-"most_complete" keeps the row with fewest NAs.}
+\item{keep}{One of "first", "last", "none", or "most_complete" (default: "most_complete").
+"most_complete" keeps the row with fewest NAs}
 
-\item{quiet}{Logical; if TRUE, suppresses messages about duplicate IDs}
+\item{quiet}{Logical. If TRUE, suppresses messages about duplicates (default: FALSE)}
 }
 \value{
 A data frame with duplicates removed according to the 'keep' parameter
@@ -30,11 +30,21 @@ Provides information about duplicate patterns and keeps the row with
 the fewest NA values (most complete information) when duplicates exist.
 }
 \examples{
+\dontrun{
 testDF <- data.frame(
   id_num = c(1, 1, 2, 2, 3, 4, 5, 5, 6),
   value = c(100, NA, 200, 250, 300, 400, 500, 500, 600),
   group = c("A", "A", "B", NA, "C", "D", "E", "F", "G")
 )
-remove_duplicates_if_exists(testDF, "id_num", "most_complete")
+
+# Keep most complete row (default)
+remove_duplicates_if_exists(testDF, "id_num")
+
+# Keep first occurrence
+remove_duplicates_if_exists(testDF, "id_num", keep = "first")
+
+# Silently remove duplicates
+remove_duplicates_if_exists(testDF, "id_num", quiet = TRUE)
+}
 
 }

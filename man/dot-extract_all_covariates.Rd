@@ -4,11 +4,7 @@
 \alias{.extract_all_covariates}
 \title{Extract all covariate names for validation}
 \usage{
-.extract_all_covariates(
-  outcome_covariates,
-  group_covariates,
-  is_group_specific
-)
+.extract_all_covariates(outcome_covariates, group_covariates)
 }
 \description{
 Extract all covariate names for validation
