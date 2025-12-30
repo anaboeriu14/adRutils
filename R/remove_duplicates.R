@@ -83,23 +83,16 @@ remove_duplicates_if_exists <- function(dataf, id_col,
 #' Extract and validate ID column
 #' @keywords internal
 .extract_id_column <- function(dataf, id_col) {
-  id_expr <- substitute(id_col)
+  # Convert to string using rlang (handles both "med_id" and med_id)
+  col_name <- rlang::as_name(rlang::enquo(id_col))
 
-  # Handle string input
-  if (is.character(id_expr)) {
-    if (!id_expr %in% names(dataf)) {
-      cli::cli_abort("Column {.field {id_expr}} not found in data")
-    }
-    return(dataf[[id_expr]])
+  # Check if column exists
+  if (!col_name %in% names(dataf)) {
+    cli::cli_abort("Column {.field {col_name}} not found in data")
   }
 
-  # Handle NSE (non-standard evaluation)
-  tryCatch(
-    eval(id_expr, dataf, parent.frame()),
-    error = function(e) {
-      cli::cli_abort("Could not evaluate ID expression: {.code {deparse(id_expr)}}")
-    }
-  )
+  # Return the column
+  return(dataf[[col_name]])
 }
 
 #' Identify duplicate IDs and their unique values
