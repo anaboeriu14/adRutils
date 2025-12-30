@@ -4,7 +4,14 @@
 \alias{.load_csv_files}
 \title{Load CSV files into data frames}
 \usage{
-.load_csv_files(file_paths, missing_vals, clean_col_names, guess_max, verbose)
+.load_csv_files(
+  file_paths,
+  missing_vals,
+  clean_col_names,
+  guess_max,
+  verbose,
+  col_types
+)
 }
 \description{
 Load CSV files into data frames

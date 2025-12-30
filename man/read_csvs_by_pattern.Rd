@@ -12,7 +12,8 @@ read_csvs_by_pattern(
   clean_col_names = TRUE,
   guess_max = 5000,
   combine = TRUE,
-  verbose = FALSE
+  verbose = FALSE,
+  col_types = NULL
 )
 }
 \arguments{
@@ -32,6 +33,14 @@ Use NULL with all_files = TRUE to read all CSVs}
 \item{combine}{Logical. If TRUE, combines all dataframes into one. If FALSE, returns a named list}
 
 \item{verbose}{Logical. If TRUE, prints progress messages (default: FALSE)}
+
+\item{col_types}{Column type specification for readr::read_csv(). Options:
+\itemize{
+\item NULL (default): Let readr guess types for each file independently
+\item readr::cols(.default = col_character()): Read all columns as character (safest for combining)
+\item readr::cols(...): Specify types for specific columns
+Useful when combining files with inconsistent column types
+}}
 }
 \value{
 A combined dataframe or a named list of dataframes

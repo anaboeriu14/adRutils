@@ -9,6 +9,11 @@
 #' @param guess_max Integer. Maximum number of rows to use for guessing column types
 #' @param combine Logical. If TRUE, combines all dataframes into one. If FALSE, returns a named list
 #' @param verbose Logical. If TRUE, prints progress messages (default: FALSE)
+#' @param col_types Column type specification for readr::read_csv(). Options:
+#'   - NULL (default): Let readr guess types for each file independently
+#'   - readr::cols(.default = col_character()): Read all columns as character (safest for combining)
+#'   - readr::cols(...): Specify types for specific columns
+#'   Useful when combining files with inconsistent column types
 #'
 #' @return A combined dataframe or a named list of dataframes
 #' @export
@@ -19,7 +24,8 @@ read_csvs_by_pattern <- function(directory_path,
                                  clean_col_names = TRUE,
                                  guess_max = 5000,
                                  combine = TRUE,
-                                 verbose = FALSE) {
+                                 verbose = FALSE,
+                                 col_types = NULL) {
 
   .validate_csv_inputs(directory_path, missing_vals, patterns, all_files)
 
@@ -35,7 +41,7 @@ read_csvs_by_pattern <- function(directory_path,
   }
 
   df_list <- .load_csv_files(file_paths, missing_vals, clean_col_names,
-                             guess_max, verbose)
+                             guess_max, verbose, col_types)
 
   .format_csv_output(df_list, file_paths, combine, verbose)
 }
@@ -82,7 +88,7 @@ read_csvs_by_pattern <- function(directory_path,
 #' Load CSV files into data frames
 #' @keywords internal
 .load_csv_files <- function(file_paths, missing_vals, clean_col_names,
-                            guess_max, verbose) {
+                            guess_max, verbose, col_types) {
 
   n_files <- length(file_paths)
 
@@ -91,7 +97,6 @@ read_csvs_by_pattern <- function(directory_path,
     file_name <- basename(file_path)
 
     if (verbose) {
-      # Show progress for many files, individual messages for few
       if (n_files > 10) {
         if (i == 1) cli::cli_progress_bar("Reading files", total = n_files)
         cli::cli_progress_update()
@@ -100,14 +105,33 @@ read_csvs_by_pattern <- function(directory_path,
       }
     }
 
-    df <- readr::read_csv(file_path, guess_max = guess_max, na = missing_vals,
-                          show_col_types = FALSE)
+    # Build read_csv arguments
+    read_args <- list(file = file_path,
+                      guess_max = guess_max,
+                      na = missing_vals,
+                      show_col_types = FALSE)
+
+    # Add col_types if specified
+    if (!is.null(col_types)) {
+      read_args$col_types <- col_types
+    }
+
+    # Read CSV with error handling
+    df <- tryCatch({
+      do.call(readr::read_csv, read_args)
+    }, error = function(e) {
+      cli::cli_abort(c(
+        "Failed to read file: {.file {file_name}}",
+        "x" = conditionMessage(e)
+      ))
+    })
 
     if (clean_col_names) df <- janitor::clean_names(df)
 
     return(df)
   })
 }
+
 
 #' Format CSV results for output
 #' @keywords internal
