@@ -4,22 +4,9 @@
 \alias{.load_csv_files}
 \title{Load CSV files into data frames}
 \usage{
-.load_csv_files(
-  file_paths,
-  missing_vals,
-  clean_col_names,
-  verbose,
-  use_readr,
-  col_types
-)
+.load_csv_files(file_paths, missing_vals, clean_col_names, verbose)
 }
 \description{
 Load CSV files into data frames
 }
-\keyword{CSV}
-\keyword{Load}
-\keyword{data}
-\keyword{files}
-\keyword{frames}
 \keyword{internal}
-\keyword{into}

@@ -11,9 +11,7 @@ read_csvs_by_pattern(
   all_files = FALSE,
   clean_col_names = TRUE,
   combine = TRUE,
-  verbose = FALSE,
-  use_readr = FALSE,
-  col_types = NULL
+  verbose = FALSE
 )
 }
 \arguments{
@@ -31,11 +29,6 @@ Use NULL with all_files = TRUE to read all CSVs}
 \item{combine}{Logical. If TRUE, combines all dataframes into one. If FALSE, returns a named list}
 
 \item{verbose}{Logical. If TRUE, prints progress messages (default: FALSE)}
-
-\item{use_readr}{Logical. If TRUE, uses readr::read_csv(); if FALSE, uses base read.csv() (default: FALSE)}
-
-\item{col_types}{Column type specification for readr::read_csv() when use_readr = TRUE.
-Ignored when use_readr = FALSE}
 }
 \value{
 A combined dataframe or a named list of dataframes

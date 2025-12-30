@@ -8,9 +8,6 @@
 #' @param clean_col_names Logical. If TRUE, cleans column names using janitor::clean_names()
 #' @param combine Logical. If TRUE, combines all dataframes into one. If FALSE, returns a named list
 #' @param verbose Logical. If TRUE, prints progress messages (default: FALSE)
-#' @param use_readr Logical. If TRUE, uses readr::read_csv(); if FALSE, uses base read.csv() (default: FALSE)
-#' @param col_types Column type specification for readr::read_csv() when use_readr = TRUE.
-#'   Ignored when use_readr = FALSE
 #'
 #' @return A combined dataframe or a named list of dataframes
 #' @export
@@ -20,9 +17,7 @@ read_csvs_by_pattern <- function(directory_path,
                                  all_files = FALSE,
                                  clean_col_names = TRUE,
                                  combine = TRUE,
-                                 verbose = FALSE,
-                                 use_readr = FALSE,
-                                 col_types = NULL) {
+                                 verbose = FALSE) {
 
   .validate_csv_inputs(directory_path, missing_vals, patterns, all_files)
 
@@ -37,8 +32,7 @@ read_csvs_by_pattern <- function(directory_path,
     cli::cli_alert_info("Reading {length(file_paths)} file{?s}")
   }
 
-  df_list <- .load_csv_files(file_paths, missing_vals, clean_col_names,
-                             verbose, use_readr, col_types)
+  df_list <- .load_csv_files(file_paths, missing_vals, clean_col_names, verbose)
 
   .format_csv_output(df_list, file_paths, combine, verbose)
 }
@@ -84,10 +78,7 @@ read_csvs_by_pattern <- function(directory_path,
 
 #' Load CSV files into data frames
 #' @keywords internal
-#' Load CSV files into data frames
-#' @keywords internal
-.load_csv_files <- function(file_paths, missing_vals, clean_col_names,
-                            verbose, use_readr, col_types) {
+.load_csv_files <- function(file_paths, missing_vals, clean_col_names, verbose) {
 
   n_files <- length(file_paths)
 
@@ -104,29 +95,13 @@ read_csvs_by_pattern <- function(directory_path,
       }
     }
 
-    # Read CSV with appropriate function
+    # Read CSV with base R (more forgiving with type inconsistencies)
     df <- tryCatch({
-      if (use_readr) {
-        # Use readr::read_csv with col_types
-        read_args <- list(
-          file = file_path,
-          na = missing_vals,
-          show_col_types = FALSE
-        )
-
-        if (!is.null(col_types)) {
-          read_args$col_types <- col_types
-        }
-
-        do.call(readr::read_csv, read_args)
-      } else {
-        # Use base read.csv (no col_types argument needed)
-        read.csv(
-          file = file_path,
-          na.strings = missing_vals,
-          stringsAsFactors = FALSE
-        )
-      }
+      read.csv(
+        file = file_path,
+        na.strings = missing_vals,
+        stringsAsFactors = FALSE
+      )
     }, error = function(e) {
       cli::cli_abort(c(
         "Failed to read file: {.file {file_name}}",
@@ -140,7 +115,6 @@ read_csvs_by_pattern <- function(directory_path,
   })
 }
 
-
 #' Format CSV results for output
 #' @keywords internal
 .format_csv_output <- function(df_list, file_paths, combine, verbose) {
@@ -150,7 +124,8 @@ read_csvs_by_pattern <- function(directory_path,
 
   if (combine) {
     if (verbose) cli::cli_alert_success("Combining all dataframes")
-    return(dplyr::bind_rows(df_list))
+    # Use rbind instead of bind_rows for automatic type coercion
+    return(do.call(rbind, df_list))
   }
 
   if (verbose) cli::cli_alert_success("Returning list of dataframes")
