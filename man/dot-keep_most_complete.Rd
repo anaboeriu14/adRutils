@@ -4,7 +4,7 @@
 \alias{.keep_most_complete}
 \title{Keep most complete row (fewest NAs) for each ID}
 \usage{
-.keep_most_complete(dataf, id_values, unique_ids, id_col)
+.keep_most_complete(dataf, id_values, unique_ids, id_col_name)
 }
 \description{
 Keep most complete row (fewest NAs) for each ID

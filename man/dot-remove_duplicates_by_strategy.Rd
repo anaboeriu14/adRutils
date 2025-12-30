@@ -4,7 +4,7 @@
 \alias{.remove_duplicates_by_strategy}
 \title{Remove duplicates based on selected strategy}
 \usage{
-.remove_duplicates_by_strategy(dataf, id_values, dupe_info, keep, id_col)
+.remove_duplicates_by_strategy(dataf, id_values, dupe_info, keep, id_col_name)
 }
 \description{
 Remove duplicates based on selected strategy

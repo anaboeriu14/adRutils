@@ -2,11 +2,11 @@
 % Please edit documentation in R/remove_duplicates.R
 \name{.extract_id_column}
 \alias{.extract_id_column}
-\title{Extract and validate ID column}
+\title{Extract and validate ID column using rlang}
 \usage{
 .extract_id_column(dataf, id_col)
 }
 \description{
-Extract and validate ID column
+Extract and validate ID column using rlang
 }
 \keyword{internal}

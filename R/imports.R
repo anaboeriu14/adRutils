@@ -9,7 +9,7 @@
 #' @importFrom magrittr %>%
 #' @importFrom tibble tibble as_tibble
 #' @importFrom stats setNames complete.cases pnorm lm nobs as.formula pairwise.t.test
-#' @importFrom rlang .data sym  %||% .data :=
+#' @importFrom rlang .data sym  %||% .data := enquo as_name
 #' @importFrom stringr str_detect str_extract str_split
 #' @importFrom readr read_csv
 #' @importFrom janitor clean_names

@@ -5,7 +5,7 @@
 #' the fewest NA values (most complete information) when duplicates exist.
 #'
 #' @param dataf A data frame to check for duplicates
-#' @param id_col Column name or expression specifying the ID to check for duplicates
+#' @param id_col Column name (quoted or unquoted) specifying the ID to check for duplicates
 #' @param keep One of "first", "last", "none", or "most_complete" (default: "most_complete").
 #'   "most_complete" keeps the row with fewest NAs
 #' @param quiet Logical. If TRUE, suppresses messages about duplicates (default: FALSE)
@@ -20,8 +20,9 @@
 #'   group = c("A", "A", "B", NA, "C", "D", "E", "F", "G")
 #' )
 #'
-#' # Keep most complete row (default)
+#' # Keep most complete row (default) - both quoted and unquoted work
 #' remove_duplicates_if_exists(testDF, "id_num")
+#' remove_duplicates_if_exists(testDF, id_num)
 #'
 #' # Keep first occurrence
 #' remove_duplicates_if_exists(testDF, "id_num", keep = "first")
@@ -51,7 +52,7 @@ remove_duplicates_if_exists <- function(dataf, id_col,
   )
 
   # Extract and validate ID column
-  id_values <- .extract_id_column(dataf, id_col)
+  id_values <- .extract_id_column(dataf, {{ id_col }})
 
   # Identify duplicates
   dupe_info <- .identify_duplicates(id_values)
@@ -67,8 +68,11 @@ remove_duplicates_if_exists <- function(dataf, id_col,
     .report_duplicate_info(dataf, id_values, dupe_info)
   }
 
+  # Get ID column name for later use
+  id_col_name <- .get_id_col_name({{ id_col }})
+
   # Remove duplicates based on strategy
-  result <- .remove_duplicates_by_strategy(dataf, id_values, dupe_info, keep, id_col)
+  result <- .remove_duplicates_by_strategy(dataf, id_values, dupe_info, keep, id_col_name)
 
   # Report results
   if (!quiet) {
@@ -79,20 +83,39 @@ remove_duplicates_if_exists <- function(dataf, id_col,
   return(result)
 }
 
+# Internal helper functions -----------------------------------------------
 
-#' Extract and validate ID column
+#' Extract and validate ID column using rlang
 #' @keywords internal
 .extract_id_column <- function(dataf, id_col) {
-  # Convert to string using rlang (handles both "med_id" and med_id)
-  col_name <- rlang::as_name(rlang::enquo(id_col))
+  # Capture the quoted expression
+  col_quo <- rlang::enquo(id_col)
 
-  # Check if column exists
+  # Convert to string
+  col_name <- tryCatch({
+    rlang::as_name(col_quo)
+  }, error = function(e) {
+    cli::cli_abort(c(
+      "Invalid column specification",
+      "i" = "Use a column name as a string: {.code \"med_id\"}",
+      "i" = "Or unquoted: {.code med_id}"
+    ))
+  })
+
+  # Validate column exists
   if (!col_name %in% names(dataf)) {
     cli::cli_abort("Column {.field {col_name}} not found in data")
   }
 
-  # Return the column
+  # Return the column values
   return(dataf[[col_name]])
+}
+
+#' Get ID column name as string using rlang
+#' @keywords internal
+.get_id_col_name <- function(id_col) {
+  col_quo <- rlang::enquo(id_col)
+  rlang::as_name(col_quo)
 }
 
 #' Identify duplicate IDs and their unique values
@@ -181,12 +204,12 @@ remove_duplicates_if_exists <- function(dataf, id_col,
 
 #' Remove duplicates based on selected strategy
 #' @keywords internal
-.remove_duplicates_by_strategy <- function(dataf, id_values, dupe_info, keep, id_col) {
+.remove_duplicates_by_strategy <- function(dataf, id_values, dupe_info, keep, id_col_name) {
   result <- switch(keep,
                    first = .keep_first(dataf, id_values),
                    last = .keep_last(dataf, id_values),
                    none = .keep_none(dataf, dupe_info$mask),
-                   most_complete = .keep_most_complete(dataf, id_values, dupe_info$unique_ids, id_col)
+                   most_complete = .keep_most_complete(dataf, id_values, dupe_info$unique_ids, id_col_name)
   )
 
   return(result)
@@ -212,15 +235,12 @@ remove_duplicates_if_exists <- function(dataf, id_col,
 
 #' Keep most complete row (fewest NAs) for each ID
 #' @keywords internal
-.keep_most_complete <- function(dataf, id_values, unique_ids, id_col) {
+.keep_most_complete <- function(dataf, id_values, unique_ids, id_col_name) {
   rows_to_keep <- logical(nrow(dataf))
 
   # Keep all non-duplicate rows
   non_dupes <- !(duplicated(id_values) | duplicated(id_values, fromLast = TRUE))
   rows_to_keep[non_dupes] <- TRUE
-
-  # Get ID column name
-  id_col_name <- .get_id_col_name(id_col)
 
   # For each duplicate ID, find the most complete row
   for (dup_id in unique_ids) {
@@ -231,18 +251,6 @@ remove_duplicates_if_exists <- function(dataf, id_col,
   }
 
   return(dataf[rows_to_keep, ])
-}
-
-#' Get ID column name as string
-#' @keywords internal
-.get_id_col_name <- function(id_col) {
-  id_expr <- substitute(id_col)
-
-  if (is.character(id_expr)) {
-    return(id_expr)
-  }
-
-  deparse(id_expr)
 }
 
 #' Find row with fewest NAs for a given ID

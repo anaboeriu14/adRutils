@@ -2,11 +2,11 @@
 % Please edit documentation in R/remove_duplicates.R
 \name{.get_id_col_name}
 \alias{.get_id_col_name}
-\title{Get ID column name as string}
+\title{Get ID column name as string using rlang}
 \usage{
 .get_id_col_name(id_col)
 }
 \description{
-Get ID column name as string
+Get ID column name as string using rlang
 }
 \keyword{internal}

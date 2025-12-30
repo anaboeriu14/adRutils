@@ -14,7 +14,7 @@ remove_duplicates_if_exists(
 \arguments{
 \item{dataf}{A data frame to check for duplicates}
 
-\item{id_col}{Column name or expression specifying the ID to check for duplicates}
+\item{id_col}{Column name (quoted or unquoted) specifying the ID to check for duplicates}
 
 \item{keep}{One of "first", "last", "none", or "most_complete" (default: "most_complete").
 "most_complete" keeps the row with fewest NAs}
@@ -37,8 +37,9 @@ testDF <- data.frame(
   group = c("A", "A", "B", NA, "C", "D", "E", "F", "G")
 )
 
-# Keep most complete row (default)
+# Keep most complete row (default) - both quoted and unquoted work
 remove_duplicates_if_exists(testDF, "id_num")
+remove_duplicates_if_exists(testDF, id_num)
 
 # Keep first occurrence
 remove_duplicates_if_exists(testDF, "id_num", keep = "first")
