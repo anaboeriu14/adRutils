@@ -8,12 +8,18 @@
   file_paths,
   missing_vals,
   clean_col_names,
-  guess_max,
   verbose,
+  use_readr,
   col_types
 )
 }
 \description{
 Load CSV files into data frames
 }
+\keyword{CSV}
+\keyword{Load}
+\keyword{data}
+\keyword{files}
+\keyword{frames}
 \keyword{internal}
+\keyword{into}

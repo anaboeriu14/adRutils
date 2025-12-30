@@ -10,9 +10,9 @@ read_csvs_by_pattern(
   patterns = NULL,
   all_files = FALSE,
   clean_col_names = TRUE,
-  guess_max = 5000,
   combine = TRUE,
   verbose = FALSE,
+  use_readr = FALSE,
   col_types = NULL
 )
 }
@@ -28,19 +28,14 @@ Use NULL with all_files = TRUE to read all CSVs}
 
 \item{clean_col_names}{Logical. If TRUE, cleans column names using janitor::clean_names()}
 
-\item{guess_max}{Integer. Maximum number of rows to use for guessing column types}
-
 \item{combine}{Logical. If TRUE, combines all dataframes into one. If FALSE, returns a named list}
 
 \item{verbose}{Logical. If TRUE, prints progress messages (default: FALSE)}
 
-\item{col_types}{Column type specification for readr::read_csv(). Options:
-\itemize{
-\item NULL (default): Let readr guess types for each file independently
-\item readr::cols(.default = col_character()): Read all columns as character (safest for combining)
-\item readr::cols(...): Specify types for specific columns
-Useful when combining files with inconsistent column types
-}}
+\item{use_readr}{Logical. If TRUE, uses readr::read_csv(); if FALSE, uses base read.csv() (default: FALSE)}
+
+\item{col_types}{Column type specification for readr::read_csv() when use_readr = TRUE.
+Ignored when use_readr = FALSE}
 }
 \value{
 A combined dataframe or a named list of dataframes
