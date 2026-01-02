@@ -55,17 +55,18 @@
 #' )
 #'
 #' # Compare original vs imputed
-#' summary(mydata$BMI)           # Original with NAs
-#' summary(result$data_imputed$i_BMI)  # Imputed values
+#' summary(mydata$BMI) # Original with NAs
+#' summary(result$data_imputed$i_BMI) # Imputed values
 #' }
 #'
 #' @export
 rf_impute_data <- function(dataf, vars_to_impute, helper_vars,
                            parallel = TRUE, verbose = FALSE) {
-
   # Validate inputs
-  .validate_imputation_params(dataf, vars_to_impute, helper_vars,
-                              parallel, verbose)
+  .validate_imputation_params(
+    dataf, vars_to_impute, helper_vars,
+    parallel, verbose
+  )
 
   # Prepare data for imputation
   imputation_data <- .prepare_imputation_data(dataf, vars_to_impute, helper_vars)

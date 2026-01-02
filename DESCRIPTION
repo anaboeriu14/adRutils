@@ -1,26 +1,40 @@
 Package: adRutils
 Type: Package
+Title: Utility Functions for Data Processing and Statistical Modeling
 Version: 1.0.0
-Title: Utility Functions for Data Processing in R
-Authors@R: c(person("Ana", "Boeriu", email = "ana.boeriu@ucsf.edu",role = c("aut", "cre")))
-Description: Provides a collection of general-purpose functions to streamline 
-    common data processing tasks. This package includes functions for data 
-    cleaning, transformation, file operations, input validation, and variable 
-    coalescing. It is designed to reduce code duplication and improve 
-    consistency in data analysis workflows.
-License: MIT + file LICENSE.md
+Authors@R: 
+    person("Ana", "Boeriu", , "ana.boeriu@ucsf.edu", role = c("aut", "cre"),
+           comment = c(ORCID = "0009-0000-5469-4085"))
+Description: A collection of utility functions for data cleaning, transformation, 
+    statistical modeling, and file operations. Provides tools for reading and 
+    combining CSV files, handling missing values, transforming variables, 
+    fitting grouped linear models, and performing pairwise comparisons with 
+    flexible p-value formatting. Designed to streamline common data analysis 
+    workflows with consistent interfaces and informative feedback.
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
-Imports: 
-  dplyr, magrittr, tidyr,
-  tibble,stats, rlang, stringr,
-  readr, janitor, missForest,  doParallel, 
-   here,  utils,
-   broom, glue, purrr,
-   patchwork, cli
- 
- 
- 
- 
+Depends: 
+    R (>= 4.1.0)
+Imports:
+    broom,
+    cli,
+    doParallel,
+    dplyr,
+    glue,
+    here,
+    janitor,
+    magrittr,
+    missForest,
+    purrr,
+    readr,
+    rlang,
+    stats,
+    stringr,
+    tibble,
+    tidyr,
+    utils
+URL: https://github.com/anaboeriu14/adRutils
+BugReports: https://github.com/anaboeriu14/adRutils/issues

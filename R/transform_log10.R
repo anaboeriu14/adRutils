@@ -50,7 +50,6 @@
 #' }
 #' @export
 transform_log10 <- function(dataf, vars, overwrite = FALSE, quiet = FALSE) {
-
   # Validate inputs
   .validate_log10_params(dataf, vars, overwrite, quiet)
 

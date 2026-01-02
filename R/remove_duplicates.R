@@ -35,7 +35,6 @@
 remove_duplicates_if_exists <- function(dataf, id_col,
                                         keep = c("most_complete", "first", "last", "none"),
                                         quiet = FALSE) {
-
   # Validate and match keep argument
   keep <- match.arg(keep)
 
@@ -92,15 +91,18 @@ remove_duplicates_if_exists <- function(dataf, id_col,
   col_quo <- rlang::enquo(id_col)
 
   # Convert to string
-  col_name <- tryCatch({
-    rlang::as_name(col_quo)
-  }, error = function(e) {
-    cli::cli_abort(c(
-      "Invalid column specification",
-      "i" = "Use a column name as a string: {.code \"med_id\"}",
-      "i" = "Or unquoted: {.code med_id}"
-    ))
-  })
+  col_name <- tryCatch(
+    {
+      rlang::as_name(col_quo)
+    },
+    error = function(e) {
+      cli::cli_abort(c(
+        "Invalid column specification",
+        "i" = "Use a column name as a string: {.code \"med_id\"}",
+        "i" = "Or unquoted: {.code med_id}"
+      ))
+    }
+  )
 
   # Validate column exists
   if (!col_name %in% names(dataf)) {
@@ -180,7 +182,9 @@ remove_duplicates_if_exists <- function(dataf, id_col,
 #' Check if all rows in a dataframe are identical
 #' @keywords internal
 .all_rows_identical <- function(rows_data) {
-  if (nrow(rows_data) <= 1) return(TRUE)
+  if (nrow(rows_data) <= 1) {
+    return(TRUE)
+  }
 
   first_row <- as.list(rows_data[1, , drop = FALSE])
 
@@ -206,10 +210,10 @@ remove_duplicates_if_exists <- function(dataf, id_col,
 #' @keywords internal
 .remove_duplicates_by_strategy <- function(dataf, id_values, dupe_info, keep, id_col_name) {
   result <- switch(keep,
-                   first = .keep_first(dataf, id_values),
-                   last = .keep_last(dataf, id_values),
-                   none = .keep_none(dataf, dupe_info$mask),
-                   most_complete = .keep_most_complete(dataf, id_values, dupe_info$unique_ids, id_col_name)
+    first = .keep_first(dataf, id_values),
+    last = .keep_last(dataf, id_values),
+    none = .keep_none(dataf, dupe_info$mask),
+    most_complete = .keep_most_complete(dataf, id_values, dupe_info$unique_ids, id_col_name)
   )
 
   return(result)
@@ -273,7 +277,7 @@ remove_duplicates_if_exists <- function(dataf, id_col,
   na_counts <- .count_nas_excluding_id(dataf, rows_with_id, id_col_name)
 
   if (length(na_counts) == 0 || all(is.na(na_counts))) {
-    return(rows_with_id[1])  # Fallback to first
+    return(rows_with_id[1]) # Fallback to first
   }
 
   # Find row with minimum NAs

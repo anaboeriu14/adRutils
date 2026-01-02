@@ -46,15 +46,15 @@
 #' # Case-sensitive matching
 #' select_cols_by_pattern(test_df, "NAME", ignore_case = FALSE)
 #'
-#'
 #' @export
 select_cols_by_pattern <- function(dataf, patterns, exclude = NULL,
                                    ignore_case = TRUE, warn_no_match = TRUE,
                                    invert = FALSE) {
-
   # Validate inputs
-  .validate_pattern_params(dataf, patterns, exclude, ignore_case,
-                           warn_no_match, invert)
+  .validate_pattern_params(
+    dataf, patterns, exclude, ignore_case,
+    warn_no_match, invert
+  )
 
   # Find matching columns
   matched_cols <- .find_matching_columns(dataf, patterns, exclude, ignore_case)
@@ -121,7 +121,8 @@ select_cols_by_pattern <- function(dataf, patterns, exclude = NULL,
 
   # Find potential matches
   potential_matches <- grep(combined_pattern, names(dataf),
-                            value = TRUE, perl = TRUE)
+    value = TRUE, perl = TRUE
+  )
 
   # Apply exclusion patterns if provided
   if (!is.null(exclude) && length(exclude) > 0) {
@@ -162,7 +163,7 @@ select_cols_by_pattern <- function(dataf, patterns, exclude = NULL,
   # Warn or error based on user preference
   if (warn_no_match) {
     cli::cli_alert_warning(msg)
-    return(dataf[, integer(0), drop = FALSE])  # Empty data frame with same rows
+    return(dataf[, integer(0), drop = FALSE]) # Empty data frame with same rows
   } else {
     cli::cli_abort(msg)
   }

@@ -11,10 +11,11 @@
 #' @export
 coalesce_variables <- function(dataf, pattern_extract = NULL, var_groups = NULL,
                                prefix = "", overwrite = FALSE, quiet = FALSE) {
-
   # Validate inputs
-  .validate_coalesce_params(dataf, pattern_extract, var_groups,
-                            prefix, overwrite, quiet)
+  .validate_coalesce_params(
+    dataf, pattern_extract, var_groups,
+    prefix, overwrite, quiet
+  )
 
   # Create groups
   groups <- .create_variable_groups(dataf, pattern_extract, var_groups)
@@ -34,7 +35,7 @@ coalesce_variables <- function(dataf, pattern_extract = NULL, var_groups = NULL,
 #' Validate coalesce_variables parameters
 #' @keywords internal
 .validate_coalesce_params <- function(dataf, pattern_extract, var_groups,
-                                      prefix, overwrite, quiet) {  # ← Removed check_processed
+                                      prefix, overwrite, quiet) { # ← Removed check_processed
   validate_params(
     data = dataf,
     custom_checks = list(
@@ -49,7 +50,7 @@ coalesce_variables <- function(dataf, pattern_extract = NULL, var_groups = NULL,
       list(
         condition = is.null(pattern_extract) ||
           (is.character(pattern_extract) && length(pattern_extract) == 1 &&
-             nchar(pattern_extract) > 0),
+            nchar(pattern_extract) > 0),
         message = "{.arg pattern_extract} must be a single non-empty character string"
       ),
       list(
@@ -60,7 +61,7 @@ coalesce_variables <- function(dataf, pattern_extract = NULL, var_groups = NULL,
       list(
         condition = is.character(prefix) && length(prefix) == 1 &&
           is.logical(overwrite) && length(overwrite) == 1 &&
-          is.logical(quiet) && length(quiet) == 1,  # ← Removed check_processed
+          is.logical(quiet) && length(quiet) == 1, # ← Removed check_processed
         message = "All parameters must be scalar values of correct type"
       )
     ),
@@ -126,7 +127,7 @@ coalesce_variables <- function(dataf, pattern_extract = NULL, var_groups = NULL,
       if (new_name %in% names(result_df)) {
         if (!overwrite) {
           skipped_cols <- c(skipped_cols, new_name)
-          next  # Skip this one
+          next # Skip this one
         }
         overwritten_cols <- c(overwritten_cols, new_name)
       } else {

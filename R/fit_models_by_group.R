@@ -79,14 +79,17 @@ fit_models_by_group <- function(data, outcomes, base_predictors,
                                 model_type = "main", interaction_terms = NULL,
                                 outcome_covariates = NULL, group_covariates = NULL,
                                 verbose = FALSE) {
-
   # Validate basic inputs
-  .validate_model_inputs(data, outcomes, base_predictors, groups,
-                         model_type, interaction_terms, verbose)
+  .validate_model_inputs(
+    data, outcomes, base_predictors, groups,
+    model_type, interaction_terms, verbose
+  )
 
   # Process and validate covariates
-  covariate_info <- .prepare_covariates(outcome_covariates, group_covariates,
-                                        groups, data, group_col)
+  covariate_info <- .prepare_covariates(
+    outcome_covariates, group_covariates,
+    groups, data, group_col
+  )
 
   # Create outcome-group combinations
   combinations <- expand_grid(outcome = outcomes, group = groups)
@@ -118,8 +121,10 @@ fit_models_by_group <- function(data, outcomes, base_predictors,
       is_group_specific = covariate_info$is_group_specific
     )
 
-    fit_single_lm(curr_outcome, curr_group, predictors, data,
-                  group_col, model_type)
+    fit_single_lm(
+      curr_outcome, curr_group, predictors, data,
+      group_col, model_type
+    )
   }) %>% list_rbind()
 
   if (verbose) {
@@ -186,7 +191,6 @@ fit_models_by_group <- function(data, outcomes, base_predictors,
 #' @export
 fit_single_lm <- function(outcome, group, predictors, data,
                           group_col = NULL, model_type = "main") {
-
   # Validate inputs
   validate_params(
     data = data,
@@ -230,15 +234,18 @@ fit_single_lm <- function(outcome, group, predictors, data,
   model_equation <- paste(outcome, "~", predictors)
 
   # Fit model with error handling
-  model_fit <- tryCatch({
-    lm(as.formula(model_equation), data = analysis_data)
-  }, error = function(e) {
-    cli::cli_alert_warning("Model failed for {outcome} in group {group}: {e$message}")
-    return(NULL)
-  })
+  model_fit <- tryCatch(
+    {
+      lm(as.formula(model_equation), data = analysis_data)
+    },
+    error = function(e) {
+      cli::cli_alert_warning("Model failed for {outcome} in group {group}: {e$message}")
+      return(NULL)
+    }
+  )
 
   # Determine column name for grouping variable
-  col_name <- if(is.null(group_col)) "group" else group_col
+  col_name <- if (is.null(group_col)) "group" else group_col
 
   # Return results
   if (is.null(model_fit)) {
@@ -291,9 +298,11 @@ fit_single_lm <- function(outcome, group, predictors, data,
         message = "{.arg groups} must be a non-empty character vector"
       ),
       list(
-        condition = if(model_type == "interaction") {
+        condition = if (model_type == "interaction") {
           is.null(interaction_terms) || is.character(interaction_terms)
-        } else TRUE,
+        } else {
+          TRUE
+        },
         message = "{.arg interaction_terms} must be NULL or character vector when model_type = 'interaction'"
       ),
       list(
@@ -311,7 +320,6 @@ fit_single_lm <- function(outcome, group, predictors, data,
 #' @keywords internal
 .prepare_covariates <- function(outcome_covariates, group_covariates,
                                 groups, data, group_col) {
-
   # Detect covariate structure
   is_group_specific <- .is_group_specific_structure(outcome_covariates, groups)
 
@@ -370,7 +378,6 @@ fit_single_lm <- function(outcome, group, predictors, data,
 .build_predictors <- function(base_predictors, outcome, group,
                               outcome_covariates, group_covariates,
                               model_type, interaction_terms, is_group_specific) {
-
   # Start with base predictors
   all_predictors <- base_predictors
 
@@ -379,7 +386,7 @@ fit_single_lm <- function(outcome, group, predictors, data,
     if (is_group_specific) {
       # Group-specific: outcome_covariates[[group]][[outcome]]
       if (group %in% names(outcome_covariates) &&
-          outcome %in% names(outcome_covariates[[group]])) {
+        outcome %in% names(outcome_covariates[[group]])) {
         all_predictors <- c(all_predictors, outcome_covariates[[group]][[outcome]])
       }
     } else {

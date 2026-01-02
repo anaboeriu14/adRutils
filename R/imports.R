@@ -1,4 +1,3 @@
-
 #' @title adRutils: A collection of R utility functions
 #' @description This package provides various utility functions for data manipulation, imputation, and other common tasks.
 #' @name adRutils
@@ -23,6 +22,4 @@
 #' @importFrom patchwork wrap_plots plot_layout plot_annotation
 
 
-
 NULL
-

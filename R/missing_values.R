@@ -37,7 +37,6 @@ summarize_na <- function(data,
                          desc_order = TRUE,
                          threshold = NULL,
                          include_count = TRUE) {
-
   # Validate inputs
   validate_params(
     data = data,
@@ -71,8 +70,10 @@ summarize_na <- function(data,
   }
 
   # Sort
-  result <- dplyr::arrange(result,
-                           if (desc_order) dplyr::desc(.data[["percent_na"]]) else .data[["percent_na"]])
+  result <- dplyr::arrange(
+    result,
+    if (desc_order) dplyr::desc(.data[["percent_na"]]) else .data[["percent_na"]]
+  )
 
   # Filter by threshold if provided
   if (!is.null(threshold)) {
@@ -115,7 +116,6 @@ summarize_na <- function(data,
 #' @seealso \code{\link{summarize_na}} for analyzing NA patterns without removing columns
 #' @export
 drop_sparse_na_cols <- function(data, threshold = 99, quiet = FALSE, return_info = FALSE) {
-
   # Validate inputs
   validate_params(
     data = data,

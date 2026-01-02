@@ -18,7 +18,6 @@ read_csvs_by_pattern <- function(directory_path,
                                  clean_col_names = TRUE,
                                  combine = TRUE,
                                  verbose = FALSE) {
-
   .validate_csv_inputs(directory_path, missing_vals, patterns, all_files)
 
   file_paths <- .find_csv_files(directory_path, patterns, all_files)
@@ -71,15 +70,16 @@ read_csvs_by_pattern <- function(directory_path,
   }
 
   regex_pattern <- paste0(".*(?:", paste(patterns, collapse = "|"), ").*\\.csv$")
-  matched_files <- list.files(directory_path, pattern = regex_pattern,
-                              full.names = TRUE)
+  matched_files <- list.files(directory_path,
+    pattern = regex_pattern,
+    full.names = TRUE
+  )
   return(unique(matched_files))
 }
 
 #' Load CSV files into data frames
 #' @keywords internal
 .load_csv_files <- function(file_paths, missing_vals, clean_col_names, verbose) {
-
   n_files <- length(file_paths)
 
   purrr::map(seq_along(file_paths), function(i) {
@@ -96,18 +96,21 @@ read_csvs_by_pattern <- function(directory_path,
     }
 
     # Read CSV with base R (more forgiving with type inconsistencies)
-    df <- tryCatch({
-      read.csv(
-        file = file_path,
-        na.strings = missing_vals,
-        stringsAsFactors = FALSE
-      )
-    }, error = function(e) {
-      cli::cli_abort(c(
-        "Failed to read file: {.file {file_name}}",
-        "x" = conditionMessage(e)
-      ))
-    })
+    df <- tryCatch(
+      {
+        read.csv(
+          file = file_path,
+          na.strings = missing_vals,
+          stringsAsFactors = FALSE
+        )
+      },
+      error = function(e) {
+        cli::cli_abort(c(
+          "Failed to read file: {.file {file_name}}",
+          "x" = conditionMessage(e)
+        ))
+      }
+    )
 
     if (clean_col_names) df <- janitor::clean_names(df)
 

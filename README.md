@@ -1,33 +1,18 @@
 # adRutils
 
-[![Version](https://img.shields.io/badge/version-0.4.0-blue.svg)](https://github.com/anaboeriu14/adRutils/releases)
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/anaboeriu14/adRutils/releases)
 
-R utility functions for data cleaning, transformation, file operations and statistcal modeling
+R utility functions for data cleaning, transformation, file operations, and statistical modeling
 
 ## Overview
 
-`adRutils` provides a collection of general-purpose functions to streamline common data processing tasks and statisitcal analyses. 
-
-## Version Information
-
-**Current version:** 0.4.0
-
-See [Releases](https://github.com/anaboeriu14/adRutils/releases) & [NEWS.md](NEWS.md)
-for detailed changelog and release notes.
-
-### What's New in 0.4.0
-
-**New plotting functions** -New plotting functions visualize interaction effects 
-from regression models, with enhanced model output access and direct
-integration with grouped model fitting.
+`adRutils` provides a collection of general-purpose functions to streamline common data processing tasks and statistical analyses.
 
 ## Installation
 
-You can install the  `adRutils` package from GitHub using one of these methods:
+You can install `adRutils` from GitHub using one of these methods:
 
-### Option 1: Using remotes (recommended for most users)
-The `remotes` package is lightweight and focused solely on package installation:
-
+### Option 1: Using remotes (recommended)
 ```r
 # Install remotes if needed
 if (!requireNamespace("remotes", quietly = TRUE)) {
@@ -37,10 +22,8 @@ if (!requireNamespace("remotes", quietly = TRUE)) {
 # Install adRutils from GitHub
 remotes::install_github("anaboeriu14/adRutils")
 ```
-### Option 2: Using devtools 
 
-The `devtools` package is more comprehensive than `remotes`, with additional tools for package development:
-
+### Option 2: Using devtools
 ```r
 if (!requireNamespace("devtools", quietly = TRUE)) {
   install.packages("devtools")
@@ -48,49 +31,80 @@ if (!requireNamespace("devtools", quietly = TRUE)) {
 devtools::install_github("anaboeriu14/adRutils")
 ```
 
-## Features
+## Version Information
 
-This package provides utility functions for data cleaning, transformation, and file operations 
+**Current version:** 1.0.0 (Stable Release)
 
-### Statistical Modeling
-- `fit_models_by_group()`: Fit linear models across multiple outcomes and groups.
-- `fit_single_lm()`: Fit individual linear models for single outcome-group combinations
-- `extract_pairwise_pvalues()`: Extract formatted p-values from pairwise t-tests for individual variables
-- `create_pairwise_table()`: Create tables with pairwise comparisons for multiple variables
+See [Releases](https://github.com/anaboeriu14/adRutils/releases) & [NEWS.md](NEWS.md) for detailed changelog and release notes.
 
-### Input Validation
-- `validate_inputs()`: Comprehensive input validation for R functions with context-aware error messages
+### What's New in 1.0.0
 
-### File Operations
-- `read_csvs_by_pattern()`: Read and combine CSV files matching specified patterns
+**First stable release!** The API is now locked down with backward compatibility guarantees.
 
-### Data Cleaning & Transformation
-- `convert_columns_to_factors()`: Convert specified columns to factor type
-- `remove_duplicates_if_exists()`: Identify and remove duplicate observations
-- `transform_log10()`: Transform data using log10 with various handling for zeros/negatives
+- **Breaking changes**: Removed tracking system, renamed `force` → `overwrite` parameter
+- **Enhanced file reading**: Better handling of inconsistent column types across CSV files
+- **Improved duplicate removal**: More robust with rlang, works reliably in pipes
+- **Flexible p-value formatting**: Multiple format options for publication-ready tables
 
-### Missing Value Management
-- `summarize_na()`: Generate summaries of missing values in a dataset
-- `drop_sparse_na_cols()`: Remove columns with high percentages of missing values
-- `rf_impute_data()`: Impute missing values using Random Forest
+## Quick Start
+```r
+library(adRutils)
 
-### Data Selection
-- `select_cols_by_pattern()`: Select columns based on name patterns
+# Read and combine CSV files
+data <- read_csvs_by_pattern(
+  "data/raw",
+  missing_vals = c("NA", ""),
+  patterns = "baseline"
+)
 
-### Caching
-- Functions for caching computation results to improve performance
+# Clean data
+data <- data %>%
+  remove_duplicates_if_exists("subject_id") %>%
+  drop_sparse_na_cols(threshold = 99) %>%
+  transform_log10(vars = c("biomarker1", "biomarker2"))
 
+# Fit models across groups
+results <- fit_models_by_group(
+  data,
+  outcomes = c("log10_biomarker1", "log10_biomarker2"),
+  base_predictors = c("age", "sex"),
+  group_col = "ancestry",
+  groups = c("AFR", "EUR", "EAS")
+)
+
+# Pairwise comparisons with flexible formatting
+comparison_table <- create_pairwise_table(
+  data,
+  variables = c("biomarker1", "biomarker2"),
+  group_var = "treatment",
+  p_format = "threshold"  # or "auto", "exact", "scientific"
+)
+```
 
 ## Documentation
 
-For full documentation, including function details and additional examples, run:
-
+For full documentation, including function details and examples:
 ```r
-?adRutils::read_pattern_csv
-?adRutils::summarize_na
-?adRutils::fit_models_by_group
-# etc.
+# Browse all functions
+help(package = "adRutils")
+
+# Function-specific help
+?fit_models_by_group
+?transform_log10
+?create_pairwise_table
+```
+## License
+
+This project is licensed under the MIT License.
+
+## Citation
+
+If you use this package in your research, please cite:
+```
+Boeriu, A. (2025). adRutils: R Utility Functions for Data Analysis.
+R package version 1.0.0. https://github.com/anaboeriu14/adRutils
 ```
 
-## License
-This project is licensed under the MIT License
+## Contact
+
+For questions or issues, please open an issue on [GitHub](https://github.com/anaboeriu14/adRutils/issues).

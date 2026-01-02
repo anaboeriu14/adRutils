@@ -20,7 +20,6 @@
 #' @export
 bin_and_categorize_variables <- function(dataf, groups, filter_missing = FALSE,
                                          quiet = FALSE) {
-
   validate_params(
     data = dataf,
     custom_checks = list(
@@ -114,9 +113,9 @@ bin_and_categorize_variables <- function(dataf, groups, filter_missing = FALSE,
 #' @keywords internal
 .create_grouped_variable <- function(column_data, group) {
   switch(group$type,
-         cutpoints = .bin_by_cutpoints(column_data, group$cutpoints, group$labels),
-         categorical = .recode_categorical(column_data, group$values),
-         custom = .apply_custom_function(column_data, group$custom_fn)
+    cutpoints = .bin_by_cutpoints(column_data, group$cutpoints, group$labels),
+    categorical = .recode_categorical(column_data, group$values),
+    custom = .apply_custom_function(column_data, group$custom_fn)
   )
 }
 

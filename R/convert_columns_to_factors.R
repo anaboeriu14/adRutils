@@ -24,7 +24,6 @@
 #' @export
 convert_columns_to_factors <- function(dataf, patterns, exclude = NULL,
                                        ordered = FALSE, quiet = FALSE) {
-
   # Validate inputs
   validate_params(
     data = dataf,
@@ -77,13 +76,15 @@ convert_columns_to_factors <- function(dataf, patterns, exclude = NULL,
 
   # Case-insensitive matching by default
   matching_cols <- grep(combined_pattern, names(dataf),
-                        value = TRUE, ignore.case = TRUE)
+    value = TRUE, ignore.case = TRUE
+  )
 
   # Apply exclusions if provided
   if (!is.null(exclude) && length(exclude) > 0) {
     exclude_pattern <- paste(exclude, collapse = "|")
     matching_cols <- matching_cols[!grepl(exclude_pattern, matching_cols,
-                                          ignore.case = TRUE)]
+      ignore.case = TRUE
+    )]
   }
 
   return(matching_cols)
@@ -97,7 +98,7 @@ convert_columns_to_factors <- function(dataf, patterns, exclude = NULL,
     if (ordered && !is.ordered(x)) {
       return(factor(x, levels = levels(x), ordered = TRUE))
     }
-    return(x)  # Already correct type
+    return(x) # Already correct type
   }
 
   # Convert non-factor to factor

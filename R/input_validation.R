@@ -22,7 +22,6 @@ validate_params <- function(data = NULL,
                             valid_methods = NULL,
                             custom_checks = list(),
                             context = "function") {
-
   # Data frame validation with context
   if (!is.null(data) && !is.data.frame(data)) {
     cli::cli_abort("In {.fn {context}()}: Input {.arg data} must be a data frame")

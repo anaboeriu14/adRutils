@@ -1,108 +1,82 @@
+# adRutils 1.0.0
+
+## 💥 Breaking Changes
+
+If upgrading from 0.4.0 or earlier, note these changes:
+
+**Removed Systems** - **Tracking system** (`tracking.R`) - check for column existence directly - **Cache system** (`cache.R`) - implement at script level if needed
+
+**Parameter Renames** - `transform_log10()`: `force` → `overwrite` - `coalesce_variables()`: `force` → `overwrite`
+
+``` r
+# Migration example
+# Before: transform_log10(data, vars = "x", force = TRUE)
+# After:  transform_log10(data, vars = "x", overwrite = TRUE)
+```
+
+## ✨ New Features
+
+**Pairwise Comparisons** - Flexible p-value formatting: `auto`, `threshold`, `exact`, `scientific` - Functions: `extract_pairwise_pvalues()`, `create_pairwise_table()`
+
+**Model Enhancements** - `fit_models_by_group()` supports ungrouped analysis (`group_col = NULL`) - Access both tidy results (`model_res`) and raw model object (`model_obj`)
+
+**Better Duplicate Handling** - `remove_duplicates_if_exists()` now uses rlang - Works with quoted (`"med_id"`) and unquoted (`med_id`) syntax
+
+**Improved File Reading** - `read_csvs_by_pattern()` has better error messages for type mismatches - Suggests solutions when column types conflict across files
+
+## 🐛 Bug Fixes
+
+-   Fixed parameter mismatch in `convert_columns_to_factors()`
+-   Fixed column extraction in `remove_duplicates_if_exists()`
+-   Fixed type coercion issues in `read_csvs_by_pattern()`
+-   Cleaned up orphaned helper functions
+
+## 🔒 Stability Guarantee
+
+**Semantic Versioning:** - `1.x.0` - New features, backward compatible - `1.0.x` - Bug fixes only - `2.0.0` - Breaking changes (avoided when possible)
+
+------------------------------------------------------------------------
+
 # adRutils 0.4.0
 
-## New Features - Interaction plotting functions
+**New:** Enhanced model output
 
-- `create_interaction_plots()`  - Generates interaction plots from model results, 
-featuring customizable colors, themes, and optional confidence bands with
-significance highlighting.
+-   `fit_models_by_group()` supports `group_col = NULL` for ungrouped analysis
+-   Added `model_obj` column for direct model access
 
-- `organize_interaction_plots()` - arranges interaction plots into publication-ready grids with 
-flexible ordering by outcomes and numeric variables, subset selection, and automatic legend collection and panel labeling
-
--  `generate_interaction_plots()`  - streamlines the entire process by combining 
-plot creation and organization into a single pipeline function.  
-
-- `fit_models_by_group()` now supports `group_col = NULL` for analysis without grouping
-## Enhancements
-
-* **Enhanced model output**: Added `model_obj` column to `fit_single_lm()` and `fit_models_by_group()` 
-for direct model access
-
-## Changes
-* Interaction plotting functions are designed to work seamlessly with `fit_models_by_group()` output
-* Model fitting functions now provide both tidy results (`model_res`) and raw model objects (`model_obj`)
+------------------------------------------------------------------------
 
 # adRutils 0.3.0
 
-## New Features & Improvements
+**New:** Group-specific covariates, pairwise comparisons
 
-###  Statistical Modeling
+-   Enhanced `fit_models_by_group()` with group-specific outcome covariates
+-   `fit_single_lm()` for individual model fitting
+-   `extract_pairwise_pvalues()` and `create_pairwise_table()`
 
-  - **Enhanced `fit_models_by_group()`**  function with major improvements:
-    - **Group-specific outcome covariates**: Support for different covariates per group (e.g., g1 vs g2 groups)
-    - **Automatic structure detection**:Handles both standard and group-specific covariate specifications
-    - **Backward compatible**: Existing code continues to work unchanged
-    - **Clearer scope**: Enhanced documentation emphasizing linear model (lm) focus
-    
-  - **New `fit_single_lm()`** exported function for fitting individual linear models
-    - Standalone function for single outcome-group combinations
-    - Same return format as main function for consistency
-    - Useful for custom modeling workflows
-
-### Pairwise Comparison Functions
-
-  - `extract_pairwise_pvalues()` - Extract and format p-values from pairwise t-tests for individual variables
-    - Performs pairwise t-tests between groups with formatted p-value output
-    - Works with any categorical grouping variable (not limited to specific group names)
-    - Returns formatted p-values: "< 0.001" for very small values, rounded to 3 decimals otherwise
-
-  - `create_pairwise_table()` - Create tables with pairwise comparisons for multiple variables
-    - Processes multiple numeric variables at once against a grouping variable
-    - Returns results in wide table format suitable for reports and manuscripts
-    - Built on top of extract_pairwise_pvalues() for consistency
-
-
-## Changes
-* Added internal helper functions `.build_predictors()` and `.fit_single_model()` for `fit_group_models()`
-
-## Breaking Changes
-* None
+------------------------------------------------------------------------
 
 # adRutils 0.2.0
 
-## New Features
+**New:** Variable coalescing, validation framework
 
-* Added `coalesce_variables()` function for combining related variables from different time points or sources
-  - Supports pattern-based grouping (e.g., "_t1", "_t2" → combined columns)
-  - Supports custom grouping for precise control over which columns to combine
+-   `coalesce_variables()` - Combine variables by pattern or manual grouping
+-   `validate_params()` - Comprehensive input validation
 
-* Added `validate_params()` function for comprehensive input validation
-  - Validates data frames, column existence, numeric columns, and grouping variables
-  - Supports method validation and custom checks
-  - Provides consistent, context-aware error messages
-  - Designed to reduce code duplication across package functions
+------------------------------------------------------------------------
 
 # adRutils 0.1.2
 
-## Bug Fixes
-* Fixed error in `remove_duplicates_if_exists()` when using `keep = "most_complete"`
-  - Resolved "invalid 'type' (list) of argument" error in `min(na_counts)`
-  - Fixed "no non-missing arguments to min" warning when processing NA IDs
-  - Replaced `sapply()` with `vapply()` 
-  
+**Fixed:** `remove_duplicates_if_exists()` error with `keep = "most_complete"`
+
+------------------------------------------------------------------------
+
 # adRutils 0.1.1
 
-## New Features
-* Added function processing tracking system to prevent duplicate operations
-  * `is_processed()`: Check if variables have been processed by a function
-  * `register_processed()`: register variables as processed
-  * `reset_processing()`: Reset processing history
-* Enhanced `transform_log10()` with processing tracking to prevent accidental double transformations
-* Added override capability with `force` parameter to intentionally reprocess data when needed
+**New:** Processing tracking system (removed in 1.0.0)
+
+------------------------------------------------------------------------
 
 # adRutils 0.1.0
 
-## Initial Release
-
-### New Features
-* Added file operations with `read_csvs_by_pattern()`
-* Implemented missing value management with `summarize_na()` and `drop_na_sparse_cols()`
-* Created data transformation utilities: `convert_columns_to_factors()`, `transform_log10()`
-* Added data selection with `select_cols_by_pattern()`
-* Developed caching system for improved performance
-
-### Bug Fixes
-* None (initial release)
-
-### Breaking Changes
-* None (initial release)
+**Initial release:** File operations, missing data tools, transformations

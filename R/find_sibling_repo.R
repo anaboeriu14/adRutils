@@ -39,7 +39,6 @@
 find_sibling_repo <- function(repo_name, alternative_names = NULL,
                               parent_levels = 1, current_repo_name = NULL,
                               stop_on_missing = TRUE) {
-
   # Validate inputs
   validate_params(
     custom_checks = list(
@@ -158,5 +157,3 @@ find_sibling_repo <- function(repo_name, alternative_names = NULL,
     "i" = "Expected structure: {expected_hint}"
   ))
 }
-
-

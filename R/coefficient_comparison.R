@@ -24,7 +24,6 @@
 #' # Get p-value
 #' res$p_value
 compare_coefs <- function(b1, b2, se1, se2) {
-
   validate_params(
     custom_checks = list(
       list(
@@ -48,13 +47,14 @@ compare_coefs <- function(b1, b2, se1, se2) {
   )
 
   z <- (b1 - b2) / sqrt(se1^2 + se2^2)
-  p_val <-  2 * (1 - pnorm(abs(z)))
+  p_val <- 2 * (1 - pnorm(abs(z)))
 
-  all_results <- list(z_statistic = z,
-                      p_value = p_val,
-                      diff = b1 - b2,
-                      se_diff = sqrt(se1^2 + se2^2))
+  all_results <- list(
+    z_statistic = z,
+    p_value = p_val,
+    diff = b1 - b2,
+    se_diff = sqrt(se1^2 + se2^2)
+  )
 
   return(all_results)
-
 }
