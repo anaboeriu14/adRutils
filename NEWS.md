@@ -1,6 +1,6 @@
 # adRutils 1.0.0
 
-## 💥 Breaking Changes
+## Breaking Changes
 
 If upgrading from 0.4.0 or earlier, note these changes:
 
@@ -14,7 +14,7 @@ If upgrading from 0.4.0 or earlier, note these changes:
 # After:  transform_log10(data, vars = "x", overwrite = TRUE)
 ```
 
-## ✨ New Features
+## New Features
 
 **Pairwise Comparisons** - Flexible p-value formatting: `auto`, `threshold`, `exact`, `scientific` - Functions: `extract_pairwise_pvalues()`, `create_pairwise_table()`
 
@@ -24,16 +24,19 @@ If upgrading from 0.4.0 or earlier, note these changes:
 
 **Improved File Reading** - `read_csvs_by_pattern()` has better error messages for type mismatches - Suggests solutions when column types conflict across files
 
-## 🐛 Bug Fixes
+## Bug Fixes
 
 -   Fixed parameter mismatch in `convert_columns_to_factors()`
 -   Fixed column extraction in `remove_duplicates_if_exists()`
 -   Fixed type coercion issues in `read_csvs_by_pattern()`
 -   Cleaned up orphaned helper functions
 
-## 🔒 Stability Guarantee
+## Stability Guarantee
 
-**Semantic Versioning:** - `1.x.0` - New features, backward compatible - `1.0.x` - Bug fixes only - `2.0.0` - Breaking changes (avoided when possible)
+**Semantic Versioning:** 
+- `1.x.0` New features, backward compatible 
+- `1.0.x`  Bug fixes only 
+- `2.0.0`  Breaking changes
 
 ------------------------------------------------------------------------
 
