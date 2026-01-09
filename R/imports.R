@@ -5,11 +5,11 @@
 #' @import dplyr
 #' @import cli
 #' @import purrr
+#' @import stringr
 #' @importFrom magrittr %>%
 #' @importFrom tibble tibble as_tibble
 #' @importFrom stats setNames complete.cases pnorm lm nobs as.formula pairwise.t.test
 #' @importFrom rlang .data sym  %||% .data := enquo as_name
-#' @importFrom stringr str_detect str_extract str_split
 #' @importFrom readr read_csv
 #' @importFrom janitor clean_names
 #' @importFrom missForest missForest
@@ -19,7 +19,5 @@
 #' @importFrom glue glue
 #' @importFrom broom tidy
 #' @importFrom tidyr expand_grid unite replace_na
-#' @importFrom patchwork wrap_plots plot_layout plot_annotation
-
 
 NULL

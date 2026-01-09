@@ -204,10 +204,10 @@ create_pairwise_table <- function(dataf, variables, group_var, p_digits,
   return(result_table)
 }
 
+
 #' Format pairwise test results with flexible formatting options
 #' @keywords internal
-#' Format pairwise test results with flexible formatting options
-#' @keywords internal
+#' @noRd
 .format_pairwise_results <- function(pvalue_matrix,
                                      format = c("auto", "threshold", "exact", "scientific"),
                                      digits = 3) {

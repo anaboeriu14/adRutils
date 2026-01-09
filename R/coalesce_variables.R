@@ -34,6 +34,7 @@ coalesce_variables <- function(dataf, pattern_extract = NULL, var_groups = NULL,
 
 #' Validate coalesce_variables parameters
 #' @keywords internal
+#' @noRd
 .validate_coalesce_params <- function(dataf, pattern_extract, var_groups,
                                       prefix, overwrite, quiet) { # ← Removed check_processed
   validate_params(
@@ -73,6 +74,7 @@ coalesce_variables <- function(dataf, pattern_extract = NULL, var_groups = NULL,
 
 #' Build variable groups from pattern or manual specification
 #' @keywords internal
+#' @noRd
 .create_variable_groups <- function(dataf, pattern_extract, var_groups) {
   if (!is.null(pattern_extract)) {
     return(.build_groups_from_pattern(dataf, pattern_extract))
@@ -90,6 +92,7 @@ coalesce_variables <- function(dataf, pattern_extract = NULL, var_groups = NULL,
 
 #' Build groups from pattern matching
 #' @keywords internal
+#' @noRd
 .build_groups_from_pattern <- function(dataf, pattern_extract) {
   matching_cols <- grep(pattern_extract, names(dataf), value = TRUE)
 
@@ -111,6 +114,7 @@ coalesce_variables <- function(dataf, pattern_extract = NULL, var_groups = NULL,
 
 #' Coalesce groups into new columns
 #' @keywords internal
+#' @noRd
 .coalesce_groups <- function(dataf, groups, prefix, overwrite, quiet) {
   result_df <- dataf
   created_cols <- character()

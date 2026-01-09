@@ -36,17 +36,11 @@
 #' # Valid transformation
 #' test_df2 <- transform_log10(test_df, c("biomarker1", "biomarker2"))
 #'
-#' # Check results
-#' summary(test_df2$log10_biomarker1)
-#'
 #' # This will error (negative values in biomarker3)
 #' err_result <- transform_log10(test_df, "biomarker3")
 #'
 #' # overwrite re-transformation
 #' test_df3 <- transform_log10(test_df2, "biomarker1", overwrite = TRUE)
-#'
-#' # Quiet mode (suppress messages)
-#' test_df4 <- transform_log10(test_df, "biomarker1", quiet = TRUE)
 #' }
 #' @export
 transform_log10 <- function(dataf, vars, overwrite = FALSE, quiet = FALSE) {
@@ -73,6 +67,7 @@ transform_log10 <- function(dataf, vars, overwrite = FALSE, quiet = FALSE) {
 
 #' Validate transform_log10 parameters
 #' @keywords internal
+#' @noRd
 .validate_log10_params <- function(dataf, vars, overwrite, quiet) {
   validate_params(
     data = dataf,
@@ -113,6 +108,7 @@ transform_log10 <- function(dataf, vars, overwrite = FALSE, quiet = FALSE) {
 
 #' Find variables with invalid values for log transformation
 #' @keywords internal
+#' @noRd
 .find_invalid_values <- function(dataf, vars) {
   vars[vapply(vars, function(var) {
     any(dataf[[var]] <= 0, na.rm = TRUE)
@@ -121,6 +117,7 @@ transform_log10 <- function(dataf, vars, overwrite = FALSE, quiet = FALSE) {
 
 #' Warn if variables already have log10 naming convention
 #' @keywords internal
+#' @noRd
 .warn_if_log_named <- function(vars) {
   potential_log_cols <- vars[grepl("^log10_", vars)]
 
@@ -135,6 +132,7 @@ transform_log10 <- function(dataf, vars, overwrite = FALSE, quiet = FALSE) {
 
 #' Apply log10 transformation to variables
 #' @keywords internal
+#' @noRd
 .apply_log10_transform <- function(dataf, vars, overwrite, quiet) {
   result <- dataf
   overwritten <- character()

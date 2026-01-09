@@ -48,16 +48,10 @@ test_df <- data.frame(
 # Valid transformation
 test_df2 <- transform_log10(test_df, c("biomarker1", "biomarker2"))
 
-# Check results
-summary(test_df2$log10_biomarker1)
-
 # This will error (negative values in biomarker3)
 err_result <- transform_log10(test_df, "biomarker3")
 
 # overwrite re-transformation
 test_df3 <- transform_log10(test_df2, "biomarker1", overwrite = TRUE)
-
-# Quiet mode (suppress messages)
-test_df4 <- transform_log10(test_df, "biomarker1", quiet = TRUE)
 }
 }

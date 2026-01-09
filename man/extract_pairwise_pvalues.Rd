@@ -54,12 +54,14 @@ results <- extract_pairwise_pvalues(mtcars, "mpg", "cyl", "bonferroni")
 
 # Threshold format (publication style)
 results <- extract_pairwise_pvalues(mtcars, "mpg", "cyl", "bonferroni",
-                                    p_format = "threshold")
+  p_format = "threshold"
+)
 # Returns: "< 0.001", "0.023", "0.156"
 
 # Scientific notation (exact magnitude)
 results <- extract_pairwise_pvalues(iris, "Sepal.Length", "Species", "holm",
-                                    p_format = "scientific", p_digits = 2)
+  p_format = "scientific", p_digits = 2
+)
 # Returns: "4.5e-02", "3.0e-04", "1.6e-01"
 }
 

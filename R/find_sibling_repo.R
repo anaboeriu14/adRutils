@@ -83,6 +83,7 @@ find_sibling_repo <- function(repo_name, alternative_names = NULL,
 
 #' Navigate to parent directory from project root
 #' @keywords internal
+#' @noRd
 .get_parent_directory <- function(parent_levels) {
   # Start from project root
   project_root <- here::here()
@@ -100,6 +101,7 @@ find_sibling_repo <- function(repo_name, alternative_names = NULL,
 
 #' Search for repository by name and alternatives
 #' @keywords internal
+#' @noRd
 .search_for_repo <- function(parent_dir, repo_name, alternative_names) {
   # Try primary name
   target_path <- file.path(parent_dir, repo_name)
@@ -125,6 +127,7 @@ find_sibling_repo <- function(repo_name, alternative_names = NULL,
 
 #' Build and throw error for repository not found
 #' @keywords internal
+#' @noRd
 .abort_repo_not_found <- function(parent_dir, repo_name, alternative_names,
                                   current_repo_name) {
   # Build list of searched paths

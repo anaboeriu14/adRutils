@@ -116,7 +116,7 @@ summarize_na <- function(data,
 #' @seealso \code{\link{summarize_na}} for analyzing NA patterns without removing columns
 #' @export
 drop_sparse_na_cols <- function(data, threshold = 99, quiet = FALSE, return_info = FALSE) {
-  # Validate inputs
+
   validate_params(
     data = data,
     custom_checks = list(
