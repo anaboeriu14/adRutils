@@ -38,6 +38,7 @@ read_csvs_by_pattern <- function(directory_path,
 
 #' Validate input parameters for read_csvs_by_pattern
 #' @keywords internal
+#' @noRd
 .validate_csv_inputs <- function(directory_path, missing_vals, patterns, all_files) {
   validate_params(
     custom_checks = list(
@@ -64,6 +65,7 @@ read_csvs_by_pattern <- function(directory_path,
 
 #' Find CSV files matching patterns
 #' @keywords internal
+#' @noRd
 .find_csv_files <- function(directory_path, patterns, all_files) {
   if (all_files) {
     return(list.files(directory_path, pattern = "\\.csv$", full.names = TRUE))
@@ -79,6 +81,7 @@ read_csvs_by_pattern <- function(directory_path,
 
 #' Load CSV files into data frames
 #' @keywords internal
+#' @noRd
 .load_csv_files <- function(file_paths, missing_vals, clean_col_names, verbose) {
   n_files <- length(file_paths)
 
@@ -120,6 +123,7 @@ read_csvs_by_pattern <- function(directory_path,
 
 #' Format CSV results for output
 #' @keywords internal
+#' @noRd
 .format_csv_output <- function(df_list, file_paths, combine, verbose) {
   if (length(df_list) == 0) {
     cli::cli_abort("No files could be read successfully")

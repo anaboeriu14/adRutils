@@ -76,6 +76,7 @@ select_cols_by_pattern <- function(dataf, patterns, exclude = NULL,
 
 #' Validate select_cols_by_pattern parameters
 #' @keywords internal
+#' @noRd
 .validate_pattern_params <- function(dataf, patterns, exclude, ignore_case,
                                      warn_no_match, invert) {
   validate_params(
@@ -110,6 +111,7 @@ select_cols_by_pattern <- function(dataf, patterns, exclude = NULL,
 
 #' Find columns matching patterns with optional exclusions
 #' @keywords internal
+#' @noRd
 .find_matching_columns <- function(dataf, patterns, exclude, ignore_case) {
   # Build combined regex pattern
   combined_pattern <- paste(patterns, collapse = "|")
@@ -136,6 +138,7 @@ select_cols_by_pattern <- function(dataf, patterns, exclude = NULL,
 
 #' Apply exclusion patterns to matched columns
 #' @keywords internal
+#' @noRd
 .apply_exclusions <- function(matched_cols, exclude_patterns, ignore_case) {
   exclude_pattern <- paste(exclude_patterns, collapse = "|")
 
@@ -149,6 +152,7 @@ select_cols_by_pattern <- function(dataf, patterns, exclude = NULL,
 
 #' Handle case when no columns match
 #' @keywords internal
+#' @noRd
 .handle_no_matches <- function(dataf, patterns, exclude, warn_no_match) {
   # Build informative message
   msg <- paste0(

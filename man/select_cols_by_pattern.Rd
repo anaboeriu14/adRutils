@@ -67,5 +67,4 @@ select_cols_by_pattern(test_df, c("id", "age"))
 # Case-sensitive matching
 select_cols_by_pattern(test_df, "NAME", ignore_case = FALSE)
 
-
 }

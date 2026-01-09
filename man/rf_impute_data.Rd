@@ -74,8 +74,8 @@ result <- rf_impute_data(
 )
 
 # Compare original vs imputed
-summary(mydata$BMI)           # Original with NAs
-summary(result$data_imputed$i_BMI)  # Imputed values
+summary(mydata$BMI) # Original with NAs
+summary(result$data_imputed$i_BMI) # Imputed values
 }
 
 }

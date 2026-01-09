@@ -79,6 +79,7 @@ bin_and_categorize_variables <- function(dataf, groups, filter_missing = FALSE,
 
 #' Validate individual group specification
 #' @keywords internal
+#' @noRd
 .validate_group_spec <- function(group, dataf) {
   # Check required fields
   if (is.null(group$col) || is.null(group$type)) {
@@ -111,6 +112,7 @@ bin_and_categorize_variables <- function(dataf, groups, filter_missing = FALSE,
 
 #' Create grouped variable based on type
 #' @keywords internal
+#' @noRd
 .create_grouped_variable <- function(column_data, group) {
   switch(group$type,
     cutpoints = .bin_by_cutpoints(column_data, group$cutpoints, group$labels),
@@ -121,6 +123,7 @@ bin_and_categorize_variables <- function(dataf, groups, filter_missing = FALSE,
 
 #' Bin continuous variable using cutpoints
 #' @keywords internal
+#' @noRd
 .bin_by_cutpoints <- function(column_data, cutpoints, labels = NULL) {
   breaks <- c(-Inf, cutpoints, Inf)
 
@@ -136,6 +139,7 @@ bin_and_categorize_variables <- function(dataf, groups, filter_missing = FALSE,
 
 #' Generate default labels for cutpoints
 #' @keywords internal
+#' @noRd
 .generate_cutpoint_labels <- function(cutpoints, breaks) {
   n_groups <- length(breaks) - 1
   labels <- character(n_groups)
@@ -155,6 +159,7 @@ bin_and_categorize_variables <- function(dataf, groups, filter_missing = FALSE,
 
 #' Validate label count matches number of groups
 #' @keywords internal
+#' @noRd
 .validate_label_count <- function(labels, breaks) {
   expected_count <- length(breaks) - 1
   if (length(labels) != expected_count) {
@@ -167,6 +172,7 @@ bin_and_categorize_variables <- function(dataf, groups, filter_missing = FALSE,
 
 #' Recode categorical variable using value mapping
 #' @keywords internal
+#' @noRd
 .recode_categorical <- function(column_data, value_map) {
   # Convert to character for mapping
   recoded <- as.character(column_data)
@@ -182,6 +188,7 @@ bin_and_categorize_variables <- function(dataf, groups, filter_missing = FALSE,
 
 #' Apply custom grouping function
 #' @keywords internal
+#' @noRd
 .apply_custom_function <- function(column_data, custom_fn) {
   result <- custom_fn(column_data)
 

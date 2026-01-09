@@ -1,3 +1,30 @@
+# adRutils 1.1.0
+
+## New Features
+
+### ID Mapping Utilities
+
+-   `create_id_mapping()` - Extract unique ID pairs from datasets with multiple ID formats
+-   `add_id_mapping()` - Add ID columns to data using lookup tables for merging datasets with different ID conventions
+    -   Handles numeric and character IDs automatically
+    -   Reports matching statistics
+    -   Warns about duplicates and unmatched rows
+
+## Improvements
+
+-   Simplified `remove_duplicates_if_exists()`:
+    -   Streamlined duplicate reporting (removed overcomplicated categorization)
+    -   Improved `.find_most_complete_row()` logic with early returns
+    -   Removed and Inlined short helper functions for better readability
+    -   Reduced code complexity while maintaining functionality
+-   Package-wide documentation cleanup:
+    -   Added `@noRd` to all internal helper functions
+    -   Cleaner documentation output with only exported functions visible
+
+## Bug Fixes
+
+-   None
+
 # adRutils 1.0.0
 
 ## Breaking Changes
@@ -33,10 +60,7 @@ If upgrading from 0.4.0 or earlier, note these changes:
 
 ## Stability Guarantee
 
-**Semantic Versioning:** 
-- `1.x.0` New features, backward compatible 
-- `1.0.x`  Bug fixes only 
-- `2.0.0`  Breaking changes
+**Semantic Versioning:** - `1.x.0` New features, backward compatible - `1.0.x` Bug fixes only - `2.0.0` Breaking changes
 
 ------------------------------------------------------------------------
 

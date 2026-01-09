@@ -14,38 +14,16 @@ remove_duplicates_if_exists(
 \arguments{
 \item{dataf}{A data frame to check for duplicates}
 
-\item{id_col}{Column name (quoted or unquoted) specifying the ID to check for duplicates}
+\item{id_col}{Column name (quoted or unquoted) specifying the ID}
 
-\item{keep}{One of "first", "last", "none", or "most_complete" (default: "most_complete").
-"most_complete" keeps the row with fewest NAs}
+\item{keep}{One of "first", "last", "none", or "most_complete" (default: "most_complete")}
 
-\item{quiet}{Logical. If TRUE, suppresses messages about duplicates (default: FALSE)}
+\item{quiet}{Logical. If TRUE, suppresses messages (default: FALSE)}
 }
 \value{
-A data frame with duplicates removed according to the 'keep' parameter
+A data frame with duplicates removed
 }
 \description{
 Identifies and removes duplicate rows based on a specified ID column.
-Provides information about duplicate patterns and keeps the row with
-the fewest NA values (most complete information) when duplicates exist.
-}
-\examples{
-\dontrun{
-testDF <- data.frame(
-  id_num = c(1, 1, 2, 2, 3, 4, 5, 5, 6),
-  value = c(100, NA, 200, 250, 300, 400, 500, 500, 600),
-  group = c("A", "A", "B", NA, "C", "D", "E", "F", "G")
-)
-
-# Keep most complete row (default) - both quoted and unquoted work
-remove_duplicates_if_exists(testDF, "id_num")
-remove_duplicates_if_exists(testDF, id_num)
-
-# Keep first occurrence
-remove_duplicates_if_exists(testDF, "id_num", keep = "first")
-
-# Silently remove duplicates
-remove_duplicates_if_exists(testDF, "id_num", quiet = TRUE)
-}
-
+Keeps the row with the fewest NA values (most complete) when duplicates exist.
 }

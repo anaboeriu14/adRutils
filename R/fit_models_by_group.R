@@ -277,6 +277,7 @@ fit_single_lm <- function(outcome, group, predictors, data,
 
 #' Validate basic model inputs
 #' @keywords internal
+#' @noRd
 .validate_model_inputs <- function(data, outcomes, base_predictors, groups,
                                    model_type, interaction_terms, verbose) {
   validate_params(
@@ -318,6 +319,7 @@ fit_single_lm <- function(outcome, group, predictors, data,
 
 #' Prepare and validate covariate specifications
 #' @keywords internal
+#' @noRd
 .prepare_covariates <- function(outcome_covariates, group_covariates,
                                 groups, data, group_col) {
   # Detect covariate structure
@@ -343,6 +345,7 @@ fit_single_lm <- function(outcome, group, predictors, data,
 
 #' Check if outcome_covariates uses group-specific structure
 #' @keywords internal
+#' @noRd
 .is_group_specific_structure <- function(outcome_covariates, groups) {
   if (is.null(outcome_covariates)) {
     return(FALSE)
@@ -357,6 +360,7 @@ fit_single_lm <- function(outcome, group, predictors, data,
 
 #' Extract all covariate names for validation
 #' @keywords internal
+#' @noRd
 .extract_all_covariates <- function(outcome_covariates, group_covariates) {
   all_covs <- character(0)
 
@@ -375,6 +379,7 @@ fit_single_lm <- function(outcome, group, predictors, data,
 
 #' Build predictor formula string
 #' @keywords internal
+#' @noRd
 .build_predictors <- function(base_predictors, outcome, group,
                               outcome_covariates, group_covariates,
                               model_type, interaction_terms, is_group_specific) {

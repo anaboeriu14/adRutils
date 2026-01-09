@@ -70,6 +70,7 @@ convert_columns_to_factors <- function(dataf, patterns, exclude = NULL,
 
 #' Find columns for factor conversion (case-insensitive)
 #' @keywords internal
+#' @noRd
 .find_cols_for_conversion <- function(dataf, patterns, exclude) {
   # Build combined regex pattern
   combined_pattern <- paste(patterns, collapse = "|")
@@ -92,6 +93,7 @@ convert_columns_to_factors <- function(dataf, patterns, exclude = NULL,
 
 #' Convert a single column to factor
 #' @keywords internal
+#' @noRd
 .to_factor <- function(x, ordered) {
   if (is.factor(x)) {
     # Convert existing factor to ordered if needed
@@ -107,6 +109,7 @@ convert_columns_to_factors <- function(dataf, patterns, exclude = NULL,
 
 #' Warn when no columns match patterns
 #' @keywords internal
+#' @noRd
 .warn_no_matches <- function(patterns, exclude) {
   if (!is.null(exclude)) {
     cli::cli_alert_warning(
@@ -121,6 +124,7 @@ convert_columns_to_factors <- function(dataf, patterns, exclude = NULL,
 
 #' Report successful conversion
 #' @keywords internal
+#' @noRd
 .report_conversion <- function(cols) {
   n_cols <- length(cols)
 

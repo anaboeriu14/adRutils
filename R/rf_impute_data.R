@@ -88,6 +88,7 @@ rf_impute_data <- function(dataf, vars_to_impute, helper_vars,
 
 #' Validate rf_impute_data parameters
 #' @keywords internal
+#' @noRd
 .validate_imputation_params <- function(dataf, vars_to_impute, helper_vars,
                                         parallel, verbose) {
   all_vars <- c(vars_to_impute, helper_vars)
@@ -125,6 +126,7 @@ rf_impute_data <- function(dataf, vars_to_impute, helper_vars,
 
 #' Prepare data for imputation
 #' @keywords internal
+#' @noRd
 .prepare_imputation_data <- function(dataf, vars_to_impute, helper_vars) {
   all_vars <- c(vars_to_impute, helper_vars)
 
@@ -137,6 +139,7 @@ rf_impute_data <- function(dataf, vars_to_impute, helper_vars,
 
 #' Get complete cases for error estimation
 #' @keywords internal
+#' @noRd
 .get_complete_cases <- function(imputation_data, verbose) {
   complete_data <- imputation_data[complete.cases(imputation_data), ]
 
@@ -156,6 +159,7 @@ rf_impute_data <- function(dataf, vars_to_impute, helper_vars,
 
 #' Run missForest imputation
 #' @keywords internal
+#' @noRd
 .run_missforest <- function(imputation_data, complete_data, parallel, verbose) {
   parallelize <- if (parallel) "forests" else "no"
 
@@ -189,6 +193,7 @@ rf_impute_data <- function(dataf, vars_to_impute, helper_vars,
 
 #' Format imputation results into return list
 #' @keywords internal
+#' @noRd
 .format_imputation_results <- function(dataf, imputation_result,
                                        vars_to_impute, helper_vars) {
   # Create error dataframe
