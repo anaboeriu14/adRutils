@@ -1,19 +1,16 @@
 # adRutils
 
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/anaboeriu14/adRutils/releases)
+[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](https://github.com/anaboeriu14/adRutils/releases)
 
-R utility functions for data cleaning, transformation, file operations, and statistical modeling
-
-## Overview
-
-`adRutils` provides a collection of general-purpose functions to streamline common data processing tasks and statistical analyses.
+A collection of R utility functions for data cleaning, transformation, file operations, id mapping, and statistical modeling. Designed to streamline data workflows and improve reproducability.
 
 ## Installation
 
 You can install `adRutils` from GitHub using one of these methods:
 
 ### Option 1: Using remotes (recommended)
-```r
+
+``` r
 # Install remotes if needed
 if (!requireNamespace("remotes", quietly = TRUE)) {
   install.packages("remotes")
@@ -24,7 +21,8 @@ remotes::install_github("anaboeriu14/adRutils")
 ```
 
 ### Option 2: Using devtools
-```r
+
+``` r
 if (!requireNamespace("devtools", quietly = TRUE)) {
   install.packages("devtools")
 }
@@ -33,21 +31,25 @@ devtools::install_github("anaboeriu14/adRutils")
 
 ## Version Information
 
-**Current version:** 1.0.0 (Stable Release)
+**Current version:** 1.1.0
 
 See [Releases](https://github.com/anaboeriu14/adRutils/releases) & [NEWS.md](NEWS.md) for detailed changelog and release notes.
 
-### What's New in 1.0.0
+### What's New in 1.1.0
 
-**First stable release!** The API is now locked down with backward compatibility guarantees.
+**ID mapping utilities**
 
-- **Breaking changes**: Removed tracking system, renamed `force` → `overwrite` parameter
-- **Enhanced file reading**: Better handling of inconsistent column types across CSV files
-- **Improved duplicate removal**: More robust with rlang, works reliably in pipes
-- **Flexible p-value formatting**: Multiple format options for publication-ready tables
+-   Easily merge datasets that use differnt ID formats (ex: long vs short IDs)
+
+-   Includes `create_id_mapping()` to extract ID pairs & `add_id_mapping()` to join datasets using lookup tables.
+
+**Improvements**
+
+-   Simplified `remove_duplicates_if_exists()` & cleaned up package-wide documentation with `@noRd` for internal helpers
 
 ## Quick Start
-```r
+
+``` r
 library(adRutils)
 
 # Read and combine CSV files
@@ -84,7 +86,8 @@ comparison_table <- create_pairwise_table(
 ## Documentation
 
 For full documentation, including function details and examples:
-```r
+
+``` r
 # Browse all functions
 help(package = "adRutils")
 
@@ -93,6 +96,7 @@ help(package = "adRutils")
 ?transform_log10
 ?create_pairwise_table
 ```
+
 ## License
 
 This project is licensed under the MIT License.
@@ -100,8 +104,9 @@ This project is licensed under the MIT License.
 ## Citation
 
 If you use this package in your research, please cite:
-```
-Boeriu, A. (2025). adRutils: R Utility Functions for Data Analysis.
+
+```         
+Boeriu, A.I. (2025). adRutils: R Utility Functions for Data Analysis.
 R package version 1.0.0. https://github.com/anaboeriu14/adRutils
 ```
 
