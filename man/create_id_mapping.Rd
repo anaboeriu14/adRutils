@@ -16,7 +16,7 @@ create_id_mapping(data, id_col1, id_col2, trim = TRUE)
 \item{trim}{Logical. Trim whitespace? (default: TRUE)}
 }
 \value{
-Data frame with two columns of unique ID pairs
+Data frame with two columns of unique ID pairs (short & long id)
 }
 \description{
 Extract unique ID pairs from a dataset with multiple ID formats.
