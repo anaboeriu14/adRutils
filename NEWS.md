@@ -1,3 +1,16 @@
+# adRutils 1.2.0
+
+## New Features
+
+-   Adds caching utilities to initialize, store, retrieve, add, and clean cached results with expiration support.
+-   New helpers for merging datasets with different ID formats: create_id_mapping() and add_id_mapping().
+
+## Bug Fixes
+
+None
+
+------------------------------------------------------------------------
+
 # adRutils 1.1.0
 
 ## New Features
@@ -24,6 +37,8 @@
 ## Bug Fixes
 
 -   None
+
+------------------------------------------------------------------------
 
 # adRutils 1.0.0
 
@@ -57,10 +72,6 @@ If upgrading from 0.4.0 or earlier, note these changes:
 -   Fixed column extraction in `remove_duplicates_if_exists()`
 -   Fixed type coercion issues in `read_csvs_by_pattern()`
 -   Cleaned up orphaned helper functions
-
-## Stability Guarantee
-
-**Semantic Versioning:** - `1.x.0` New features, backward compatible - `1.0.x` Bug fixes only - `2.0.0` Breaking changes
 
 ------------------------------------------------------------------------
 

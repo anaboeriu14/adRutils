@@ -1,6 +1,6 @@
 # adRutils
 
-[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](https://github.com/anaboeriu14/adRutils/releases)
+[![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](https://github.com/anaboeriu14/adRutils/releases)
 
 A collection of R utility functions for data cleaning, transformation, file operations, id mapping, and statistical modeling. Designed to streamline data workflows and improve reproducability.
 
@@ -31,21 +31,15 @@ devtools::install_github("anaboeriu14/adRutils")
 
 ## Version Information
 
-**Current version:** 1.1.0
+**Current version:** 1.2.0
 
 See [Releases](https://github.com/anaboeriu14/adRutils/releases) & [NEWS.md](NEWS.md) for detailed changelog and release notes.
 
-### What's New in 1.1.0
+### What's New in 1.2.0
 
-**ID mapping utilities**
+**Caching System** New caching functionality for storing and retrieving results, with configurable expiration and automatic cleanup to improve performance of expensive operations.
 
--   Easily merge datasets that use differnt ID formats (ex: long vs short IDs)
-
--   Includes `create_id_mapping()` to extract ID pairs & `add_id_mapping()` to join datasets using lookup tables.
-
-**Improvements**
-
--   Simplified `remove_duplicates_if_exists()` & cleaned up package-wide documentation with `@noRd` for internal helpers
+**ID Mapping** Easily merge datasets that use differnt ID formats (ex: long vs short IDs)
 
 ## Quick Start
 
