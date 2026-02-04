@@ -47,7 +47,7 @@ extract_raw_coefficients <- function(model_results, term_pattern = NULL, ci_leve
 #'
 #' @param model_results Tibble from fit_models_by_group() containing model_obj column
 #' @param term_pattern Regex pattern to filter terms (optional
-#' @param method Standardization method (default: "refit"). See ?effectsize::standardize_parameters
+#' @param method Standardization method (default: "posthoc"). See ?effectsize::standardize_parameters
 #'
 #' @return Tibble with standardized coefficients and significance flag
 #'
@@ -58,7 +58,7 @@ extract_raw_coefficients <- function(model_results, term_pattern = NULL, ci_leve
 #' }
 #' @export
 extract_standardized_coefs <- function(model_results, term_pattern = NULL,
-                                       method = "refit") {
+                                       method = "posthoc") {
 
   validate_params(
     data = model_results,

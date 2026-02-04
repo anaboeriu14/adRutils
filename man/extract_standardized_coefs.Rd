@@ -7,7 +7,7 @@
 extract_standardized_coefs(
   model_results,
   term_pattern = NULL,
-  method = "refit"
+  method = "posthoc"
 )
 }
 \arguments{
@@ -15,7 +15,7 @@ extract_standardized_coefs(
 
 \item{term_pattern}{Regex pattern to filter terms (optional}
 
-\item{method}{Standardization method (default: "refit"). See ?effectsize::standardize_parameters}
+\item{method}{Standardization method (default: "posthoc"). See ?effectsize::standardize_parameters}
 }
 \value{
 Tibble with standardized coefficients and significance flag
