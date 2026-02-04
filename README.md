@@ -1,6 +1,6 @@
 # adRutils
 
-[![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](https://github.com/anaboeriu14/adRutils/releases)
+[![Version](https://img.shields.io/badge/version-1.3.0-blue.svg)](https://github.com/anaboeriu14/adRutils/releases) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 A collection of R utility functions for data cleaning, transformation, file operations, id mapping, and statistical modeling. Designed to streamline data workflows and improve reproducability.
 
@@ -28,18 +28,6 @@ if (!requireNamespace("devtools", quietly = TRUE)) {
 }
 devtools::install_github("anaboeriu14/adRutils")
 ```
-
-## Version Information
-
-**Current version:** 1.2.0
-
-See [Releases](https://github.com/anaboeriu14/adRutils/releases) & [NEWS.md](NEWS.md) for detailed changelog and release notes.
-
-### What's New in 1.2.0
-
-**Caching System** New caching functionality for storing and retrieving results, with configurable expiration and automatic cleanup to improve performance of expensive operations.
-
-**ID Mapping** Easily merge datasets that use differnt ID formats (ex: long vs short IDs)
 
 ## Quick Start
 
@@ -91,6 +79,12 @@ help(package = "adRutils")
 ?create_pairwise_table
 ```
 
+## Version Information
+
+**Current version:** 1.3.0
+
+See [Releases](https://github.com/anaboeriu14/adRutils/releases) & [NEWS.md](NEWS.md) for detailed changelog and release notes.
+
 ## License
 
 This project is licensed under the MIT License.
@@ -101,7 +95,7 @@ If you use this package in your research, please cite:
 
 ```         
 Boeriu, A.I. (2025). adRutils: R Utility Functions for Data Analysis.
-R package version 1.0.0. https://github.com/anaboeriu14/adRutils
+R package version 1.3.0. https://github.com/anaboeriu14/adRutils
 ```
 
 ## Contact

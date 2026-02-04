@@ -1,3 +1,27 @@
+# adRutils 1.3.0
+
+## New Features
+
+- `extract_coefficients()` - Extract and format raw model coefficients with CIs
+- `extract_standardized_coefs()` - Extract standardized coefficients (requires `parameters` package)
+
+## Changes
+
+- **Removed `fit_single_lm()`** - Logic now internal to `fit_models_by_group()`
+- Streamlined `fit_models_by_group()` internals and documentation
+- Streamlined `transform_log10()` - consolidated helper functions
+
+## Breaking Changes
+
+- `fit_single_lm()` is no longer exported. Use `fit_models_by_group()` with single outcome/group instead.
+
+## Bug Fixes
+
+None
+
+------------------------------------------------------------------------
+
+
 # adRutils 1.2.0
 
 ## New Features

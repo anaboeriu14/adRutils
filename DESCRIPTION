@@ -1,8 +1,8 @@
 Package: adRutils
 Type: Package
 Title: Utility Functions for Data Processing and Statistical Modeling
-Version: 1.2.0
-Date: 2025-01-09
+Version: 1.3.0
+Date: 2026-02-03
 Authors@R: 
     person("Ana", "Boeriu", , "ana.boeriu@ucsf.edu", role = c("aut", "cre"),
            comment = c(ORCID = "0009-0000-5469-4085"))
@@ -36,6 +36,7 @@ Imports:
     stringr,
     tibble,
     tidyr,
-    utils
+    utils,
+    parameters
 URL: https://github.com/anaboeriu14/adRutils
 BugReports: https://github.com/anaboeriu14/adRutils/issues
