@@ -18,49 +18,36 @@ fit_models_by_group(
 )
 }
 \arguments{
-\item{data}{A data frame containing the variables for analysis}
+\item{data}{Data frame containing variables for analysis}
 
-\item{outcomes}{Character vector of outcome variable names to model}
+\item{outcomes}{Character vector of outcome variable names}
 
-\item{base_predictors}{Character vector of predictor variable names to include in all models}
+\item{base_predictors}{Character vector of predictors to include in all models}
 
-\item{group_col}{Character string specifying the grouping column name.
-If NULL, no grouping is applied. Default is NULL}
+\item{group_col}{Column name for grouping (NULL for no grouping)}
 
-\item{groups}{Character vector specifying which groups to analyze. Use "All" for all data. Default is "All"}
+\item{groups}{Groups to analyze; use "All" for entire dataset (default)}
 
-\item{model_type}{Character string: "main" or "interaction". Default is "main"}
+\item{model_type}{Either "main" or "interaction"}
 
-\item{interaction_terms}{Character vector of interaction terms when model_type = "interaction"}
+\item{interaction_terms}{Interaction terms when model_type = "interaction"}
 
-\item{outcome_covariates}{Optional outcome-specific covariates. Can be:
-\itemize{
-\item Standard: list(outcome1 = c("X1", "X2"))
-\item Group-specific: list(group1 = list(Y1 = c("X2")))
-}}
+\item{outcome_covariates}{Outcome-specific covariates as named list}
 
-\item{group_covariates}{Optional group-specific covariates: list(group1 = c("X1"))}
+\item{group_covariates}{Group-specific covariates as named list}
 
-\item{verbose}{Logical. If TRUE, shows progress during model fitting. Default is FALSE}
+\item{verbose}{Show progress (default: FALSE)}
 }
 \value{
-A tibble with columns: outcome, (group_col name or "group"), model, predictors,
-model_equation, model_res (tidy results), model_obj (model object), dataf (analysis data),
-n_obs. The grouping column will be named according to the \code{group_col} parameter,
-or "group" if group_col is NULL.
+Tibble with columns: outcome, group (or group_col name), model,
+predictors, model_equation, model_res, model_obj, dataf, n_obs
 }
 \description{
-Fits linear models for multiple outcomes across different groups with flexible
-covariate specifications. This function is specifically designed for linear regression
-and uses lm() internally.
-}
-\details{
-This function fits linear models using lm() only. It calls
-\code{\link{fit_single_lm}} internally for each outcome-group combination.
+Fits linear models for multiple outcomes across groups with flexible covariate
+specifications.
 }
 \examples{
 \dontrun{
-# Basic usage with ancestry grouping
 results <- fit_models_by_group(
   data = my_data,
   outcomes = c("memory", "attention"),
@@ -68,42 +55,5 @@ results <- fit_models_by_group(
   group_col = "ancestry",
   groups = c("AFR", "EUR")
 )
-
-# With outcome-specific covariates
-results <- fit_models_by_group(
-  data = my_data,
-  outcomes = c("memory", "attention"),
-  base_predictors = c("age", "sex"),
-  outcome_covariates = list(
-    memory = c("education"),
-    attention = c("language")
-  )
-)
-
-# With group-specific outcome covariates
-results <- fit_models_by_group(
-  data = my_data,
-  outcomes = c("memory"),
-  base_predictors = c("age", "sex"),
-  group_col = "ancestry",
-  groups = c("AFR", "EUR"),
-  outcome_covariates = list(
-    AFR = list(memory = c("education")),
-    EUR = list(memory = c("education", "language"))
-  )
-)
-
-# With progress reporting
-results <- fit_models_by_group(
-  data = my_data,
-  outcomes = paste0("cog_", 1:20),
-  base_predictors = c("age", "sex"),
-  group_col = "ancestry",
-  groups = c("AFR", "EUR", "EAS"),
-  verbose = TRUE
-)
 }
-}
-\seealso{
-\code{\link{fit_single_lm}} for fitting individual models
 }

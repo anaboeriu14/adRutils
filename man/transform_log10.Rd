@@ -2,56 +2,28 @@
 % Please edit documentation in R/transform_log10.R
 \name{transform_log10}
 \alias{transform_log10}
-\title{Transform numeric variables to log10 scale}
+\title{Transform Numeric Variables to Log10 Scale}
 \usage{
 transform_log10(dataf, vars, overwrite = FALSE, quiet = FALSE)
 }
 \arguments{
-\item{dataf}{A data frame containing the variables to transform}
+\item{dataf}{Data frame containing variables to transform}
 
 \item{vars}{Character vector of column names to transform}
 
-\item{overwrite}{Logical. If TRUE, bypasses the check for previous processing (default: FALSE)}
+\item{overwrite}{Allow overwriting existing log10_ columns (default: FALSE)}
 
-\item{quiet}{Logical. If TRUE, suppresses informational messages (default: FALSE)}
+\item{quiet}{Suppress messages (default: FALSE)}
 }
 \value{
-A data frame with the original columns plus new log10-transformed columns
+Data frame with added log10-transformed columns
 }
 \description{
-Transforms specified numeric variables to log10 scale and adds them
-as new columns with "log10_" prefix. Includes validation checks to ensure
-proper transformation and prevents double transformation.
-}
-\details{
-The function performs several validation checks:
-\itemize{
-\item All variables must be numeric
-\item No values can be negative or zero (log10 undefined)
-\item Warns if variables already have "log10_" prefix
-\item Prevents double transformation (unless overwrite = TRUE)
-}
-
-New columns are named with "log10_" prefix. For example, transforming
-"biomarker1" creates a new column "log10_biomarker1".
+Adds log10-transformed columns with "log10_" prefix. Errors on non-positive values.
 }
 \examples{
 \dontrun{
-test_df <- data.frame(
-  id = 1:3,
-  biomarker1 = c(10, 20, 30),
-  biomarker2 = c(5, 15, 25),
-  age = c(67, 97, 34),
-  biomarker3 = c(1.2, -0.23, 3)
-)
-
-# Valid transformation
-test_df2 <- transform_log10(test_df, c("biomarker1", "biomarker2"))
-
-# This will error (negative values in biomarker3)
-err_result <- transform_log10(test_df, "biomarker3")
-
-# overwrite re-transformation
-test_df3 <- transform_log10(test_df2, "biomarker1", overwrite = TRUE)
+df <- data.frame(x = c(10, 100, 1000), y = c(1, 2, 3))
+transform_log10(df, c("x", "y"))
 }
 }
