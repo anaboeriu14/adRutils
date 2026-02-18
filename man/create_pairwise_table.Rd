@@ -32,6 +32,7 @@ See \code{\link{extract_pairwise_pvalues}} for format options}
 \value{
 A tibble with variables as rows and pairwise comparisons as columns.
 Each cell contains a formatted p-value. The first column contains variable names.
+Comparison columns are prefixed with "p_" (e.g., "p_Group1 vs Group2").
 }
 \description{
 Performs pairwise t-tests for multiple numeric variables against a grouping variable
@@ -48,17 +49,15 @@ results <- create_pairwise_table(mtcars, c("mpg", "hp", "wt"), "cyl")
 
 # Threshold format (publication style)
 results <- create_pairwise_table(mtcars, c("mpg", "hp"), "cyl",
-  p_format = "threshold"
-)
+                                 p_format = "threshold")
 
 # With custom adjustment and formatting
 results <- create_pairwise_table(iris,
-  c("Sepal.Length", "Sepal.Width"),
-  "Species",
-  p_adjust = "holm",
-  p_format = "scientific",
-  p_digits = 2
-)
+                                 c("Sepal.Length", "Sepal.Width"),
+                                 "Species",
+                                 p_adjust = "holm",
+                                 p_format = "scientific",
+                                 p_digits = 2)
 }
 
 }

@@ -35,20 +35,20 @@
 #'
 #' # Threshold format (publication style)
 #' results <- extract_pairwise_pvalues(mtcars, "mpg", "cyl", "bonferroni",
-#'   p_format = "threshold"
-#' )
+#'                                     p_format = "threshold")
 #' # Returns: "< 0.001", "0.023", "0.156"
 #'
 #' # Scientific notation (exact magnitude)
 #' results <- extract_pairwise_pvalues(iris, "Sepal.Length", "Species", "holm",
-#'   p_format = "scientific", p_digits = 2
-#' )
+#'                                     p_format = "scientific", p_digits = 2)
 #' # Returns: "4.5e-02", "3.0e-04", "1.6e-01"
 #' }
 #'
 #' @export
 extract_pairwise_pvalues <- function(dataf, numeric_var, group_var, p_adjust, p_digits,
-                                     p_format = c("auto", "threshold", "exact", "scientific")) {
+                                     p_format = c("auto", "threshold", "exact", "scientific")
+) {
+
   # Validate and match p_format
   p_format <- match.arg(p_format)
 
@@ -77,22 +77,21 @@ extract_pairwise_pvalues <- function(dataf, numeric_var, group_var, p_adjust, p_
   )
 
   # Perform pairwise t-tests
-  post_hoc_test <- pairwise.t.test(
+  pairwise_t <- pairwise.t.test(
     dataf[[numeric_var]],
     dataf[[group_var]],
     p.adjust.method = p_adjust
   )
 
   # Check if test produced results
-  if (is.null(post_hoc_test[["p.value"]])) {
+  if (is.null(pairwise_t[["p.value"]])) {
     return(NULL)
   }
 
   # Format and return p-values
-  return(.format_pairwise_results(post_hoc_test[["p.value"]],
-    format = p_format,
-    digits = p_digits
-  ))
+  return(.format_pairwise_results(pairwise_t[["p.value"]],
+                                  format = p_format,
+                                  digits = p_digits))
 }
 
 #' Create Pairwise Comparison Table for Multiple Variables
@@ -112,6 +111,7 @@ extract_pairwise_pvalues <- function(dataf, numeric_var, group_var, p_adjust, p_
 #'
 #' @return A tibble with variables as rows and pairwise comparisons as columns.
 #'   Each cell contains a formatted p-value. The first column contains variable names.
+#'   Comparison columns are prefixed with "p_" (e.g., "p_Group1 vs Group2").
 #'
 #' @details
 #' This function is a wrapper around \code{\link{extract_pairwise_pvalues}} that processes
@@ -126,23 +126,23 @@ extract_pairwise_pvalues <- function(dataf, numeric_var, group_var, p_adjust, p_
 #'
 #' # Threshold format (publication style)
 #' results <- create_pairwise_table(mtcars, c("mpg", "hp"), "cyl",
-#'   p_format = "threshold"
-#' )
+#'                                  p_format = "threshold")
 #'
 #' # With custom adjustment and formatting
 #' results <- create_pairwise_table(iris,
-#'   c("Sepal.Length", "Sepal.Width"),
-#'   "Species",
-#'   p_adjust = "holm",
-#'   p_format = "scientific",
-#'   p_digits = 2
-#' )
+#'                                  c("Sepal.Length", "Sepal.Width"),
+#'                                  "Species",
+#'                                  p_adjust = "holm",
+#'                                  p_format = "scientific",
+#'                                  p_digits = 2)
 #' }
 #'
 #' @export
 create_pairwise_table <- function(dataf, variables, group_var, p_digits,
                                   p_adjust = "bonferroni",
-                                  p_format = c("auto", "threshold", "exact", "scientific")) {
+                                  p_format = c("auto", "threshold", "exact", "scientific")
+) {
+
   # Validate and match p_format
   p_format <- match.arg(p_format)
 
@@ -173,9 +173,8 @@ create_pairwise_table <- function(dataf, variables, group_var, p_digits,
   # Extract p-values for each variable with specified formatting
   pvalue_results <- map(
     variables,
-    ~ extract_pairwise_pvalues(dataf, .x, group_var, p_adjust,
-      p_format = p_format, p_digits = p_digits
-    )
+    ~extract_pairwise_pvalues(dataf, .x, group_var, p_adjust,
+                              p_format = p_format, p_digits = p_digits)
   )
   names(pvalue_results) <- variables
 
@@ -190,7 +189,7 @@ create_pairwise_table <- function(dataf, variables, group_var, p_digits,
   comparison_names <- names(pvalue_results[[first_valid]])
 
   # Build result table
-  result_table <- map_dfr(pvalue_results, ~ {
+  result_table <- map_dfr(pvalue_results, ~{
     if (is.null(.x)) {
       # Handle NULL results (no valid comparisons)
       result <- as.list(rep(NA_character_, length(comparison_names)))
@@ -201,42 +200,47 @@ create_pairwise_table <- function(dataf, variables, group_var, p_digits,
     }
   }, .id = "variable")
 
+  # Rename comparison columns to p_Group1_Group2 format
+  comp_cols <- setdiff(names(result_table), "variable")
+  new_names <- gsub("\\s+vs\\s+", "_", comp_cols)
+  new_names <- paste0("p_", new_names)
+  names(result_table)[names(result_table) %in% comp_cols] <- new_names
+
   return(result_table)
 }
 
-
 #' Format pairwise test results with flexible formatting options
 #' @keywords internal
-#' @noRd
+#' Format pairwise test results with flexible formatting options
+#' @keywords internal
 .format_pairwise_results <- function(pvalue_matrix,
                                      format = c("auto", "threshold", "exact", "scientific"),
                                      digits = 3) {
+
   format <- match.arg(format)
 
   # Format p-values based on selected format
   formatted_pvals <- switch(format,
-    auto = {
-      # Use signif for better precision across magnitudes
-      ifelse(pvalue_matrix >= 0.001,
-        as.character(signif(pvalue_matrix, digits)),
-        formatC(pvalue_matrix, format = "e", digits = digits)
-      )
-    },
-    threshold = {
-      # Use round for consistent decimal alignment
-      ifelse(pvalue_matrix < 0.001,
-        "< 0.001",
-        as.character(round(pvalue_matrix, digits))
-      )
-    },
-    exact = {
-      # Use round for table alignment
-      as.character(round(pvalue_matrix, digits))
-    },
-    scientific = {
-      # Scientific notation
-      formatC(pvalue_matrix, format = "e", digits = digits)
-    }
+                            auto = {
+                              # Use signif for better precision across magnitudes
+                              ifelse(pvalue_matrix >= 0.001,
+                                     as.character(signif(pvalue_matrix, digits)),
+                                     formatC(pvalue_matrix, format = "e", digits = digits))
+                            },
+                            threshold = {
+                              # Use round for consistent decimal alignment
+                              ifelse(pvalue_matrix < 0.001,
+                                     "< 0.001",
+                                     as.character(round(pvalue_matrix, digits)))
+                            },
+                            exact = {
+                              # Use round for table alignment
+                              as.character(round(pvalue_matrix, digits))
+                            },
+                            scientific = {
+                              # Scientific notation
+                              formatC(pvalue_matrix, format = "e", digits = digits)
+                            }
   )
 
   # Extract row and column names
