@@ -7,7 +7,7 @@
 .format_pairwise_results(
   pvalue_matrix,
   format = c("auto", "threshold", "exact", "scientific"),
-  digits = 3
+  digits = NULL
 )
 }
 \description{

@@ -9,7 +9,7 @@ extract_pairwise_pvalues(
   numeric_var,
   group_var,
   p_adjust,
-  p_digits,
+  p_digits = NULL,
   p_format = c("auto", "threshold", "exact", "scientific")
 )
 }

@@ -45,7 +45,7 @@
 #' }
 #'
 #' @export
-extract_pairwise_pvalues <- function(dataf, numeric_var, group_var, p_adjust, p_digits,
+extract_pairwise_pvalues <- function(dataf, numeric_var, group_var, p_adjust, p_digits = NULL,
                                      p_format = c("auto", "threshold", "exact", "scientific")
 ) {
 
@@ -61,8 +61,8 @@ extract_pairwise_pvalues <- function(dataf, numeric_var, group_var, p_adjust, p_
     valid_methods = c("bonferroni", "holm", "hochberg", "hommel", "BH", "BY", "fdr", "none"),
     custom_checks = list(
       list(
-        condition = is.numeric(p_digits) && length(p_digits) == 1 && p_digits > 0,
-        message = "{.arg p_digits} must be a single positive integer"
+        condition = is.null(p_digits) || (is.numeric(p_digits) && length(p_digits) == 1 && p_digits > 0),
+        message = "{.arg p_digits} must be NULL or a single positive integer"
       ),
       list(
         condition = length(unique(dataf[[group_var]])) >= 2,
@@ -138,7 +138,7 @@ extract_pairwise_pvalues <- function(dataf, numeric_var, group_var, p_adjust, p_
 #' }
 #'
 #' @export
-create_pairwise_table <- function(dataf, variables, group_var, p_digits,
+create_pairwise_table <- function(dataf, variables, group_var, p_digits = NULL,
                                   p_adjust = "bonferroni",
                                   p_format = c("auto", "threshold", "exact", "scientific")
 ) {
@@ -155,8 +155,8 @@ create_pairwise_table <- function(dataf, variables, group_var, p_digits,
     valid_methods = c("bonferroni", "holm", "hochberg", "hommel", "BH", "BY", "fdr", "none"),
     custom_checks = list(
       list(
-        condition = is.numeric(p_digits) && length(p_digits) == 1 && p_digits > 0,
-        message = "{.arg p_digits} must be a single positive integer"
+        condition = is.null(p_digits) || (is.numeric(p_digits) && length(p_digits) == 1 && p_digits > 0),
+        message = "{.arg p_digits} must be NULL or a single positive integer"
       ),
       list(
         condition = length(variables) > 0,
@@ -222,33 +222,40 @@ create_pairwise_table <- function(dataf, variables, group_var, p_digits,
 #' @keywords internal
 .format_pairwise_results <- function(pvalue_matrix,
                                      format = c("auto", "threshold", "exact", "scientific"),
-                                     digits = 3) {
+                                     digits = NULL) {
 
   format <- match.arg(format)
 
-  # Format p-values based on selected format
-  formatted_pvals <- switch(format,
-                            auto = {
-                              # Use signif for better precision across magnitudes
-                              ifelse(pvalue_matrix >= 0.001,
-                                     as.character(signif(pvalue_matrix, digits)),
-                                     formatC(pvalue_matrix, format = "e", digits = digits))
-                            },
-                            threshold = {
-                              # Use round for consistent decimal alignment
-                              ifelse(pvalue_matrix < 0.001,
-                                     "< 0.001",
-                                     as.character(round(pvalue_matrix, digits)))
-                            },
-                            exact = {
-                              # Use round for table alignment
-                              as.character(round(pvalue_matrix, digits))
-                            },
-                            scientific = {
-                              # Scientific notation
-                              formatC(pvalue_matrix, format = "e", digits = digits)
-                            }
-  )
+  # If digits is NULL, return raw numeric values (no formatting)
+  if (is.null(digits)) {
+    formatted_pvals <- pvalue_matrix
+    # Convert to character matrix for consistent downstream handling
+    formatted_pvals[] <- as.character(pvalue_matrix)
+  } else {
+    # Format p-values based on selected format
+    formatted_pvals <- switch(format,
+                              auto = {
+                                # Use signif for better precision across magnitudes
+                                ifelse(pvalue_matrix >= 0.001,
+                                       as.character(signif(pvalue_matrix, digits)),
+                                       formatC(pvalue_matrix, format = "e", digits = digits))
+                              },
+                              threshold = {
+                                # Use round for consistent decimal alignment
+                                ifelse(pvalue_matrix < 0.001,
+                                       "< 0.001",
+                                       as.character(round(pvalue_matrix, digits)))
+                              },
+                              exact = {
+                                # Use round for table alignment
+                                as.character(round(pvalue_matrix, digits))
+                              },
+                              scientific = {
+                                # Scientific notation
+                                formatC(pvalue_matrix, format = "e", digits = digits)
+                              }
+    )
+  }
 
   # Extract row and column names
   row_names <- rownames(formatted_pvals)

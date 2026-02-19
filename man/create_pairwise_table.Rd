@@ -8,7 +8,7 @@ create_pairwise_table(
   dataf,
   variables,
   group_var,
-  p_digits,
+  p_digits = NULL,
   p_adjust = "bonferroni",
   p_format = c("auto", "threshold", "exact", "scientific")
 )
