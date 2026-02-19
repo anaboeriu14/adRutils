@@ -77,19 +77,19 @@ extract_pairwise_pvalues <- function(dataf, numeric_var, group_var, p_adjust, p_
   )
 
   # Perform pairwise t-tests
-  pairwise_t <- pairwise.t.test(
+  pairwiseT <- pairwise.t.test(
     dataf[[numeric_var]],
     dataf[[group_var]],
     p.adjust.method = p_adjust
   )
 
   # Check if test produced results
-  if (is.null(pairwise_t[["p.value"]])) {
+  if (is.null(pairwiseT[["p.value"]])) {
     return(NULL)
   }
 
   # Format and return p-values
-  return(.format_pairwise_results(pairwise_t[["p.value"]],
+  return(.format_pairwise_results(pairwiseT[["p.value"]],
                                   format = p_format,
                                   digits = p_digits))
 }
@@ -205,6 +205,13 @@ create_pairwise_table <- function(dataf, variables, group_var, p_digits,
   new_names <- gsub("\\s+vs\\s+", "_", comp_cols)
   new_names <- paste0("p_", new_names)
   names(result_table)[names(result_table) %in% comp_cols] <- new_names
+
+  # Convert p-value columns to numeric (safe for all formats except threshold)
+  if (p_format != "threshold") {
+    for (col in new_names) {
+      result_table[[col]] <- as.numeric(result_table[[col]])
+    }
+  }
 
   return(result_table)
 }
