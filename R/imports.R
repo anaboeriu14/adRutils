@@ -6,8 +6,10 @@
 #' @import cli
 #' @import purrr
 #' @import stringr
+#' @importFrom dplyr filter lag
 #' @importFrom magrittr %>%
-#' @importFrom stats setNames complete.cases pnorm lm nobs as.formula pairwise.t.test qnorm
+#' @importFrom stats setNames complete.cases pnorm lm nobs as.formula
+#' pairwise.t.test qnorm chisq.test p.adjust fisher.test
 #' @importFrom tibble tibble as_tibble
 #' @importFrom rlang .data sym  %||% .data := enquo as_name
 #' @importFrom readr read_csv
@@ -15,7 +17,7 @@
 #' @importFrom missForest missForest
 #' @importFrom doParallel registerDoParallel
 #' @importFrom here here
-#' @importFrom utils head object.size read.csv
+#' @importFrom utils head object.size read.csv combn
 #' @importFrom glue glue
 #' @importFrom broom tidy
 #' @importFrom tidyr expand_grid unite replace_na unnest
