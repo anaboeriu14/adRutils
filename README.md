@@ -1,6 +1,6 @@
 # adRutils
 
-[![Version](https://img.shields.io/badge/version-1.3.0-blue.svg)](https://github.com/anaboeriu14/adRutils/releases) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Version](https://img.shields.io/badge/version-1.4.0-blue.svg)](https://github.com/anaboeriu14/adRutils/releases) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 A collection of R utility functions for data cleaning, transformation, file operations, id mapping, and statistical modeling. Designed to streamline data workflows and improve reproducability.
 
@@ -81,7 +81,7 @@ help(package = "adRutils")
 
 ## Version Information
 
-**Current version:** 1.3.0
+**Current version:** 1.4.0
 
 See [Releases](https://github.com/anaboeriu14/adRutils/releases) & [NEWS.md](NEWS.md) for detailed changelog and release notes.
 

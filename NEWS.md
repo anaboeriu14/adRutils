@@ -1,26 +1,48 @@
+# adRutils 1.4.0
+
+## Changes
+
+-   **Updated `create_pairwise_table()` -** One function for both numeric and categorical pairwise group comparisons, replacing `extract_pairwise_pvalues()` and the previous `create_pairwise_table()`
+    -   Numeric variables: uses `pairwise.t.test()` for proper multi-comparison adjustment
+    -   Categorical variables: chi-squared test with Fisher's exact fallback
+    -   Added `p_format = "raw"` option to return unformatted numeric p-values
+    -   Output includes `test_type` column indicating which test was used
+
+## Breaking Changes
+
+-   removed `extract_pairwise_pvalues()` and added `create_pairwise_table()` instead
+-   `create_pairwise_table()` has a new signature:
+    -   `variables` → split into `numeric_vars` and `categorical_vars`
+    -   `p_adjust` → `p_adjust_method`
+    -   `p_digits` now defaults to 3
+
+# Bug Fixes
+
+- Fixed `@import stats` / `@import dplyr` conflict causing warnings on package load
+------------------------------------------------------------------------
+
 # adRutils 1.3.0
 
 ## New Features
 
-- `extract_coefficients()` - Extract and format raw model coefficients with CIs
-- `extract_standardized_coefs()` - Extract standardized coefficients (requires `parameters` package)
+-   `extract_coefficients()` - Extract and format raw model coefficients with CIs
+-   `extract_standardized_coefs()` - Extract standardized coefficients (requires `parameters` package)
 
 ## Changes
 
-- **Removed `fit_single_lm()`** - Logic now internal to `fit_models_by_group()`
-- Streamlined `fit_models_by_group()` internals and documentation
-- Streamlined `transform_log10()` - consolidated helper functions
+-   **Removed `fit_single_lm()`** - Logic now internal to `fit_models_by_group()`
+-   Streamlined `fit_models_by_group()` internals and documentation
+-   Streamlined `transform_log10()` - consolidated helper functions
 
 ## Breaking Changes
 
-- `fit_single_lm()` is no longer exported. Use `fit_models_by_group()` with single outcome/group instead.
+-   `fit_single_lm()` is no longer exported. Use `fit_models_by_group()` with single outcome/group instead.
 
 ## Bug Fixes
 
 None
 
 ------------------------------------------------------------------------
-
 
 # adRutils 1.2.0
 
