@@ -1,3 +1,23 @@
+# adRutils 1.5.0
+
+## New Features - Longitudinal & Mixed-Effects Utilities
+
+`categorize_slopes()` - Categorize random slopes from lme4 mixed-effects models into trajectory groups (e.g., "Slow", "Typical", "Fast").
+
+-   Supports multiple classification methods including SD-based (1sd, 1.5sd) and quantile-based (tertile, quartile) cutoffs, with customizable labels and reference levels.
+
+`coalesce_timepoints()` - Coalesce measures across longitudinal timepoints in priority order.
+
+-   For each base variable, selects the first non-missing value across user-specified timepoint suffixes and creates \*\_final (coalesced value) and \*\_source (which timepoint contributed) columns. Supports custom timepoint labels.
+
+## Changes
+
+-   New dependency: lme4 (for categorize_slopes())
+
+-   Both functions integrate with the existing validate_params() validation framework
+
+------------------------------------------------------------------------
+
 # adRutils 1.4.0
 
 ## Changes
@@ -16,9 +36,10 @@
     -   `p_adjust` → `p_adjust_method`
     -   `p_digits` now defaults to 3
 
-# Bug Fixes
+## Bug Fixes
 
-- Fixed `@import stats` / `@import dplyr` conflict causing warnings on package load
+-   Fixed `@import stats` / `@import dplyr` conflict causing warnings on package load
+
 ------------------------------------------------------------------------
 
 # adRutils 1.3.0

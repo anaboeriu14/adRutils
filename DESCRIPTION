@@ -37,6 +37,7 @@ Imports:
     tibble,
     tidyr,
     utils,
-    parameters
+    parameters,
+    lme4
 URL: https://github.com/anaboeriu14/adRutils
 BugReports: https://github.com/anaboeriu14/adRutils/issues
