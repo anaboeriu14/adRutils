@@ -8,7 +8,7 @@ categorize_slopes(
   model,
   id_col = "id",
   slope_term = "time",
-  methods = c("1sd", "tertile", "quartile"),
+  methods = c("1sd", "1.5sd", "tertile", "quartile"),
   labels = list(low = "Slow", mid = "Typical", high = "Fast"),
   prefix = "group",
   ref_level = labels$mid

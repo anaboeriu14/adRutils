@@ -23,6 +23,7 @@
 #' @importFrom broom tidy
 #' @importFrom tidyr expand_grid unite replace_na unnest
 #' @importFrom parameters standardize_parameters
+#' @importFrom metafor rma
 
 
 NULL

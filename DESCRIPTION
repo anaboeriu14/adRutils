@@ -38,6 +38,7 @@ Imports:
     tidyr,
     utils,
     parameters,
-    lme4
+    lme4,
+    metafor
 URL: https://github.com/anaboeriu14/adRutils
 BugReports: https://github.com/anaboeriu14/adRutils/issues
