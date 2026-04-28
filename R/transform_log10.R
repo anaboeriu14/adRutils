@@ -1,68 +1,69 @@
-#' Transform Numeric Variables to Log10 Scale
+#' Transform numeric variables to a log10 scale
 #'
-#' Adds log10-transformed columns with "log10_" prefix. Errors on non-positive values.
+#' Adds log10-transformed copies of `vars` to `dataf`, prefixed with
+#' `log10_`. Original columns are preserved unchanged.
 #'
-#' @param dataf Data frame containing variables to transform
-#' @param vars Character vector of column names to transform
-#' @param overwrite Allow overwriting existing log10_ columns (default: FALSE)
-#' @param quiet Suppress messages (default: FALSE)
+#' @details
+#' Errors when any value in `vars` is `<= 0`, since `log10()` is undefined
+#' there. Errors when a target column (`log10_<var>`) already exists,
+#' unless `overwrite = TRUE`.
 #'
-#' @return Data frame with added log10-transformed columns
+#' Warns (does not error) if an input variable is itself already
+#' `log10_`-prefixed, since this typically indicates double-transformation.
+#'
+#' @param dataf A data frame.
+#' @param vars Character vector of column names to transform. Must be
+#'   numeric and strictly positive.
+#' @param overwrite If `TRUE`, replace existing `log10_<var>` columns.
+#'   Default `FALSE`.
+#' @param quiet If `TRUE`, suppress warnings. Default `FALSE`.
+#'
+#' @return `dataf` with one new column per input variable, named
+#'   `log10_<var>`.
 #'
 #' @examples
-#' \dontrun{
 #' df <- data.frame(x = c(10, 100, 1000), y = c(1, 2, 3))
-#' transform_log10(df, c("x", "y"))
-#' }
+#' transform_log10(df, vars = c("x", "y"))
+#'
 #' @export
 transform_log10 <- function(dataf, vars, overwrite = FALSE, quiet = FALSE) {
 
-  # Validate
-  validate_params(
-    data = dataf,
-    columns = vars,
+  validate_args(
+    data            = dataf,
+    columns         = vars,
     numeric_columns = vars,
-    custom_checks = list(
-      list(
-        condition = is.character(vars) && length(vars) > 0,
-        message = "{.arg vars} must be a non-empty character vector"
-      )
-    ),
-    context = "transform_log10"
+    vars            = is_nonempty_character(),
+    overwrite       = is_flag(),
+    quiet           = is_flag()
   )
 
-  # Check for non-positive values
-  invalid_vars <- vars[vapply(vars, function(v) any(dataf[[v]] <= 0, na.rm = TRUE), logical(1))]
-  if (length(invalid_vars) > 0) {
-    cli::cli_abort("Column{?s} with non-positive values: {.field {invalid_vars}}")
+  # Single-pass classification: decide everything before mutating.
+  new_cols      <- paste0("log10_", vars)
+  has_nonpos    <- vapply(vars, function(v) any(dataf[[v]] <= 0, na.rm = TRUE),
+                          logical(1))
+  already_log   <- grepl("^log10_", vars)
+  exists_target <- new_cols %in% names(dataf)
+
+  if (any(has_nonpos)) {
+    cli::cli_abort(
+      "Column{?s} with non-positive values: {.field {vars[has_nonpos]}}"
+    )
+  }
+  if (any(exists_target) && !overwrite) {
+    cli::cli_abort(c(
+      "Target column{?s} already exist: {.field {new_cols[exists_target]}}",
+      "i" = "Use {.arg overwrite = TRUE} to replace."
+    ))
+  }
+  if (!quiet && any(already_log)) {
+    cli::cli_warn("Input{?s} already log10-prefixed: {.field {vars[already_log]}}")
   }
 
-  # Warn if input vars already have log10_ prefix
-  log_named <- vars[grepl("^log10_", vars)]
-  if (!quiet && length(log_named) > 0) {
-    cli::cli_warn("Column{?s} already named with log10_ prefix: {.field {log_named}}")
+  dataf[new_cols] <- lapply(vars, function(v) log10(dataf[[v]]))
+
+  if (!quiet && any(exists_target)) {
+    cli::cli_warn("Overwrote column{?s}: {.field {new_cols[exists_target]}}")
   }
 
-  # Transform
-  result <- dataf
-  overwritten <- character()
-
-  for (var in vars) {
-    new_col <- paste0("log10_", var)
-
-    if (new_col %in% names(dataf)) {
-      if (!overwrite) {
-        cli::cli_abort("Column {.field {new_col}} already exists. Use {.arg overwrite = TRUE} to replace.")
-      }
-      overwritten <- c(overwritten, new_col)
-    }
-
-    result[[new_col]] <- log10(dataf[[var]])
-  }
-
-  if (!quiet && length(overwritten) > 0) {
-    cli::cli_warn("Overwrote column{?s}: {.field {overwritten}}")
-  }
-
-  result
+  dataf
 }
