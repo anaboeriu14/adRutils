@@ -1,202 +1,164 @@
-#' Create ID Mapping Table
+#' Create an ID mapping table from a dataset
 #'
-#' Extract unique ID pairs from a dataset with multiple ID formats.
+#' Extracts the unique pairs of two ID columns from a dataset, producing a
+#' lookup table suitable for use with [add_id_mapping()].
 #'
-#' @param data Data frame containing both ID columns
-#' @param id_col1 Name of first ID column
-#' @param id_col2 Name of second ID column
-#' @param trim Logical. Trim whitespace? (default: TRUE)
+#' @param data A data frame containing both ID columns.
+#' @param id_col1,id_col2 Names of the two ID columns. Must differ.
+#' @param trim If `TRUE` (default), trim leading/trailing whitespace from
+#'   the IDs before deduplication.
 #'
-#' @return Data frame with two columns of unique ID pairs (short & long id)
+#' @return A data frame with two columns of unique ID pairs.
+#'
+#' @examples
+#' df <- data.frame(
+#'   short_id = c("A1", "A2", "A1"),
+#'   long_id  = c("subj_001", "subj_002", "subj_001")
+#' )
+#' create_id_mapping(df, "short_id", "long_id")
+#'
 #' @export
 create_id_mapping <- function(data, id_col1, id_col2, trim = TRUE) {
 
-  validate_params(
-    data = data,
+  validate_args(
+    data    = data,
     columns = c(id_col1, id_col2),
+    id_col1 = is_string(),
+    id_col2 = is_string(),
+    trim    = is_flag(),
     custom_checks = list(
       list(
         condition = id_col1 != id_col2,
-        message = "ID columns must be different"
+        message   = "{.arg id_col1} and {.arg id_col2} must differ"
       )
-    ),
-    context = "create_id_mapping"
+    )
   )
 
-  # Extract and prepare ID pairs
-  mapping <- .extract_id_pairs(data, id_col1, id_col2, trim)
+  mapping <- data %>%
+    dplyr::select(dplyr::all_of(c(id_col1, id_col2))) %>%
+    dplyr::distinct() %>%
+    dplyr::mutate(dplyr::across(dplyr::everything(), .normalize_id, trim = trim))
 
-  # Check both directions for duplicates
   .check_mapping_duplicates(mapping, id_col1)
   .check_mapping_duplicates(mapping, id_col2)
 
-  # Report success
-  cli::cli_alert_success(
-    "Created mapping with {nrow(mapping)} unique ID pair{?s}"
-  )
-
-  return(mapping)
+  cli::cli_alert_success("Created mapping with {nrow(mapping)} unique ID pair{?s}")
+  mapping
 }
 
-#' Add ID Column Using ID Mapping
+
+#' Add an ID column via lookup
 #'
-#' Add a new ID column to data by looking up values from an ID mapping table.
-#' Useful when merging datasets that use different ID conventions.
+#' Joins an ID mapping table to `data`, adding `id_col_to_add` based on
+#' matches in `existing_id_col`. If `id_col_to_add` already exists in
+#' `data`, it is replaced.
 #'
-#' @param data Data frame to add ID to
-#' @param id_mapping Data frame with ID lookup table (must contain existing_id_col and id_col_to_add)
-#' @param existing_id_col Name of existing ID column in data
-#' @param id_col_to_add Name of ID column to add from mapping
-#' @param trim Logical. Trim whitespace before matching? (default: TRUE)
-#' @param quiet Logical. Suppress matching statistics? (default: FALSE)
+#' @param data A data frame.
+#' @param id_mapping A lookup table containing both `existing_id_col` and
+#'   `id_col_to_add`.
+#' @param existing_id_col Name of the ID column already in `data`.
+#' @param id_col_to_add Name of the ID column to add from `id_mapping`.
+#' @param trim If `TRUE` (default), trim whitespace before matching.
+#' @param quiet If `TRUE`, suppress matching statistics. Default `FALSE`.
 #'
-#' @return Data frame with new ID column added
+#' @return `data` with `id_col_to_add` added (or replaced).
+#'
 #' @export
-add_id_mapping <- function(data,
-                           id_mapping,
+add_id_mapping <- function(data, id_mapping,
                            existing_id_col,
                            id_col_to_add,
-                           trim = TRUE,
+                           trim  = TRUE,
                            quiet = FALSE) {
 
-  # Validate inputs
-  validate_params(
-    data = data,
-    columns = existing_id_col,
+  validate_args(
+    data            = data,
+    columns         = existing_id_col,
+    existing_id_col = is_string(),
+    id_col_to_add   = is_string(),
+    trim            = is_flag(),
+    quiet           = is_flag(),
     custom_checks = list(
       list(
         condition = is.data.frame(id_mapping),
-        message = "{.arg id_mapping} must be a data frame"
+        message   = "{.arg id_mapping} must be a data frame"
       ),
       list(
-        condition = existing_id_col %in% names(id_mapping) && id_col_to_add %in% names(id_mapping),
-        message = "Both {.arg existing_id_col} and {.arg id_col_to_add} must exist in id_mapping"
+        condition = existing_id_col %in% names(id_mapping) &&
+          id_col_to_add %in% names(id_mapping),
+        message   = paste0(
+          "{.arg id_mapping} must contain both {.field {existing_id_col}} ",
+          "and {.field {id_col_to_add}}"
+        )
       ),
       list(
         condition = existing_id_col != id_col_to_add,
-        message = "{.arg existing_id_col} and {.arg id_col_to_add} must be different"
+        message   = "{.arg existing_id_col} and {.arg id_col_to_add} must differ"
       )
-    ),
-    context = "add_id_mapping"
+    )
   )
 
-  # Warn if overwriting
-  if (id_col_to_add %in% names(data) && !quiet) {
+  if (!quiet && id_col_to_add %in% names(data)) {
     cli::cli_alert_warning("Overwriting existing column: {.field {id_col_to_add}}")
   }
 
-  # Prepare data and mapping
-  mapping_prep <- .prepare_mapping(id_mapping, existing_id_col, id_col_to_add, trim)
-  data_prep <- .prepare_data_for_join(data, existing_id_col, trim)
-
-  # Check for issues
-  if (!quiet) .check_mapping_duplicates(mapping_prep, existing_id_col)
-
-  # Perform join
-  result <- .join_with_mapping(data_prep, mapping_prep, existing_id_col, id_col_to_add)
-
-  # Report results
-  if (!quiet) .report_id_matching(result, id_col_to_add)
-
-  return(result)
-}
-
-#' Extract and prepare ID pairs from data
-#' @keywords internal
-#' @noRd
-.extract_id_pairs <- function(data, id_col1, id_col2, trim) {
-  mapping <- data %>%
-    select(all_of(c(id_col1, id_col2))) %>%
-    distinct() %>%
-    mutate(across(everything(), as.character))
-
-  if (trim) {
-    mapping <- mapping %>%
-      mutate(across(everything(), str_trim))
-  }
-
-  return(mapping)
-}
-
-#' Prepare mapping table for join
-#' @keywords internal
-#' @noRd
-.prepare_mapping <- function(id_mapping, existing_id_col, id_col_to_add, trim) {
   mapping <- id_mapping %>%
-    select(all_of(c(existing_id_col, id_col_to_add))) %>%
-    distinct() %>%
-    mutate(across(everything(), as.character))
+    dplyr::select(dplyr::all_of(c(existing_id_col, id_col_to_add))) %>%
+    dplyr::distinct() %>%
+    dplyr::mutate(dplyr::across(dplyr::everything(), .normalize_id, trim = trim))
 
-  if (trim) {
-    mapping <- mapping %>%
-      mutate(across(everything(), str_trim))
+  if (!quiet) .check_mapping_duplicates(mapping, existing_id_col)
+
+  # Drop existing target column (if present) so the join doesn't suffix.
+  if (id_col_to_add %in% names(data)) {
+    data <- data[, setdiff(names(data), id_col_to_add), drop = FALSE]
   }
 
-  return(mapping)
+  prepared <- data %>%
+    dplyr::mutate(!!existing_id_col := .normalize_id(.data[[existing_id_col]],
+                                                     trim = trim))
+
+  result <- dplyr::left_join(prepared, mapping, by = existing_id_col)
+
+  if (!quiet) .report_id_matching(result, id_col_to_add)
+  result
 }
 
-#' Prepare data for ID join
+
+#' Coerce an ID vector to character, optionally trimming whitespace.
 #' @keywords internal
 #' @noRd
-.prepare_data_for_join <- function(data, existing_id_col, trim) {
-  if (trim) {
-    data %>%
-      mutate(!!existing_id_col := str_trim(as.character(.data[[existing_id_col]])))
-  } else {
-    data %>%
-      mutate(!!existing_id_col := as.character(.data[[existing_id_col]]))
-  }
+.normalize_id <- function(x, trim = TRUE) {
+  out <- as.character(x)
+  if (trim) out <- stringr::str_trim(out)
+  out
 }
 
-#' Join data with mapping and handle column conflicts
-#' @keywords internal
-#' @noRd
-.join_with_mapping <- function(data, mapping, existing_id_col, id_col_to_add) {
-  result <- data %>%
-    left_join(mapping, by = existing_id_col, suffix = c("", ".new"))
-
-  # Handle overwrite suffix if it occurred
-  new_col_name <- paste0(id_col_to_add, ".new")
-  if (new_col_name %in% names(result)) {
-    result <- result %>%
-      select(-all_of(id_col_to_add)) %>%
-      rename(!!id_col_to_add := !!new_col_name)
-  }
-
-  return(result)
-}
-
-#' Check for duplicate IDs in mapping
+#' Warn if a column has duplicates (one-to-many mapping).
 #' @keywords internal
 #' @noRd
 .check_mapping_duplicates <- function(mapping, id_col) {
   n_dupes <- sum(duplicated(mapping[[id_col]]))
-
-  if (n_dupes > 0) {
+  if (n_dupes > 0L) {
     cli::cli_alert_warning(
       "{n_dupes} duplicate{?s} in {.field {id_col}} - one-to-many mapping"
     )
   }
-
   invisible(NULL)
 }
 
-#' Report ID matching statistics
+#' Report how many rows in `data` matched after the join.
 #' @keywords internal
 #' @noRd
 .report_id_matching <- function(data, id_col) {
   n_matched <- sum(!is.na(data[[id_col]]))
-  n_total <- nrow(data)
+  n_total   <- nrow(data)
 
   if (n_matched < n_total) {
-    n_unmatched <- n_total - n_matched
-    pct_unmatched <- round((n_unmatched / n_total) * 100, 1)
-    cli::cli_alert_warning(
-      "{n_unmatched} row{?s} ({pct_unmatched}%) unmatched"
-    )
+    n_unmatched  <- n_total - n_matched
+    pct          <- round((n_unmatched / n_total) * 100, 1)
+    cli::cli_alert_warning("{n_unmatched} row{?s} ({pct}%) unmatched")
   } else {
     cli::cli_alert_success("All {n_total} row{?s} matched")
   }
-
   invisible(NULL)
 }
