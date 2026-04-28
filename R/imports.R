@@ -12,7 +12,7 @@
 #' @importFrom stats setNames complete.cases pnorm lm nobs as.formula
 #' pairwise.t.test qnorm chisq.test p.adjust fisher.test
 #' @importFrom tibble tibble as_tibble
-#' @importFrom rlang .data sym  %||% .data := enquo as_name
+#' @importFrom rlang .data sym  %||% .data := enquo as_name enquos eval_tidy
 #' @importFrom readr read_csv
 #' @importFrom janitor clean_names
 #' @importFrom missForest missForest
