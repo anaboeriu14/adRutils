@@ -7,7 +7,6 @@
 #' @import purrr
 #' @import stringr
 #' @import lme4
-#' @importFrom dplyr filter lag
 #' @importFrom magrittr %>%
 #' @importFrom stats setNames complete.cases pnorm lm nobs as.formula
 #' pairwise.t.test qnorm chisq.test p.adjust fisher.test

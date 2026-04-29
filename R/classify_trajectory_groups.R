@@ -84,6 +84,13 @@ classify_trajectory_groups <- function(model,
     )
   )
 
+  if (!requireNamespace("lme4", quietly = TRUE)) {
+    cli::cli_abort(c(
+      "The {.pkg lme4} package is required for mixed-effects model utilities",
+      "i" = "Install with: {.code install.packages(\"lme4\")}"
+    ))
+  }
+
   # Find which random-effects grouping factor contains the slope term
   re       <- lme4::ranef(model)
   slope_in <- vapply(re, function(df) slope_term %in% colnames(df), logical(1))

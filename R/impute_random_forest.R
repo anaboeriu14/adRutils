@@ -67,6 +67,13 @@ impute_random_forest <- function(dataf,
     )
   )
 
+  if (!requireNamespace("missForest", quietly = TRUE)) {
+    cli::cli_abort(c(
+      "The {.pkg missForest} package is required for random-forest imputation",
+      "i" = "Install with: {.code install.packages(\"missForest\")}"
+    ))
+  }
+
   imputation_data <- dataf %>%
     dplyr::select(dplyr::all_of(c(vars_to_impute, helper_vars))) %>%
     as.data.frame()

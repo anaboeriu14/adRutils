@@ -145,6 +145,13 @@ add_meta_pooled_results <- function(data,
     )
   )
 
+  if (!requireNamespace("metafor", quietly = TRUE)) {
+    cli::cli_abort(c(
+      "The {.pkg metafor} package is required for meta-analysis",
+      "i" = "Install with: {.code install.packages(\"metafor\")}"
+    ))
+  }
+
   preserve_cols <- setdiff(names(data), c(cohort_col, .RECOMPUTED_COLS))
 
   group_results <- data %>%
