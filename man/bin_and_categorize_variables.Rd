@@ -2,7 +2,7 @@
 % Please edit documentation in R/bin_and_categorize_variables.R
 \name{bin_and_categorize_variables}
 \alias{bin_and_categorize_variables}
-\title{Bin and Categorize Variables into Groups}
+\title{Bin and categorize variables into groups}
 \usage{
 bin_and_categorize_variables(
   dataf,
@@ -12,25 +12,55 @@ bin_and_categorize_variables(
 )
 }
 \arguments{
-\item{dataf}{A data frame containing demographic variables}
+\item{dataf}{A data frame.}
 
-\item{groups}{List of group specifications. Each element should be a list with:
-- 'col': String. Column name in the data
-- 'name': String. Name for the new grouping variable (optional, defaults to col_group)
-- 'type': String. One of "cutpoints" (for continuous), "categorical", or "custom"
-- 'cutpoints': For continuous variables, numeric vector of cutpoints (required for "cutpoints" type)
-- 'labels': Labels for the groups (optional)
-- 'values': For categorical variables, named vector mapping codes to labels (required for "categorical" type)
-- 'custom_fn': For custom grouping, a function that takes a vector and returns grouped values}
+\item{groups}{A list of group specifications. Each element is itself a list
+with these fields:
+\itemize{
+\item \code{col} (required): Name of the column in \code{dataf} to transform.
+\item \code{type} (required): One of \code{"cutpoints"}, \code{"categorical"}, or \code{"custom"}.
+\item \code{name} (optional): Output column name. Defaults to \verb{<col>_group}.
+\item \code{cutpoints} (required for \code{type = "cutpoints"}): Numeric vector of
+internal break points, in increasing order. Intervals are
+left-open, right-closed, except the leftmost which is closed on
+both ends (matching \code{\link[base:cut]{base::cut()}} with \code{include.lowest = TRUE}).
+\item \code{labels} (optional, for \code{type = "cutpoints"}): Character vector of
+length \code{length(cutpoints) + 1}. Defaults to interval notation
+derived from the cutpoints.
+\item \code{values} (required for \code{type = "categorical"}): Named vector mapping
+original values to new labels. All mappings are applied
+simultaneously, so chained remappings will not occur.
+\item \code{custom_fn} (required for \code{type = "custom"}): A function taking the
+column vector and returning a vector of the same length.
+}}
 
-\item{filter_missing}{Logical. Whether to filter rows with NA in any group column (default: FALSE)}
+\item{filter_missing}{If \code{TRUE}, drop rows with \code{NA} in any newly created
+group column. Default \code{FALSE}.}
 
-\item{quiet}{Logical. Whether to suppress informational messages (default: FALSE)}
+\item{quiet}{If \code{TRUE}, suppress informational messages. Default \code{FALSE}.}
 }
 \value{
-A data frame with added grouping variables
+\code{dataf} with one new column per element of \code{groups}.
 }
 \description{
-Transforms variables into categorical groups using cutpoints for continuous variables
-and value mappings for categorical variables.
+Transforms variables into categorical groups using cutpoints (continuous),
+value mappings (categorical), or custom functions.
+}
+\examples{
+df <- data.frame(
+  age      = c(45, 67, 72, 81, 55),
+  sex_code = c(1, 2, 1, 2, 1),
+  bmi      = c(22.4, 28.1, 31.5, 24.8, 35.2)
+)
+
+bin_and_categorize_variables(df, groups = list(
+  list(col = "age",      type = "cutpoints",   cutpoints = c(60, 75)),
+  list(col = "sex_code", type = "categorical",
+       values = c("1" = "Male", "2" = "Female"),
+       name   = "sex"),
+  list(col = "bmi",      type = "cutpoints",
+       cutpoints = c(18.5, 25, 30),
+       labels    = c("Underweight", "Normal", "Overweight", "Obese"))
+))
+
 }

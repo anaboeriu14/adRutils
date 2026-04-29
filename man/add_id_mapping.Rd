@@ -2,7 +2,7 @@
 % Please edit documentation in R/id_mapping.R
 \name{add_id_mapping}
 \alias{add_id_mapping}
-\title{Add ID Column Using ID Mapping}
+\title{Add an ID column via lookup}
 \usage{
 add_id_mapping(
   data,
@@ -14,22 +14,24 @@ add_id_mapping(
 )
 }
 \arguments{
-\item{data}{Data frame to add ID to}
+\item{data}{A data frame.}
 
-\item{id_mapping}{Data frame with ID lookup table (must contain existing_id_col and id_col_to_add)}
+\item{id_mapping}{A lookup table containing both \code{existing_id_col} and
+\code{id_col_to_add}.}
 
-\item{existing_id_col}{Name of existing ID column in data}
+\item{existing_id_col}{Name of the ID column already in \code{data}.}
 
-\item{id_col_to_add}{Name of ID column to add from mapping}
+\item{id_col_to_add}{Name of the ID column to add from \code{id_mapping}.}
 
-\item{trim}{Logical. Trim whitespace before matching? (default: TRUE)}
+\item{trim}{If \code{TRUE} (default), trim whitespace before matching.}
 
-\item{quiet}{Logical. Suppress matching statistics? (default: FALSE)}
+\item{quiet}{If \code{TRUE}, suppress matching statistics. Default \code{FALSE}.}
 }
 \value{
-Data frame with new ID column added
+\code{data} with \code{id_col_to_add} added (or replaced).
 }
 \description{
-Add a new ID column to data by looking up values from an ID mapping table.
-Useful when merging datasets that use different ID conventions.
+Joins an ID mapping table to \code{data}, adding \code{id_col_to_add} based on
+matches in \code{existing_id_col}. If \code{id_col_to_add} already exists in
+\code{data}, it is replaced.
 }

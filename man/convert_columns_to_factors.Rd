@@ -13,31 +13,33 @@ convert_columns_to_factors(
 )
 }
 \arguments{
-\item{dataf}{A data frame containing the columns to convert}
+\item{dataf}{A data frame.}
 
-\item{patterns}{Character vector of patterns to match column names against}
+\item{patterns}{Character vector of regex patterns to match column names.}
 
-\item{exclude}{Optional character vector of patterns to exclude from matching}
+\item{exclude}{Optional character vector of regex patterns. Columns whose
+names match any exclusion pattern are skipped, even if they match an
+inclusion pattern.}
 
-\item{ordered}{Logical indicating whether to create ordered factors (default: FALSE)}
+\item{ordered}{If \code{TRUE}, create ordered factors. Default \code{FALSE}.}
 
-\item{quiet}{Logical indicating whether to suppress messages (default: FALSE)}
+\item{quiet}{If \code{TRUE}, suppress informational messages. Default \code{FALSE}.}
 }
 \value{
-A data frame with specified columns converted to factors
+\code{dataf} with matching columns converted to (possibly ordered)
+factors.
 }
 \description{
-Converts columns in a data frame to factors based on matching patterns
-in their names. Can create either regular or ordered factors.
+Converts columns whose names match any of the supplied regex patterns
+into factors. Optionally produces ordered factors.
 }
 \examples{
-testDf <- data.frame(
+df <- data.frame(
   cdx_var1 = c("A", "B", "A", "C"),
   cdx_var2 = c("X", "Y", "X", "Z"),
-  age = c(25, 30, 22, 40),
-  gender = c("M", "M", "F", "M")
+  age      = c(25, 30, 22, 40),
+  gender   = c("M", "M", "F", "M")
 )
-newD <- convert_columns_to_factors(testDf, c("cdx", "gender"))
-str(newD)
+convert_columns_to_factors(df, patterns = c("cdx", "gender"))
 
 }

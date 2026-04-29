@@ -95,7 +95,7 @@ This project is licensed under the MIT License.
 
 If you use this package in your research, please cite:
 
-```
+```         
 Boeriu, A.I. (2026). adRutils: R Utility Functions for Data Analysis.
 R package version 2.0.0. https://github.com/anaboeriu14/adRutils
 ```

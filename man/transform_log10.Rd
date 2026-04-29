@@ -2,28 +2,39 @@
 % Please edit documentation in R/transform_log10.R
 \name{transform_log10}
 \alias{transform_log10}
-\title{Transform Numeric Variables to Log10 Scale}
+\title{Transform numeric variables to a log10 scale}
 \usage{
 transform_log10(dataf, vars, overwrite = FALSE, quiet = FALSE)
 }
 \arguments{
-\item{dataf}{Data frame containing variables to transform}
+\item{dataf}{A data frame.}
 
-\item{vars}{Character vector of column names to transform}
+\item{vars}{Character vector of column names to transform. Must be
+numeric and strictly positive.}
 
-\item{overwrite}{Allow overwriting existing log10_ columns (default: FALSE)}
+\item{overwrite}{If \code{TRUE}, replace existing \verb{log10_<var>} columns.
+Default \code{FALSE}.}
 
-\item{quiet}{Suppress messages (default: FALSE)}
+\item{quiet}{If \code{TRUE}, suppress warnings. Default \code{FALSE}.}
 }
 \value{
-Data frame with added log10-transformed columns
+\code{dataf} with one new column per input variable, named
+\verb{log10_<var>}.
 }
 \description{
-Adds log10-transformed columns with "log10_" prefix. Errors on non-positive values.
+Adds log10-transformed copies of \code{vars} to \code{dataf}, prefixed with
+\code{log10_}. Original columns are preserved unchanged.
+}
+\details{
+Errors when any value in \code{vars} is \verb{<= 0}, since \code{log10()} is undefined
+there. Errors when a target column (\verb{log10_<var>}) already exists,
+unless \code{overwrite = TRUE}.
+
+Warns (does not error) if an input variable is itself already
+\code{log10_}-prefixed, since this typically indicates double-transformation.
 }
 \examples{
-\dontrun{
 df <- data.frame(x = c(10, 100, 1000), y = c(1, 2, 3))
-transform_log10(df, c("x", "y"))
-}
+transform_log10(df, vars = c("x", "y"))
+
 }

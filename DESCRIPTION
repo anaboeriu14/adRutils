@@ -1,44 +1,43 @@
 Package: adRutils
-Type: Package
-Title: Utility Functions for Data Processing and Statistical Modeling
-Version: 1.4.0
-Date: 2026-02-23
+Title: Utility Functions for Data Analysis Workflows
+Version: 2.0.0
 Authors@R: 
-    person("Ana", "Boeriu", , "ana.boeriu@ucsf.edu", role = c("aut", "cre"),
-           comment = c(ORCID = "0009-0000-5469-4085"))
-Description: A collection of utility functions for data cleaning, transformation, 
-    statistical modeling, and file operations. Provides tools for reading and 
-    combining CSV files, handling missing values, transforming variables, 
-    fitting grouped linear models, and performing pairwise comparisons with 
-    flexible p-value formatting. Designed to streamline common data analysis 
-    workflows with consistent interfaces and informative feedback.
-License: MIT + file LICENSE.md
+    person("Ana", "Boeriu",
+           email = "your-email@domain",
+           role = c("aut", "cre"))
+Description: A collection of utility functions supporting tidy data
+    analysis workflows, including input validation, data cleaning,
+    longitudinal coalescing, regression model batching, coefficient
+    extraction, and random-effects meta-analysis. Designed to reduce
+    boilerplate in research scripts and to work alongside domain-
+    specific packages.
+License: MIT + file LICENSE
+URL: https://github.com/anaboeriu14/adRutils,
+    https://anaboeriu14.github.io/adRutils
+BugReports: https://github.com/anaboeriu14/adRutils/issues
 Encoding: UTF-8
-LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
-Depends: 
-    R (>= 4.1.0)
 Imports:
     broom,
     cli,
-    doParallel,
     dplyr,
     glue,
     here,
     janitor,
     magrittr,
-    missForest,
     purrr,
     readr,
     rlang,
-    stats,
     stringr,
     tibble,
-    tidyr,
-    utils,
-    parameters,
+    tidyr
+Suggests:
+    doParallel,
+    effectsize,
     lme4,
-    metafor
-URL: https://github.com/anaboeriu14/adRutils
-BugReports: https://github.com/anaboeriu14/adRutils/issues
+    metafor,
+    missForest,
+    parameters,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3

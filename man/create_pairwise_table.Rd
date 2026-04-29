@@ -2,7 +2,7 @@
 % Please edit documentation in R/pairwise_group_comparisons.R
 \name{create_pairwise_table}
 \alias{create_pairwise_table}
-\title{Create Pairwise Group Comparison Table}
+\title{Create a pairwise group comparison table}
 \usage{
 create_pairwise_table(
   data,
@@ -15,38 +15,53 @@ create_pairwise_table(
 )
 }
 \arguments{
-\item{data}{A data frame}
+\item{data}{A data frame.}
 
-\item{group_var}{Character string. Grouping variable name}
+\item{group_var}{Name of the grouping variable.}
 
-\item{numeric_vars}{Character vector. Numeric variables to compare via t-tests}
+\item{numeric_vars}{Character vector of numeric variables to compare
+via t-tests.}
 
-\item{categorical_vars}{Character vector. Categorical variables to compare
-via chi-squared tests with Fisher's exact fallback (default: NULL)}
+\item{categorical_vars}{Character vector of categorical variables.
+Default \code{NULL}.}
 
-\item{p_adjust_method}{P-value adjustment method (default: "bonferroni").
-Options: "bonferroni", "holm", "hochberg", "hommel", "BH", "BY", "fdr", "none"}
+\item{p_adjust_method}{P-value adjustment method. Default \code{"bonferroni"}.
+See \code{\link[stats:p.adjust]{stats::p.adjust()}} for options.}
 
-\item{p_format}{P-value display format (default: "auto"):
-"auto", "threshold", "exact", "scientific", or "raw" (no formatting)}
+\item{p_format}{Display format for p-values. One of \code{"auto"},
+\code{"threshold"}, \code{"exact"}, \code{"scientific"}, or \code{"raw"} (no formatting).
+Default \code{"auto"}.}
 
-\item{p_digits}{Number of decimal places or significant figures (default: 3)}
+\item{p_digits}{Decimal places or significant figures (depending on
+format). Default \code{3}.}
 }
 \value{
-A tibble with columns: variable, test_type, and one column per group pair
+A tibble with \code{variable}, \code{test_type}, and one column per
+group pair.
 }
 \description{
-Compares groups pairwise using t-tests (numeric) and chi-squared/Fisher tests
-(categorical). Returns a formatted table with adjusted p-values.
+Compares groups pairwise using t-tests for numeric variables and
+chi-squared tests (with Fisher's exact fallback) for categorical
+variables. Returns a tidy table with one row per variable and one
+column per group pair.
+}
+\details{
+Numeric variables use \code{\link[stats:pairwise.t.test]{stats::pairwise.t.test()}} with the supplied
+\code{p_adjust_method}. Categorical variables compute pairwise tests
+independently and then adjust via \code{\link[stats:p.adjust]{stats::p.adjust()}} with the same
+method.
+
+Pair column names are human-readable (e.g., \code{"AFR vs EUR"}), so
+programmatic access requires backticks: \code{result$`AFR vs EUR`}.
 }
 \examples{
 \dontrun{
 create_pairwise_table(
-  data = my_data,
-  group_var = "ancestry",
-  numeric_vars = c("age", "bmi"),
+  data             = my_data,
+  group_var        = "ancestry",
+  numeric_vars     = c("age", "bmi"),
   categorical_vars = c("sex", "diagnosis"),
-  p_format = "threshold"
+  p_format         = "threshold"
 )
 }
 

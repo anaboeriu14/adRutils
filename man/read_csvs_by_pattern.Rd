@@ -2,7 +2,7 @@
 % Please edit documentation in R/file_io.R
 \name{read_csvs_by_pattern}
 \alias{read_csvs_by_pattern}
-\title{Read and combine CSV files matching specified patterns}
+\title{Read and combine CSV files matching a pattern}
 \usage{
 read_csvs_by_pattern(
   directory_path,
@@ -11,28 +11,36 @@ read_csvs_by_pattern(
   all_files = FALSE,
   clean_col_names = TRUE,
   combine = TRUE,
-  verbose = FALSE
+  quiet = FALSE
 )
 }
 \arguments{
-\item{directory_path}{Character. Path to the directory containing CSV files}
+\item{directory_path}{Path to the directory containing CSV files.}
 
-\item{missing_vals}{Character vector. Values to be treated as NA (required)}
+\item{missing_vals}{Character vector of strings to treat as \code{NA}.}
 
-\item{patterns}{Character vector. Patterns to match files against (regex supported).
-Use NULL with all_files = TRUE to read all CSVs}
+\item{patterns}{Character vector of regex patterns matching filenames.
+Required unless \code{all_files = TRUE}.}
 
-\item{all_files}{Logical. If TRUE, reads all CSV files regardless of patterns}
+\item{all_files}{If \code{TRUE}, read every \code{.csv} in the directory regardless
+of \code{patterns}. Default \code{FALSE}.}
 
-\item{clean_col_names}{Logical. If TRUE, cleans column names using janitor::clean_names()}
+\item{clean_col_names}{If \code{TRUE}, clean column names with
+\code{\link[janitor:clean_names]{janitor::clean_names()}}. Default \code{TRUE}.}
 
-\item{combine}{Logical. If TRUE, combines all dataframes into one. If FALSE, returns a named list}
+\item{combine}{If \code{TRUE} (default), bind all files into a single data
+frame using \code{\link[dplyr:bind_rows]{dplyr::bind_rows()}}. If \code{FALSE}, return a named list.}
 
-\item{verbose}{Logical. If TRUE, prints progress messages (default: FALSE)}
+\item{quiet}{If \code{TRUE}, suppress progress messages. Default \code{FALSE}.}
 }
 \value{
-A combined dataframe or a named list of dataframes
+A combined data frame (when \code{combine = TRUE}), a named list of
+data frames (when \code{combine = FALSE}), or an empty data frame if no
+files matched.
 }
 \description{
-Read and combine CSV files matching specified patterns
+Reads all CSV files in a directory whose names match any of the supplied
+regex patterns (or all CSVs if \code{all_files = TRUE}), optionally cleans
+column names with \code{\link[janitor:clean_names]{janitor::clean_names()}}, and either combines them
+into a single data frame or returns them as a named list.
 }

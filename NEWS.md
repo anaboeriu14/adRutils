@@ -1,3 +1,29 @@
+# adRutils 2.0.0
+
+Major cleanup release. Validation, naming, and several functions were standardized across the package. The function reference reflects the new state; the changes are summarized below. See git history for per-function detail.
+
+## Breaking changes
+
+-   Several functions and parameters were renamed for clarity and consistency (e.g., `categorize_slopes` → `classify_trajectory_groups`, `verbose` → `quiet`).
+
+-   `validate_params` was rewritten as `validate_args` with a richer interface and exported assertion helpers (`is_flag`, `is_string`, etc.).
+
+-   Cache utilities moved to `adRpheno`. For general caching use `memoise` or `cachem`.
+
+-   `add_inverse_variance_weights` removed; REML weights are now computed inside `add_meta_pooled_results` and attached automatically.
+
+-   Confidence interval columns renamed to `conf.low`/`conf.high` (broom convention) in meta-analysis and coefficient extraction.
+
+## Fixes
+
+-   `compare_coefs`: numerically stable p-values for highly significant differences.
+
+-   `bin_and_categorize_variables`: single-pass categorical mapping; proper interval notation for default cutpoint labels.
+
+-   `convert_columns_to_factors`: ordered conversion preserves unobserved factor levels.
+
+------------------------------------------------------------------------
+
 # adRutils 1.5.0
 
 ## New Features - Longitudinal & Mixed-Effects Utilities

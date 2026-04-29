@@ -2,22 +2,30 @@
 % Please edit documentation in R/id_mapping.R
 \name{create_id_mapping}
 \alias{create_id_mapping}
-\title{Create ID Mapping Table}
+\title{Create an ID mapping table from a dataset}
 \usage{
 create_id_mapping(data, id_col1, id_col2, trim = TRUE)
 }
 \arguments{
-\item{data}{Data frame containing both ID columns}
+\item{data}{A data frame containing both ID columns.}
 
-\item{id_col1}{Name of first ID column}
+\item{id_col1, id_col2}{Names of the two ID columns. Must differ.}
 
-\item{id_col2}{Name of second ID column}
-
-\item{trim}{Logical. Trim whitespace? (default: TRUE)}
+\item{trim}{If \code{TRUE} (default), trim leading/trailing whitespace from
+the IDs before deduplication.}
 }
 \value{
-Data frame with two columns of unique ID pairs (short & long id)
+A data frame with two columns of unique ID pairs.
 }
 \description{
-Extract unique ID pairs from a dataset with multiple ID formats.
+Extracts the unique pairs of two ID columns from a dataset, producing a
+lookup table suitable for use with \code{\link[=add_id_mapping]{add_id_mapping()}}.
+}
+\examples{
+df <- data.frame(
+  short_id = c("A1", "A2", "A1"),
+  long_id  = c("subj_001", "subj_002", "subj_001")
+)
+create_id_mapping(df, "short_id", "long_id")
+
 }

@@ -15,42 +15,48 @@ add_meta_pooled_results(
 )
 }
 \arguments{
-\item{data}{A tidy effects dataframe containing at minimum \code{cohort},
+\item{data}{A tidy effects data frame containing at minimum \code{cohort},
 \code{estimate}, \code{std.error}, and \code{n_obs} columns.}
 
-\item{group_vars}{Character vector of grouping columns (e.g.,
-\code{c("outcome", "term")}).}
+\item{group_vars}{Character vector of grouping columns
+(e.g., \code{c("outcome", "term")}).}
 
 \item{cohort_col}{Name of the cohort identifier column. Default \code{"cohort"}.}
 
 \item{discovery_label, replication_label}{Labels identifying the discovery
 and replication cohorts, used only when computing \code{same_direction} and
-\code{replicated} for k = 2 groups. If \code{NULL} (default), the first and second
-cohort values (in appearance order) are used.}
+\code{replicated} for k = 2 groups. If \code{NULL} (default), the first and
+second cohort values (in appearance order) are used.}
 
 \item{pooled_label}{Label used for the appended pooled row. Default
 \code{"Pooled"}.}
 
-\item{cohort_levels}{Optional character vector defining factor levels for
-the \code{cohort} column in the returned data. If \code{NULL}, a factor is built
-from the unique values with \code{pooled_label} last.}
+\item{cohort_levels}{Optional character vector defining factor levels
+for the \code{cohort} column in the returned data. If \code{NULL}, a factor is
+built from the unique values with \code{pooled_label} last.}
 }
 \value{
-\code{data} with pooled rows appended, including columns \code{I2}, \code{Q},
-\code{tau2}, \code{n_cohorts}, \code{same_direction}, and \code{replicated}.
+\code{data} with pooled rows appended and a \code{weight} column added.
+New columns on the pooled rows: \code{I2}, \code{Q}, \code{tau2}, \code{n_cohorts},
+\code{same_direction}, \code{replicated}. The pooled row's \code{n_obs} is the sum
+across cohorts (total subjects, not effective sample size).
 }
 \description{
-For each group defined by \code{group_vars}, fits a random-effects meta-analysis
-via \code{metafor::rma(method = "REML")} and appends a pooled row to the data.
-Heterogeneity statistics (I², Q, τ²) are computed when k ≥ 2.
+For each group defined by \code{group_vars}, fits a random-effects
+meta-analysis via \code{\link[metafor:rma.uni]{metafor::rma()}} with \code{method = "REML"} and appends a
+pooled row to the data. Each cohort row receives a \code{weight} column
+giving its REML contribution (in percent) to the pooled estimate;
+pooled rows have \code{weight = NA}.
 }
 \details{
-When exactly 2 cohorts are present in a group, two replication-style
-indicators are also computed: \code{same_direction} (sign agreement) and
-\code{replicated} (sign agreement AND |β/SE| > 1.96 in the second cohort). These
-concepts do not generalize cleanly to >2 cohorts, so they are set to NA
-when k ≥ 3.
+Heterogeneity statistics (\code{I2}, \code{Q}, \code{tau2}) are attached to the pooled
+row when k >= 2.
 
-Groups with k = 1 after any upstream filtering are retained as-is, with no
+When exactly two cohorts are present in a group, \code{same_direction} (sign
+agreement) and \code{replicated} (sign agreement AND |β/SE| > 1.96 in the
+second cohort) are computed for the pooled row. These concepts do not
+generalize to k >= 3, so they are set to \code{NA} in that case.
+
+Groups with k = 1 after upstream filtering are retained as-is, with no
 pooled row appended (and a warning).
 }

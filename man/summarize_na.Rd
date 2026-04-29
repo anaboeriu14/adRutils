@@ -4,44 +4,29 @@
 \alias{summarize_na}
 \title{Summarize NA values by column}
 \usage{
-summarize_na(data, desc_order = TRUE, threshold = NULL, include_count = TRUE)
+summarize_na(data, threshold = NULL)
 }
 \arguments{
-\item{data}{A data frame or tibble to analyze for missing values}
+\item{data}{A data frame or tibble.}
 
-\item{desc_order}{Logical; if TRUE (default), sorts from highest to lowest percent of NAs}
-
-\item{threshold}{Numeric; if provided, returns only columns with NA percentage above this threshold}
-
-\item{include_count}{Logical; if TRUE (default), includes count of NAs in addition to percentages}
+\item{threshold}{Optional numeric in \verb{[0, 100]}. If supplied, only
+columns with \code{percent_na >= threshold} are returned.}
 }
 \value{
-A tibble with columns:
-\item{column}{Name of the column}
-\item{count_na}{Number of NA values (if include_count=TRUE)}
-\item{percent_na}{Percentage of values that are NA (rounded to 3 decimal places)}
-\item{total_rows}{Total number of rows in the data (if include_count=TRUE)}
+A tibble with columns \code{column}, \code{count_na}, and \code{percent_na}
+(rounded to 3 decimal places).
 }
 \description{
-Creates a tidy summary of missing values in each column of a data frame.
-Calculates the count and percentage of NA values for each column
-and returns a sorted tibble.
+Returns a tibble with one row per column of \code{data}, listing the count
+and percentage of \code{NA} values, sorted from most to least missing.
 }
 \examples{
-# Create a sample data frame with missing values
-testDF <- data.frame(
+df <- data.frame(
   a = c(1, 2, NA, 4, 5),
   b = c(NA, NA, 3, 4, 5),
   c = 1:5
 )
-
-# Summarize missing values
-summarize_na(testDF)
-
-# Get only columns with >= 50\% missing values
-summarize_na(testDF, threshold = 50)
-
-# Sort by lowest percentage first
-summarize_na(testDF, desc_order = FALSE)
+summarize_na(df)
+summarize_na(df, threshold = 50)
 
 }

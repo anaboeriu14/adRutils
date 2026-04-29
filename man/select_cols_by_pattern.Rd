@@ -2,7 +2,7 @@
 % Please edit documentation in R/select_cols_by_pattern.R
 \name{select_cols_by_pattern}
 \alias{select_cols_by_pattern}
-\title{Select columns by name pattern}
+\title{Select columns by regex pattern}
 \usage{
 select_cols_by_pattern(
   dataf,
@@ -14,57 +14,50 @@ select_cols_by_pattern(
 )
 }
 \arguments{
-\item{dataf}{A data frame or tibble to select columns from}
+\item{dataf}{A data frame or tibble.}
 
-\item{patterns}{Character vector of regex patterns to match column names}
+\item{patterns}{Character vector of regex patterns to match column
+names.}
 
-\item{exclude}{Character vector of regex patterns to exclude (optional)}
+\item{exclude}{Optional character vector of regex patterns. Matching
+columns are dropped after inclusion is applied.}
 
-\item{ignore_case}{Logical. If TRUE (default), performs case-insensitive matching}
+\item{ignore_case}{If \code{TRUE} (default), perform case-insensitive matching.}
 
-\item{warn_no_match}{Logical. If TRUE (default), warns instead of errors when no columns match}
+\item{warn_no_match}{If \code{TRUE} (default), emit a warning and return an
+empty data frame when no columns match. If \code{FALSE}, abort.}
 
-\item{invert}{Logical. If TRUE, selects columns that do NOT match the patterns (default: FALSE)}
+\item{invert}{If \code{TRUE}, return columns that do NOT match the patterns.
+Default \code{FALSE}.}
 }
 \value{
-A data frame or tibble containing only the selected columns
+A data frame containing the selected columns. When no columns
+match and \code{warn_no_match = TRUE}, a 0-column data frame is returned.
 }
 \description{
-This function selects columns from a data frame based on regex patterns matching column names.
-It is a convenience wrapper around dplyr's select() and matches() functions with additional
-validation and flexibility.
+Selects columns from a data frame whose names match any of the supplied
+regex patterns, with optional exclusion patterns and an \code{invert} flag
+to return columns that do \emph{not} match.
 }
 \details{
-The function uses regular expressions to match column names. Multiple patterns are combined
-with OR logic (any pattern can match). Exclusion patterns are applied after initial matching.
-
-When \code{invert = TRUE}, the function returns columns that do NOT match any of the patterns.
-This is useful for removing specific columns while keeping everything else.
+Multiple patterns are combined with OR logic. Exclusion patterns are
+applied after initial matching. When \code{invert = TRUE}, the function
+returns columns that do \emph{not} match any inclusion pattern (after
+applying exclusions). Matching is case-insensitive by default.
 }
 \examples{
-# Create a sample data frame
-test_df <- data.frame(
-  id = 1:5,
+df <- data.frame(
+  id         = 1:5,
   name_first = c("John", "Jane", "Bob", "Alice", "Tom"),
-  name_last = c("Smith", "Doe", "Johnson", "Brown", "Wilson"),
-  age = c(25, 30, 35, 40, 45),
+  name_last  = c("Smith", "Doe", "Johnson", "Brown", "Wilson"),
+  age        = c(25, 30, 35, 40, 45),
   score_math = c(85, 90, 78, 92, 88),
-  score_eng = c(76, 94, 82, 88, 79)
+  score_eng  = c(76, 94, 82, 88, 79)
 )
 
-# Select columns that contain "name"
-select_cols_by_pattern(test_df, "name")
-
-# Select columns that contain "score" but exclude "math"
-select_cols_by_pattern(test_df, "score", exclude = "math")
-
-# Select all columns EXCEPT those containing "score"
-select_cols_by_pattern(test_df, "score", invert = TRUE)
-
-# Multiple patterns (OR logic)
-select_cols_by_pattern(test_df, c("id", "age"))
-
-# Case-sensitive matching
-select_cols_by_pattern(test_df, "NAME", ignore_case = FALSE)
+select_cols_by_pattern(df, "name")
+select_cols_by_pattern(df, "score", exclude = "math")
+select_cols_by_pattern(df, "score", invert = TRUE)
+select_cols_by_pattern(df, c("id", "age"))
 
 }

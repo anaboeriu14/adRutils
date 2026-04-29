@@ -2,7 +2,7 @@
 % Please edit documentation in R/fit_models_by_group.R
 \name{fit_models_by_group}
 \alias{fit_models_by_group}
-\title{Fit Linear Models Across Outcomes and Groups}
+\title{Fit linear models across outcomes and groups}
 \usage{
 fit_models_by_group(
   data,
@@ -14,46 +14,65 @@ fit_models_by_group(
   interaction_terms = NULL,
   outcome_covariates = NULL,
   group_covariates = NULL,
-  verbose = FALSE
+  quiet = FALSE
 )
 }
 \arguments{
-\item{data}{Data frame containing variables for analysis}
+\item{data}{A data frame containing all variables referenced.}
 
-\item{outcomes}{Character vector of outcome variable names}
+\item{outcomes}{Character vector of outcome variable names.}
 
-\item{base_predictors}{Character vector of predictors to include in all models}
+\item{base_predictors}{Character vector of predictors included in every
+model.}
 
-\item{group_col}{Column name for grouping (NULL for no grouping)}
+\item{group_col}{Column name for grouping. Use \code{NULL} for ungrouped
+analysis (\code{groups = "All"}).}
 
-\item{groups}{Groups to analyze; use "All" for entire dataset (default)}
+\item{groups}{Character vector of group values to analyze. Default
+\code{"All"} runs on the full dataset.}
 
-\item{model_type}{Either "main" or "interaction"}
+\item{model_type}{One of \code{"main"} or \code{"interaction"}.}
 
-\item{interaction_terms}{Interaction terms when model_type = "interaction"}
+\item{interaction_terms}{Used when \code{model_type = "interaction"}. Either
+\code{"all_pairwise"} (all two-way interactions among predictors) or a
+character string of explicit interaction terms.}
 
-\item{outcome_covariates}{Outcome-specific covariates as named list}
+\item{outcome_covariates}{Optional named list. Two supported shapes:
+\itemize{
+\item Outcome-specific: \code{list(outcome1 = c("cov1", "cov2"))}. The named
+covariates are added to models for that outcome, across all groups.
+\item Group-and-outcome-specific: \code{list(group1 = list(outcome1 = c("cov1")))}.
+The shape is detected automatically.
+}}
 
-\item{group_covariates}{Group-specific covariates as named list}
+\item{group_covariates}{Optional named list of group-specific covariates,
+e.g., \code{list(group1 = c("cov1"), group2 = c("cov2"))}.}
 
-\item{verbose}{Show progress (default: FALSE)}
+\item{quiet}{If \code{TRUE}, suppress progress messages. Default \code{FALSE}.}
 }
 \value{
-Tibble with columns: outcome, group (or group_col name), model,
-predictors, model_equation, model_res, model_obj, dataf, n_obs
+A tibble with columns: \code{outcome}, the grouping column (named
+after \code{group_col} or \code{"group"}), \code{model}, \code{predictors},
+\code{model_equation}, \code{model_res} (tidy results, list-column), \code{model_obj}
+(fitted model, list-column), \code{model_error} (error message if fit
+failed, otherwise \code{NA}), \code{dataf} (data subset used, list-column), and
+\code{n_obs}.
 }
 \description{
-Fits linear models for multiple outcomes across groups with flexible covariate
-specifications.
+Fits a linear model for every combination of outcome and group, with
+optional outcome-specific or group-specific covariates. Returns a tibble
+with one row per model, including the fitted model object, tidy results,
+and the data subset used.
 }
 \examples{
 \dontrun{
-results <- fit_models_by_group(
-  data = my_data,
-  outcomes = c("memory", "attention"),
+fit_models_by_group(
+  data            = my_data,
+  outcomes        = c("memory", "attention"),
   base_predictors = c("age", "sex"),
-  group_col = "ancestry",
-  groups = c("AFR", "EUR")
+  group_col       = "ancestry",
+  groups          = c("AFR", "EUR")
 )
 }
+
 }

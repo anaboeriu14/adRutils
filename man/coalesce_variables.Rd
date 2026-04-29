@@ -2,7 +2,7 @@
 % Please edit documentation in R/coalesce_variables.R
 \name{coalesce_variables}
 \alias{coalesce_variables}
-\title{Coalesce related variables by pattern or manual grouping}
+\title{Coalesce related variables into a single column}
 \usage{
 coalesce_variables(
   dataf,
@@ -14,21 +14,47 @@ coalesce_variables(
 )
 }
 \arguments{
-\item{dataf}{A data frame containing the variables to coalesce}
+\item{dataf}{A data frame containing the variables to coalesce.}
 
-\item{pattern_extract}{Regular expression identifying the varying part to remove}
+\item{pattern_extract}{Regex matching the varying segment of column names.
+Columns are grouped by the \emph{non-matching} portion of their name.
+Mutually exclusive with \code{var_groups}.}
 
-\item{var_groups}{Named list of column groups to coalesce}
+\item{var_groups}{Named list of column groups. Each name becomes the new
+coalesced column name. Mutually exclusive with \code{pattern_extract}.}
 
-\item{prefix}{Character string to prepend to new column names (default: "")}
+\item{prefix}{String to prepend to new column names. Default \code{""}.}
 
-\item{overwrite}{Logical. If TRUE, overwrites existing coalesced columns (default: FALSE)}
+\item{overwrite}{If \code{TRUE}, replace existing columns; if \code{FALSE} (default),
+skip them with a warning.}
 
-\item{quiet}{Logical. If TRUE, suppresses messages (default: FALSE)}
+\item{quiet}{If \code{TRUE}, suppress messages. Default \code{FALSE}.}
 }
 \value{
-Data frame with additional coalesced columns
+\code{dataf} with coalesced columns added.
 }
 \description{
-Coalesce related variables by pattern or manual grouping
+Combines groups of columns into one column per group by taking the first
+non-missing value across them (using \code{\link[dplyr:coalesce]{dplyr::coalesce()}}). Groups can be
+specified manually via \code{var_groups} or discovered automatically via a
+regex \code{pattern_extract} that identifies the varying portion of column
+names.
+}
+\examples{
+df <- data.frame(
+  bmi_v1 = c(22, NA, 28),
+  bmi_v2 = c(NA, 25, 27),
+  age_v1 = c(45, NA, 70),
+  age_v2 = c(NA, 60, NA)
+)
+
+# Pattern-based: strip "_v[12]" from each name and group by the rest
+coalesce_variables(df, pattern_extract = "_v[12]")
+
+# Manual grouping
+coalesce_variables(df, var_groups = list(
+  bmi = c("bmi_v1", "bmi_v2"),
+  age = c("age_v1", "age_v2")
+))
+
 }

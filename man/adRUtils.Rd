@@ -4,5 +4,6 @@
 \alias{adRutils}
 \title{adRutils: A collection of R utility functions}
 \description{
-This package provides various utility functions for data manipulation, imputation, and other common tasks.
+This package provides various utility functions for data
+manipulation, modeling, and meta-analysis support.
 }

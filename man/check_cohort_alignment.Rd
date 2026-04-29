@@ -11,7 +11,7 @@ check_cohort_alignment(x, y, by, x_label = "x", y_label = "y", quiet = FALSE)
 
 \item{by}{Character vector of column names defining the key.}
 
-\item{x_label, y_label}{Labels used in messages (default "x" and "y").}
+\item{x_label, y_label}{Labels used in messages. Default \code{"x"} and \code{"y"}.}
 
 \item{quiet}{If \code{TRUE}, suppress CLI output. Default \code{FALSE}.}
 }
