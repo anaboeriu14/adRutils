@@ -1,12 +1,14 @@
 # adRutils
 
-[![Version](https://img.shields.io/badge/version-1.4.0-blue.svg)](https://github.com/anaboeriu14/adRutils/releases) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](https://github.com/anaboeriu14/adRutils/releases) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-A collection of R utility functions for data cleaning, transformation, file operations, id mapping, and statistical modeling. Designed to streamline data workflows and improve reproducability.
+A collection of R utility functions for data cleaning, transformation, file operations, ID mapping, and statistical modeling. Designed to streamline data workflows and improve reproducibility.
+
+> **Version 2.0.0 is a major cleanup release.** Several functions and parameters have been renamed for clarity and consistency. See [NEWS.md](NEWS.md) for the full list.
 
 ## Installation
 
-You can install `adRutils` from GitHub using one of these methods:
+Install from GitHub using one of these methods:
 
 ### Option 1: Using remotes (recommended)
 
@@ -38,30 +40,30 @@ library(adRutils)
 data <- read_csvs_by_pattern(
   "data/raw",
   missing_vals = c("NA", ""),
-  patterns = "baseline"
+  patterns     = "baseline"
 )
 
 # Clean data
 data <- data %>%
-  remove_duplicates_if_exists("subject_id") %>%
-  drop_sparse_na_cols(threshold = 99) %>%
+  remove_duplicates("subject_id") %>%
+  drop_high_na_cols(threshold = 99) %>%
   transform_log10(vars = c("biomarker1", "biomarker2"))
 
 # Fit models across groups
 results <- fit_models_by_group(
   data,
-  outcomes = c("log10_biomarker1", "log10_biomarker2"),
+  outcomes        = c("log10_biomarker1", "log10_biomarker2"),
   base_predictors = c("age", "sex"),
-  group_col = "ancestry",
-  groups = c("AFR", "EUR", "EAS")
+  group_col       = "ancestry",
+  groups          = c("AFR", "EUR", "EAS")
 )
 
 # Pairwise comparisons with flexible formatting
 comparison_table <- create_pairwise_table(
   data,
-  variables = c("biomarker1", "biomarker2"),
-  group_var = "treatment",
-  p_format = "threshold"  # or "auto", "exact", "scientific"
+  numeric_vars     = c("biomarker1", "biomarker2"),
+  group_var        = "treatment",
+  p_format         = "threshold"
 )
 ```
 
@@ -81,9 +83,9 @@ help(package = "adRutils")
 
 ## Version Information
 
-**Current version:** 1.4.0
+**Current version:** 2.0.0
 
-See [Releases](https://github.com/anaboeriu14/adRutils/releases) & [NEWS.md](NEWS.md) for detailed changelog and release notes.
+See [Releases](https://github.com/anaboeriu14/adRutils/releases) and [NEWS.md](NEWS.md) for the full changelog.
 
 ## License
 
@@ -93,9 +95,9 @@ This project is licensed under the MIT License.
 
 If you use this package in your research, please cite:
 
-```         
-Boeriu, A.I. (2025). adRutils: R Utility Functions for Data Analysis.
-R package version 1.3.0. https://github.com/anaboeriu14/adRutils
+```
+Boeriu, A.I. (2026). adRutils: R Utility Functions for Data Analysis.
+R package version 2.0.0. https://github.com/anaboeriu14/adRutils
 ```
 
 ## Contact
