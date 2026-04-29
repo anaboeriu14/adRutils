@@ -2,6 +2,10 @@
 
 Major cleanup release. Validation, naming, and several functions were standardized across the package. The function reference reflects the new state; the changes are summarized below. See git history for per-function detail.
 
+## New
+
+-   Outlier detection moved here from `adRpheno` (it's domain-agnostic): `detect_outlier_thresholds()` and `replace_outliers_with_na()`.
+
 ## Breaking changes
 
 -   Several functions and parameters were renamed for clarity and consistency (e.g., `categorize_slopes` → `classify_trajectory_groups`, `verbose` → `quiet`).

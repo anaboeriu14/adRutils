@@ -1,6 +1,7 @@
 # adRutils
 
-[![R-CMD-check](https://github.com/anaboeriu14/adRutils/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/anaboeriu14/adRutils/actions/workflows/R-CMD-check.yaml) [![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](https://github.com/anaboeriu14/adRutils/releases) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![R-CMD-check](https://github.com/anaboeriu14/adRutils/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/anaboeriu14/adRutils/actions/workflows/R-CMD-check.yaml) 
+[![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](https://github.com/anaboeriu14/adRutils/releases)
 
 A collection of R utility functions for data cleaning, transformation, file operations, ID mapping, and statistical modeling. Designed to streamline data workflows and improve reproducibility.
 
