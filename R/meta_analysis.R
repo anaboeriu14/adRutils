@@ -86,8 +86,14 @@ check_cohort_alignment <- function(x, y, by,
 #' second cohort) are computed for the pooled row. These concepts do not
 #' generalize to k >= 3, so they are set to `NA` in that case.
 #'
-#' Groups with k = 1 after upstream filtering are retained as-is, with no
-#' pooled row appended (and a warning).
+#' Pooling requires at least 2 cohorts in `data` overall; an input with
+#' only one cohort is treated as a misuse and aborts immediately.
+#'
+#' Within a multi-cohort dataset, individual `(group_vars)` cells may still
+#' have only one cohort represented (e.g., when a model failed to fit in
+#' the other cohort, or when the input is unbalanced). These cells are
+#' retained as-is, with no pooled row appended and `weight = NA`, and a
+#' warning identifies which cells were skipped.
 #'
 #' @param data A tidy effects data frame containing at minimum `cohort`,
 #'   `estimate`, `std.error`, and `n_obs` columns.
@@ -152,6 +158,15 @@ add_meta_pooled_results <- function(data,
     ))
   }
 
+  # Level-1 check: meta-analysis is undefined with fewer than 2 cohorts.
+  n_cohorts_global <- length(unique(data[[cohort_col]]))
+  if (n_cohorts_global < 2L) {
+    cli::cli_abort(c(
+      "Meta-analysis requires at least 2 cohorts; {.arg data} has {n_cohorts_global}.",
+      "i" = "{.fn add_meta_pooled_results} pools effects across cohorts; with one cohort there is nothing to pool."
+    ))
+  }
+
   preserve_cols <- setdiff(names(data), c(cohort_col, .RECOMPUTED_COLS))
 
   group_results <- data %>%
@@ -198,6 +213,14 @@ add_meta_pooled_results <- function(data,
                                 pooled_label) {
 
   k <- nrow(cohort_rows)
+
+  # group_map() strips the grouping columns from `cohort_rows`, but
+  # downstream code (and the user) expects them to be present on every row
+  # of the output. Re-attach them up front so both the k < 2 and k >= 2
+  # paths produce well-formed cohort rows.
+  for (key in names(group_keys)) {
+    cohort_rows[[key]] <- group_keys[[key]]
+  }
 
   if (k < 2L) {
     cli::cli_warn(c(

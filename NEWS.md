@@ -26,6 +26,18 @@ Major cleanup release. Validation, naming, and several functions were standardiz
 
 -   `convert_columns_to_factors`: ordered conversion preserves unobserved factor levels.
 
+-   `add_meta_pooled_results()`: now errors immediately when the input has fewer than 2 unique cohorts; meta-analysis is undefined with a single cohort. Per-cell singleton groups within multi-cohort inputs continue to warn-and-skip.
+
+-   `create_id_mapping()` and `add_id_mapping()`: fixed `trim = TRUE` not actually deduplicating across whitespace differences. Trimming was happening after `distinct()`, so `"A1 "` and `" A1"` were treated as distinct rows. Trimming now happens before deduplication.
+
+-   `create_pairwise_table()`: fixed an internal `cli` evaluation error in the validation message when the grouping variable had fewer than 2 unique levels.
+
+-   `id_mapping`: modernized `dplyr::across()` calls to silence dplyr 1.1.0 deprecation warnings.
+
+## Testing
+
+-   Added a `tests/testthat/` suite to tests across the package's exported functions.
+
 ------------------------------------------------------------------------
 
 # adRutils 1.5.0

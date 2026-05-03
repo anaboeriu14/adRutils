@@ -1,19 +1,17 @@
 Package: adRutils
 Title: Utility Functions for Data Analysis Workflows
 Version: 2.0.0
-Authors@R: 
+Authors@R:
     person("Ana", "Boeriu",
-           email = "your-email@domain",
+           email = "ana.boeriu@ucsf.edu",
            role = c("aut", "cre"))
-Description: A collection of utility functions supporting tidy data
-    analysis workflows, including input validation, data cleaning,
-    longitudinal coalescing, regression model batching, coefficient
-    extraction, and random-effects meta-analysis. Designed to reduce
-    boilerplate in research scripts and to work alongside domain-
-    specific packages.
+Description: Utility functions supporting tidy data analysis workflows,
+    including input validation, data cleaning, longitudinal coalescing,
+    regression model batching, coefficient extraction, and random-effects
+    meta-analysis. Designed to reduce boilerplate in research scripts and
+    to work alongside domain-specific packages.
 License: MIT + file LICENSE
 URL: https://github.com/anaboeriu14/adRutils,
-    https://anaboeriu14.github.io/adRutils
 BugReports: https://github.com/anaboeriu14/adRutils/issues
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -33,8 +31,6 @@ Imports:
     tibble,
     tidyr
 Suggests:
-    doParallel,
-    effectsize,
     lme4,
     metafor,
     missForest,

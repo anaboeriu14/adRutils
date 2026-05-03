@@ -57,6 +57,12 @@ agreement) and \code{replicated} (sign agreement AND |β/SE| > 1.96 in the
 second cohort) are computed for the pooled row. These concepts do not
 generalize to k >= 3, so they are set to \code{NA} in that case.
 
-Groups with k = 1 after upstream filtering are retained as-is, with no
-pooled row appended (and a warning).
+Pooling requires at least 2 cohorts in \code{data} overall; an input with
+only one cohort is treated as a misuse and aborts immediately.
+
+Within a multi-cohort dataset, individual \code{(group_vars)} cells may still
+have only one cohort represented (e.g., when a model failed to fit in
+the other cohort, or when the input is unbalanced). These cells are
+retained as-is, with no pooled row appended and \code{weight = NA}, and a
+warning identifies which cells were skipped.
 }
