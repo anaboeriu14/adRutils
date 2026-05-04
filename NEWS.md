@@ -4,39 +4,39 @@ Major cleanup release. Validation, naming, and several functions were standardiz
 
 ## New
 
--   Outlier detection moved here from `adRpheno` (it's domain-agnostic): `detect_outlier_thresholds()` and `replace_outliers_with_na()`.
+- Outlier detection moved here from `adRpheno` (it's domain-agnostic): `detect_outlier_thresholds()` and `replace_outliers_with_na()`.
 
 ## Breaking changes
 
--   Several functions and parameters were renamed for clarity and consistency (e.g., `categorize_slopes` → `classify_trajectory_groups`, `verbose` → `quiet`).
+- Several functions and parameters were renamed for clarity and consistency (e.g., `categorize_slopes` → `classify_trajectory_groups`, `verbose` → `quiet`).
 
--   `validate_params` was rewritten as `validate_args` with a richer interface and exported assertion helpers (`is_flag`, `is_string`, etc.).
+- `validate_params` was rewritten as `validate_args` with a richer interface and exported assertion helpers (`is_flag`, `is_string`, etc.).
 
--   Cache utilities moved to `adRpheno`. For general caching use `memoise` or `cachem`.
+- Cache utilities moved to `adRpheno`. For general caching use `memoise` or `cachem`.
 
--   `add_inverse_variance_weights` removed; REML weights are now computed inside `add_meta_pooled_results` and attached automatically.
+- `add_inverse_variance_weights` removed; REML weights are now computed inside `add_meta_pooled_results` and attached automatically.
 
--   Confidence interval columns renamed to `conf.low`/`conf.high` (broom convention) in meta-analysis and coefficient extraction.
+- Confidence interval columns renamed to `conf.low`/`conf.high` (broom convention) in meta-analysis and coefficient extraction.
 
 ## Fixes
 
--   `compare_coefs`: numerically stable p-values for highly significant differences.
+- `compare_coefs`: numerically stable p-values for highly significant differences.
 
--   `bin_and_categorize_variables`: single-pass categorical mapping; proper interval notation for default cutpoint labels.
+- `bin_and_categorize_variables`: single-pass categorical mapping; proper interval notation for default cutpoint labels.
 
--   `convert_columns_to_factors`: ordered conversion preserves unobserved factor levels.
+- `convert_columns_to_factors`: ordered conversion preserves unobserved factor levels.
 
--   `add_meta_pooled_results()`: now errors immediately when the input has fewer than 2 unique cohorts; meta-analysis is undefined with a single cohort. Per-cell singleton groups within multi-cohort inputs continue to warn-and-skip.
+- `add_meta_pooled_results()`: now errors immediately when the input has fewer than 2 unique cohorts; meta-analysis is undefined with a single cohort. Per-cell singleton groups within multi-cohort inputs continue to warn-and-skip.
 
--   `create_id_mapping()` and `add_id_mapping()`: fixed `trim = TRUE` not actually deduplicating across whitespace differences. Trimming was happening after `distinct()`, so `"A1 "` and `" A1"` were treated as distinct rows. Trimming now happens before deduplication.
+- `create_id_mapping()` and `add_id_mapping()`: fixed `trim = TRUE` not actually deduplicating across whitespace differences. Trimming was happening after `distinct()`, so `"A1 "` and `" A1"` were treated as distinct rows. Trimming now happens before deduplication.
 
--   `create_pairwise_table()`: fixed an internal `cli` evaluation error in the validation message when the grouping variable had fewer than 2 unique levels.
+- `create_pairwise_table()`: fixed an internal `cli` evaluation error in the validation message when the grouping variable had fewer than 2 unique levels.
 
--   `id_mapping`: modernized `dplyr::across()` calls to silence dplyr 1.1.0 deprecation warnings.
+- `id_mapping`: modernized `dplyr::across()` calls to silence dplyr 1.1.0 deprecation warnings.
 
 ## Testing
 
--   Added a `tests/testthat/` suite to tests across the package's exported functions.
+- Added a `tests/testthat/` suite to tests across the package's exported functions.
 
 ------------------------------------------------------------------------
 
@@ -46,17 +46,17 @@ Major cleanup release. Validation, naming, and several functions were standardiz
 
 `categorize_slopes()` - Categorize random slopes from lme4 mixed-effects models into trajectory groups (e.g., "Slow", "Typical", "Fast").
 
--   Supports multiple classification methods including SD-based (1sd, 1.5sd) and quantile-based (tertile, quartile) cutoffs, with customizable labels and reference levels.
+- Supports multiple classification methods including SD-based (1sd, 1.5sd) and quantile-based (tertile, quartile) cutoffs, with customizable labels and reference levels.
 
 `coalesce_timepoints()` - Coalesce measures across longitudinal timepoints in priority order.
 
--   For each base variable, selects the first non-missing value across user-specified timepoint suffixes and creates \*\_final (coalesced value) and \*\_source (which timepoint contributed) columns. Supports custom timepoint labels.
+- For each base variable, selects the first non-missing value across user-specified timepoint suffixes and creates \*\_final (coalesced value) and \*\_source (which timepoint contributed) columns. Supports custom timepoint labels.
 
 ## Changes
 
--   New dependency: lme4 (for categorize_slopes())
+- New dependency: lme4 (for categorize_slopes())
 
--   Both functions integrate with the existing validate_params() validation framework
+- Both functions integrate with the existing validate_params() validation framework
 
 ------------------------------------------------------------------------
 
@@ -64,23 +64,23 @@ Major cleanup release. Validation, naming, and several functions were standardiz
 
 ## Changes
 
--   **Updated `create_pairwise_table()` -** One function for both numeric and categorical pairwise group comparisons, replacing `extract_pairwise_pvalues()` and the previous `create_pairwise_table()`
-    -   Numeric variables: uses `pairwise.t.test()` for proper multi-comparison adjustment
-    -   Categorical variables: chi-squared test with Fisher's exact fallback
-    -   Added `p_format = "raw"` option to return unformatted numeric p-values
-    -   Output includes `test_type` column indicating which test was used
+- **Updated `create_pairwise_table()` -** One function for both numeric and categorical pairwise group comparisons, replacing `extract_pairwise_pvalues()` and the previous `create_pairwise_table()`
+  - Numeric variables: uses `pairwise.t.test()` for proper multi-comparison adjustment
+  - Categorical variables: chi-squared test with Fisher's exact fallback
+  - Added `p_format = "raw"` option to return unformatted numeric p-values
+  - Output includes `test_type` column indicating which test was used
 
 ## Breaking Changes
 
--   removed `extract_pairwise_pvalues()` and added `create_pairwise_table()` instead
--   `create_pairwise_table()` has a new signature:
-    -   `variables` → split into `numeric_vars` and `categorical_vars`
-    -   `p_adjust` → `p_adjust_method`
-    -   `p_digits` now defaults to 3
+- removed `extract_pairwise_pvalues()` and added `create_pairwise_table()` instead
+- `create_pairwise_table()` has a new signature:
+  - `variables` → split into `numeric_vars` and `categorical_vars`
+  - `p_adjust` → `p_adjust_method`
+  - `p_digits` now defaults to 3
 
 ## Bug Fixes
 
--   Fixed `@import stats` / `@import dplyr` conflict causing warnings on package load
+- Fixed `@import stats` / `@import dplyr` conflict causing warnings on package load
 
 ------------------------------------------------------------------------
 
@@ -88,18 +88,18 @@ Major cleanup release. Validation, naming, and several functions were standardiz
 
 ## New Features
 
--   `extract_coefficients()` - Extract and format raw model coefficients with CIs
--   `extract_standardized_coefs()` - Extract standardized coefficients (requires `parameters` package)
+- `extract_coefficients()` - Extract and format raw model coefficients with CIs
+- `extract_standardized_coefs()` - Extract standardized coefficients (requires `parameters` package)
 
 ## Changes
 
--   **Removed `fit_single_lm()`** - Logic now internal to `fit_models_by_group()`
--   Streamlined `fit_models_by_group()` internals and documentation
--   Streamlined `transform_log10()` - consolidated helper functions
+- **Removed `fit_single_lm()`** - Logic now internal to `fit_models_by_group()`
+- Streamlined `fit_models_by_group()` internals and documentation
+- Streamlined `transform_log10()` - consolidated helper functions
 
 ## Breaking Changes
 
--   `fit_single_lm()` is no longer exported. Use `fit_models_by_group()` with single outcome/group instead.
+- `fit_single_lm()` is no longer exported. Use `fit_models_by_group()` with single outcome/group instead.
 
 ## Bug Fixes
 
@@ -111,8 +111,8 @@ None
 
 ## New Features
 
--   Adds caching utilities to initialize, store, retrieve, add, and clean cached results with expiration support.
--   New helpers for merging datasets with different ID formats: create_id_mapping() and add_id_mapping().
+- Adds caching utilities to initialize, store, retrieve, add, and clean cached results with expiration support.
+- New helpers for merging datasets with different ID formats: create_id_mapping() and add_id_mapping().
 
 ## Bug Fixes
 
@@ -126,26 +126,26 @@ None
 
 ### ID Mapping Utilities
 
--   `create_id_mapping()` - Extract unique ID pairs from datasets with multiple ID formats
--   `add_id_mapping()` - Add ID columns to data using lookup tables for merging datasets with different ID conventions
-    -   Handles numeric and character IDs automatically
-    -   Reports matching statistics
-    -   Warns about duplicates and unmatched rows
+- `create_id_mapping()` - Extract unique ID pairs from datasets with multiple ID formats
+- `add_id_mapping()` - Add ID columns to data using lookup tables for merging datasets with different ID conventions
+  - Handles numeric and character IDs automatically
+  - Reports matching statistics
+  - Warns about duplicates and unmatched rows
 
 ## Improvements
 
--   Simplified `remove_duplicates_if_exists()`:
-    -   Streamlined duplicate reporting (removed overcomplicated categorization)
-    -   Improved `.find_most_complete_row()` logic with early returns
-    -   Removed and Inlined short helper functions for better readability
-    -   Reduced code complexity while maintaining functionality
--   Package-wide documentation cleanup:
-    -   Added `@noRd` to all internal helper functions
-    -   Cleaner documentation output with only exported functions visible
+- Simplified `remove_duplicates_if_exists()`:
+  - Streamlined duplicate reporting (removed overcomplicated categorization)
+  - Improved `.find_most_complete_row()` logic with early returns
+  - Removed and Inlined short helper functions for better readability
+  - Reduced code complexity while maintaining functionality
+- Package-wide documentation cleanup:
+  - Added `@noRd` to all internal helper functions
+  - Cleaner documentation output with only exported functions visible
 
 ## Bug Fixes
 
--   None
+- None
 
 ------------------------------------------------------------------------
 
@@ -177,10 +177,10 @@ If upgrading from 0.4.0 or earlier, note these changes:
 
 ## Bug Fixes
 
--   Fixed parameter mismatch in `convert_columns_to_factors()`
--   Fixed column extraction in `remove_duplicates_if_exists()`
--   Fixed type coercion issues in `read_csvs_by_pattern()`
--   Cleaned up orphaned helper functions
+- Fixed parameter mismatch in `convert_columns_to_factors()`
+- Fixed column extraction in `remove_duplicates_if_exists()`
+- Fixed type coercion issues in `read_csvs_by_pattern()`
+- Cleaned up orphaned helper functions
 
 ------------------------------------------------------------------------
 
@@ -188,8 +188,8 @@ If upgrading from 0.4.0 or earlier, note these changes:
 
 **New:** Enhanced model output
 
--   `fit_models_by_group()` supports `group_col = NULL` for ungrouped analysis
--   Added `model_obj` column for direct model access
+- `fit_models_by_group()` supports `group_col = NULL` for ungrouped analysis
+- Added `model_obj` column for direct model access
 
 ------------------------------------------------------------------------
 
@@ -197,9 +197,9 @@ If upgrading from 0.4.0 or earlier, note these changes:
 
 **New:** Group-specific covariates, pairwise comparisons
 
--   Enhanced `fit_models_by_group()` with group-specific outcome covariates
--   `fit_single_lm()` for individual model fitting
--   `extract_pairwise_pvalues()` and `create_pairwise_table()`
+- Enhanced `fit_models_by_group()` with group-specific outcome covariates
+- `fit_single_lm()` for individual model fitting
+- `extract_pairwise_pvalues()` and `create_pairwise_table()`
 
 ------------------------------------------------------------------------
 
@@ -207,8 +207,8 @@ If upgrading from 0.4.0 or earlier, note these changes:
 
 **New:** Variable coalescing, validation framework
 
--   `coalesce_variables()` - Combine variables by pattern or manual grouping
--   `validate_params()` - Comprehensive input validation
+- `coalesce_variables()` - Combine variables by pattern or manual grouping
+- `validate_params()` - Comprehensive input validation
 
 ------------------------------------------------------------------------
 

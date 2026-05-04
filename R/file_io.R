@@ -130,5 +130,24 @@ read_csvs_by_pattern <- function(directory_path,
   }
 
   if (show_bar) cli::cli_progress_done()
+
+  # Harmonize column types across files before bind_rows.
+  # Rule: if any file has a column as character, treat it as character everywhere.
+  # This handles columns like medication_*_frequency that are integer in some
+  # CSV drops and character in others.
+  char_cols <- unique(unlist(lapply(df_list, function(df) {
+    names(df)[vapply(df, is.character, logical(1))]
+  })))
+
+  if (length(char_cols) > 0L) {
+    df_list <- lapply(df_list, function(df) {
+      to_fix <- intersect(char_cols, names(df))
+      if (length(to_fix) > 0L) {
+        df[to_fix] <- lapply(df[to_fix], as.character)
+      }
+      df
+    })
+  }
+
   df_list
 }
