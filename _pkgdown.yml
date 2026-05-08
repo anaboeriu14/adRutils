@@ -1,53 +1,48 @@
-url: https://anaboeriu14.github.io/adRutils
-
+url: https://anaboeriu14.github.io/adRutils/
 template:
   bootstrap: 5
   bslib:
-    primary: "#2C5F8D"   # tweak to taste; this is a calm slate-blue
-    base_font: {google: "Inter"}
-    heading_font: {google: "Inter"}
-    code_font: {google: "JetBrains Mono"}
-
+    primary: '#2C5F8D'
+    base_font:
+      google: Inter
+    heading_font:
+      google: Inter
+    code_font:
+      google: JetBrains Mono
 home:
   title: adRutils
-  description: >
-    Utility functions for data cleaning, transformation, modeling,
-    meta-analysis, and ID mapping. Designed to streamline reproducible
-    data workflows.
-
+  description: |
+    Utility functions for data cleaning, transformation, modeling, meta-analysis, and ID mapping. Designed to streamline reproducible data workflows.
   links:
   - text: Report a bug
     href: https://github.com/anaboeriu14/adRutils/issues
   - text: View source
     href: https://github.com/anaboeriu14/adRutils
-
 navbar:
   structure:
-    left:  [intro, reference, articles, news]
-    right: [search, github]
-
+    left:
+    - intro
+    - reference
+    - articles
+    - news
+    right:
+    - search
+    - github
 reference:
-
-- title: "Package overview"
-  contents:
-  - adRutils
-
-- title: "Data cleaning"
-  desc: >
-    Detect and remove problematic values, duplicate rows, and missing data
-    before downstream analysis.
+- title: Package overview
+  contents: adRutils
+- title: Data cleaning
+  desc: |
+    Detect and remove problematic values, duplicate rows, and missing data before downstream analysis.
   contents:
   - detect_outlier_thresholds
   - replace_outliers_with_na
   - remove_duplicates
   - summarize_na
   - drop_high_na_cols
-
-- title: "Variable transformation"
-  desc: >
-    Reshape, recode, and combine variables. Most functions add new columns
-    rather than replacing originals, so transformations are easy to inspect
-    and undo.
+- title: Variable transformation
+  desc: |
+    Reshape, recode, and combine variables. Most functions add new columns rather than replacing originals, so transformations are easy to inspect and undo.
   contents:
   - transform_log10
   - bin_and_categorize_variables
@@ -55,54 +50,39 @@ reference:
   - combine_timepoints
   - convert_columns_to_factors
   - select_cols_by_pattern
-
-- title: "ID mapping"
-  desc: >
-    Build and apply ID lookup tables when datasets share subjects but use
-    different identifier formats.
+- title: ID mapping
+  desc: |
+    Build and apply ID lookup tables when datasets share subjects but use different identifier formats.
   contents:
   - create_id_mapping
   - add_id_mapping
-
-- title: "Imputation"
-  contents:
-  - impute_random_forest
-
-- title: "Modeling"
-  desc: >
-    Fit linear models and extract coefficients across outcomes and groups,
-    with support for outcome-specific and group-specific covariates.
+- title: Imputation
+  contents: impute_random_forest
+- title: Modeling
+  desc: |
+    Fit linear models and extract coefficients across outcomes and groups, with support for outcome-specific and group-specific covariates.
   contents:
   - fit_models_by_group
   - extract_coefficients
   - extract_standardized_coefficients
   - compare_coefs
-
-- title: "Meta-analysis"
-  desc: >
-    REML-based pooling across cohorts, with replication-style indicators
-    for two-cohort designs.
+- title: Meta-analysis
+  desc: |
+    REML-based pooling across cohorts, with replication-style indicators for two-cohort designs.
   contents:
   - check_cohort_alignment
   - add_meta_pooled_results
-
-- title: "Longitudinal & mixed-effects"
-  contents:
-  - classify_trajectory_groups
-
-- title: "Group comparisons"
-  contents:
-  - create_pairwise_table
-
-- title: "File I/O & paths"
+- title: Longitudinal & mixed-effects
+  contents: classify_trajectory_groups
+- title: Group comparisons
+  contents: create_pairwise_table
+- title: File I/O & paths
   contents:
   - read_csvs_by_pattern
   - find_sibling_repo_path
-
-- title: "Argument validation"
-  desc: >
-    A consistent interface for input validation, used throughout the
-    package and available for downstream code.
+- title: Argument validation
+  desc: |
+    A consistent interface for input validation, used throughout the package and available for downstream code.
   contents:
   - validate_args
   - custom_check
@@ -113,8 +93,8 @@ reference:
   - is_nonempty_list
   - is_number
   - is_one_of
-
 news:
   releases:
-  - text: "Version 2.0.0"
+  - text: Version 2.0.0
     href: https://github.com/anaboeriu14/adRutils/releases/tag/v2.0.0
+
