@@ -12,7 +12,7 @@
 #' @importFrom stats setNames complete.cases pnorm lm nobs as.formula
 #'   pairwise.t.test qnorm chisq.test p.adjust fisher.test
 #' @importFrom tibble tibble as_tibble
-#' @importFrom rlang .data sym `%||%` `:=` enquo as_name enquos eval_tidy
+#' @importFrom rlang .data sym `%||%` `:=` enquo as_name enquos eval_tidy caller_env quo
 #' @importFrom readr read_csv
 #' @importFrom janitor clean_names
 #' @importFrom here here
@@ -22,3 +22,4 @@
 #' @importFrom tidyr expand_grid unite replace_na unnest
 
 NULL
+

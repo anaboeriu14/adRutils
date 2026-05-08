@@ -10,7 +10,8 @@ validate_args(
   columns = NULL,
   numeric_columns = NULL,
   custom_checks = list(),
-  context = NULL
+  context = NULL,
+  .envir = rlang::caller_env()
 )
 }
 \arguments{
@@ -25,11 +26,17 @@ and \verb{numeric_columns =} shorthand for column existence/type checks.}
 \item{numeric_columns}{Character vector of columns required to exist in
 \code{data} AND be numeric.}
 
-\item{custom_checks}{A list of \verb{list(condition = <logical>, message = <chr>)}
-pairs for domain-specific checks that don't fit the standard shapes.}
+\item{custom_checks}{A list of \code{\link[=custom_check]{custom_check()}} results (or equivalent
+\code{list(condition, message)} pairs with quoted conditions) for
+domain-specific checks that don't fit the standard shapes.}
 
-\item{context}{Calling function name. Defaults to the calling function
-detected via \code{sys.call()}.}
+\item{context}{Calling function name. If \code{NULL}, inferred from the call
+stack.}
+
+\item{.envir}{The environment in which to look up argument values.
+Defaults to the calling environment, which is correct for the typical
+use of calling \code{validate_args()} directly inside a function. Pass an
+explicit environment when wrapping \code{validate_args()} in a helper.}
 }
 \value{
 Invisibly \code{TRUE} if all checks pass; aborts with a consolidated
@@ -41,14 +48,19 @@ all failures together. Designed to replace ad-hoc validation scattered
 through individual functions with a single, uniform interface.
 }
 \details{
-All conditions in \code{custom_checks} are evaluated eagerly when the list is
-constructed (not lazily inside \code{validate_args}). Write each \code{condition}
-so that it is safe to evaluate even when its referent might be \code{NULL},
-typically by guarding with \code{is.null()} and \code{&&}:
+Custom checks accept \emph{unevaluated} expressions, so it is safe to
+reference values that may be \code{NULL} or otherwise problematic --- the
+expression is only evaluated inside \code{validate_args()}, where errors are
+caught and reported as validation failures rather than propagating up
+to the caller. Use \code{\link[=custom_check]{custom_check()}} (or a \code{list(condition = ..., message = ...)}
+pair, where \code{condition} is wrapped in \code{\link[rlang:defusing-advanced]{rlang::quo()}} or the call is
+deferred):
 
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{list(
-  condition = !is.null(x) && is.character(x) && length(x) > 0,
-  message   = "\{.arg x\} must be a non-empty character vector"
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{validate_args(
+  x = is_string(),
+  custom_checks = list(
+    custom_check(nrow(data) > 0, "\{.arg data\} must have at least one row")
+  )
 )
 }\if{html}{\out{</div>}}
 }
@@ -61,7 +73,10 @@ my_function <- function(dataf, vars, threshold = 0.5, quiet = FALSE) {
     numeric_columns = vars,
     vars            = is_nonempty_character(),
     threshold       = is_number(min = 0, max = 1),
-    quiet           = is_flag()
+    quiet           = is_flag(),
+    custom_checks   = list(
+      custom_check(nrow(dataf) > 0, "{.arg dataf} must have rows")
+    )
   )
   # ... function body ...
 }
