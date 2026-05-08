@@ -11,7 +11,7 @@ Description: Utility functions supporting tidy data analysis workflows,
     meta-analysis. Designed to reduce boilerplate in research scripts and
     to work alongside domain-specific packages.
 License: MIT + file LICENSE
-URL: https://github.com/anaboeriu14/adRutils,
+URL: https://github.com/anaboeriu14/adRutils, https://anaboeriu14.github.io/adRutils
 BugReports: https://github.com/anaboeriu14/adRutils/issues
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -31,9 +31,12 @@ Imports:
     tibble,
     tidyr
 Suggests:
+    knitr,
     lme4,
     metafor,
     missForest,
     parameters,
+    rmarkdown,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
+VignetteBuilder: knitr

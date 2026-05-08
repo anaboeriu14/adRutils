@@ -71,7 +71,9 @@ comparison_table <- create_pairwise_table(
 
 ## Documentation
 
-For full documentation, including function details and examples:
+The [adRutils package website](https://anaboeriu14.github.io/adRutils/) has full reference documentation, articles, and the changelog. 
+
+You can also browse documentation from R:
 
 ``` r
 # Browse all functions

@@ -53,3 +53,5 @@ rsconnect/
 .Rbuildignore
 *.Rproj
 .positai
+docs
+inst/doc
