@@ -1,0 +1,322 @@
+# Changelog
+
+## adRutils 2.0.0
+
+Major cleanup release. Validation, naming, and several functions were
+standardized across the package. The function reference reflects the new
+state; the changes are summarized below. See git history for
+per-function detail.
+
+### New
+
+- Outlier detection moved here from `adRpheno` (it’s domain-agnostic):
+  [`detect_outlier_thresholds()`](https://anaboeriu14.github.io/adRutils/reference/detect_outlier_thresholds.md)
+  and
+  [`replace_outliers_with_na()`](https://anaboeriu14.github.io/adRutils/reference/replace_outliers_with_na.md).
+
+### Breaking changes
+
+- Several functions and parameters were renamed for clarity and
+  consistency (e.g., `categorize_slopes` → `classify_trajectory_groups`,
+  `verbose` → `quiet`).
+
+- `validate_params` was rewritten as `validate_args` with a richer
+  interface and exported assertion helpers (`is_flag`, `is_string`,
+  etc.).
+
+- Cache utilities moved to `adRpheno`. For general caching use `memoise`
+  or `cachem`.
+
+- `add_inverse_variance_weights` removed; REML weights are now computed
+  inside `add_meta_pooled_results` and attached automatically.
+
+- Confidence interval columns renamed to `conf.low`/`conf.high` (broom
+  convention) in meta-analysis and coefficient extraction.
+
+### Fixes
+
+- `compare_coefs`: numerically stable p-values for highly significant
+  differences.
+
+- `bin_and_categorize_variables`: single-pass categorical mapping;
+  proper interval notation for default cutpoint labels.
+
+- `convert_columns_to_factors`: ordered conversion preserves unobserved
+  factor levels.
+
+- [`add_meta_pooled_results()`](https://anaboeriu14.github.io/adRutils/reference/add_meta_pooled_results.md):
+  now errors immediately when the input has fewer than 2 unique cohorts;
+  meta-analysis is undefined with a single cohort. Per-cell singleton
+  groups within multi-cohort inputs continue to warn-and-skip.
+
+- [`create_id_mapping()`](https://anaboeriu14.github.io/adRutils/reference/create_id_mapping.md)
+  and
+  [`add_id_mapping()`](https://anaboeriu14.github.io/adRutils/reference/add_id_mapping.md):
+  fixed `trim = TRUE` not actually deduplicating across whitespace
+  differences. Trimming was happening after
+  [`distinct()`](https://dplyr.tidyverse.org/reference/distinct.html),
+  so `"A1 "` and `" A1"` were treated as distinct rows. Trimming now
+  happens before deduplication.
+
+- [`create_pairwise_table()`](https://anaboeriu14.github.io/adRutils/reference/create_pairwise_table.md):
+  fixed an internal `cli` evaluation error in the validation message
+  when the grouping variable had fewer than 2 unique levels.
+
+- `id_mapping`: modernized
+  [`dplyr::across()`](https://dplyr.tidyverse.org/reference/across.html)
+  calls to silence dplyr 1.1.0 deprecation warnings.
+
+### Testing
+
+- Added a `tests/testthat/` suite to tests across the package’s exported
+  functions.
+
+------------------------------------------------------------------------
+
+## adRutils 1.5.0
+
+### New Features - Longitudinal & Mixed-Effects Utilities
+
+`categorize_slopes()` - Categorize random slopes from lme4 mixed-effects
+models into trajectory groups (e.g., “Slow”, “Typical”, “Fast”).
+
+- Supports multiple classification methods including SD-based (1sd,
+  1.5sd) and quantile-based (tertile, quartile) cutoffs, with
+  customizable labels and reference levels.
+
+`coalesce_timepoints()` - Coalesce measures across longitudinal
+timepoints in priority order.
+
+- For each base variable, selects the first non-missing value across
+  user-specified timepoint suffixes and creates \*\_final (coalesced
+  value) and \*\_source (which timepoint contributed) columns. Supports
+  custom timepoint labels.
+
+### Changes
+
+- New dependency: lme4 (for categorize_slopes())
+
+- Both functions integrate with the existing validate_params()
+  validation framework
+
+------------------------------------------------------------------------
+
+## adRutils 1.4.0
+
+### Changes
+
+- **Updated
+  [`create_pairwise_table()`](https://anaboeriu14.github.io/adRutils/reference/create_pairwise_table.md)
+  -** One function for both numeric and categorical pairwise group
+  comparisons, replacing `extract_pairwise_pvalues()` and the previous
+  [`create_pairwise_table()`](https://anaboeriu14.github.io/adRutils/reference/create_pairwise_table.md)
+  - Numeric variables: uses
+    [`pairwise.t.test()`](https://rdrr.io/r/stats/pairwise.t.test.html)
+    for proper multi-comparison adjustment
+  - Categorical variables: chi-squared test with Fisher’s exact fallback
+  - Added `p_format = "raw"` option to return unformatted numeric
+    p-values
+  - Output includes `test_type` column indicating which test was used
+
+### Breaking Changes
+
+- removed `extract_pairwise_pvalues()` and added
+  [`create_pairwise_table()`](https://anaboeriu14.github.io/adRutils/reference/create_pairwise_table.md)
+  instead
+- [`create_pairwise_table()`](https://anaboeriu14.github.io/adRutils/reference/create_pairwise_table.md)
+  has a new signature:
+  - `variables` → split into `numeric_vars` and `categorical_vars`
+  - `p_adjust` → `p_adjust_method`
+  - `p_digits` now defaults to 3
+
+### Bug Fixes
+
+- Fixed `@import stats` / `@import dplyr` conflict causing warnings on
+  package load
+
+------------------------------------------------------------------------
+
+## adRutils 1.3.0
+
+### New Features
+
+- [`extract_coefficients()`](https://anaboeriu14.github.io/adRutils/reference/extract_coefficients.md) -
+  Extract and format raw model coefficients with CIs
+- `extract_standardized_coefs()` - Extract standardized coefficients
+  (requires `parameters` package)
+
+### Changes
+
+- **Removed `fit_single_lm()`** - Logic now internal to
+  [`fit_models_by_group()`](https://anaboeriu14.github.io/adRutils/reference/fit_models_by_group.md)
+- Streamlined
+  [`fit_models_by_group()`](https://anaboeriu14.github.io/adRutils/reference/fit_models_by_group.md)
+  internals and documentation
+- Streamlined
+  [`transform_log10()`](https://anaboeriu14.github.io/adRutils/reference/transform_log10.md) -
+  consolidated helper functions
+
+### Breaking Changes
+
+- `fit_single_lm()` is no longer exported. Use
+  [`fit_models_by_group()`](https://anaboeriu14.github.io/adRutils/reference/fit_models_by_group.md)
+  with single outcome/group instead.
+
+### Bug Fixes
+
+None
+
+------------------------------------------------------------------------
+
+## adRutils 1.2.0
+
+### New Features
+
+- Adds caching utilities to initialize, store, retrieve, add, and clean
+  cached results with expiration support.
+- New helpers for merging datasets with different ID formats:
+  create_id_mapping() and add_id_mapping().
+
+### Bug Fixes
+
+None
+
+------------------------------------------------------------------------
+
+## adRutils 1.1.0
+
+### New Features
+
+#### ID Mapping Utilities
+
+- [`create_id_mapping()`](https://anaboeriu14.github.io/adRutils/reference/create_id_mapping.md) -
+  Extract unique ID pairs from datasets with multiple ID formats
+- [`add_id_mapping()`](https://anaboeriu14.github.io/adRutils/reference/add_id_mapping.md) -
+  Add ID columns to data using lookup tables for merging datasets with
+  different ID conventions
+  - Handles numeric and character IDs automatically
+  - Reports matching statistics
+  - Warns about duplicates and unmatched rows
+
+### Improvements
+
+- Simplified `remove_duplicates_if_exists()`:
+  - Streamlined duplicate reporting (removed overcomplicated
+    categorization)
+  - Improved `.find_most_complete_row()` logic with early returns
+  - Removed and Inlined short helper functions for better readability
+  - Reduced code complexity while maintaining functionality
+- Package-wide documentation cleanup:
+  - Added `@noRd` to all internal helper functions
+  - Cleaner documentation output with only exported functions visible
+
+### Bug Fixes
+
+- None
+
+------------------------------------------------------------------------
+
+## adRutils 1.0.0
+
+### Breaking Changes
+
+If upgrading from 0.4.0 or earlier, note these changes:
+
+**Removed Systems** - **Tracking system** (`tracking.R`) - check for
+column existence directly - **Cache system** (`cache.R`) - implement at
+script level if needed
+
+**Parameter Renames** -
+[`transform_log10()`](https://anaboeriu14.github.io/adRutils/reference/transform_log10.md):
+`force` → `overwrite` -
+[`coalesce_variables()`](https://anaboeriu14.github.io/adRutils/reference/coalesce_variables.md):
+`force` → `overwrite`
+
+``` r
+
+# Migration example
+# Before: transform_log10(data, vars = "x", force = TRUE)
+# After:  transform_log10(data, vars = "x", overwrite = TRUE)
+```
+
+### New Features
+
+**Pairwise Comparisons** - Flexible p-value formatting: `auto`,
+`threshold`, `exact`, `scientific` - Functions:
+`extract_pairwise_pvalues()`,
+[`create_pairwise_table()`](https://anaboeriu14.github.io/adRutils/reference/create_pairwise_table.md)
+
+**Model Enhancements** -
+[`fit_models_by_group()`](https://anaboeriu14.github.io/adRutils/reference/fit_models_by_group.md)
+supports ungrouped analysis (`group_col = NULL`) - Access both tidy
+results (`model_res`) and raw model object (`model_obj`)
+
+**Better Duplicate Handling** - `remove_duplicates_if_exists()` now uses
+rlang - Works with quoted (`"med_id"`) and unquoted (`med_id`) syntax
+
+**Improved File Reading** -
+[`read_csvs_by_pattern()`](https://anaboeriu14.github.io/adRutils/reference/read_csvs_by_pattern.md)
+has better error messages for type mismatches - Suggests solutions when
+column types conflict across files
+
+### Bug Fixes
+
+- Fixed parameter mismatch in
+  [`convert_columns_to_factors()`](https://anaboeriu14.github.io/adRutils/reference/convert_columns_to_factors.md)
+- Fixed column extraction in `remove_duplicates_if_exists()`
+- Fixed type coercion issues in
+  [`read_csvs_by_pattern()`](https://anaboeriu14.github.io/adRutils/reference/read_csvs_by_pattern.md)
+- Cleaned up orphaned helper functions
+
+------------------------------------------------------------------------
+
+## adRutils 0.4.0
+
+**New:** Enhanced model output
+
+- [`fit_models_by_group()`](https://anaboeriu14.github.io/adRutils/reference/fit_models_by_group.md)
+  supports `group_col = NULL` for ungrouped analysis
+- Added `model_obj` column for direct model access
+
+------------------------------------------------------------------------
+
+## adRutils 0.3.0
+
+**New:** Group-specific covariates, pairwise comparisons
+
+- Enhanced
+  [`fit_models_by_group()`](https://anaboeriu14.github.io/adRutils/reference/fit_models_by_group.md)
+  with group-specific outcome covariates
+- `fit_single_lm()` for individual model fitting
+- `extract_pairwise_pvalues()` and
+  [`create_pairwise_table()`](https://anaboeriu14.github.io/adRutils/reference/create_pairwise_table.md)
+
+------------------------------------------------------------------------
+
+## adRutils 0.2.0
+
+**New:** Variable coalescing, validation framework
+
+- [`coalesce_variables()`](https://anaboeriu14.github.io/adRutils/reference/coalesce_variables.md) -
+  Combine variables by pattern or manual grouping
+- `validate_params()` - Comprehensive input validation
+
+------------------------------------------------------------------------
+
+## adRutils 0.1.2
+
+**Fixed:** `remove_duplicates_if_exists()` error with
+`keep = "most_complete"`
+
+------------------------------------------------------------------------
+
+## adRutils 0.1.1
+
+**New:** Processing tracking system (removed in 1.0.0)
+
+------------------------------------------------------------------------
+
+## adRutils 0.1.0
+
+**Initial release:** File operations, missing data tools,
+transformations
