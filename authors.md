@@ -7,7 +7,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/anaboeriu14/adRutils/blob/main/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/anaboeriu14/adRutils/blob/v2.0.1/DESCRIPTION)
 
 Boeriu A (2026). *adRutils: Utility Functions for Data Analysis
 Workflows*. R package version 2.0.1,
