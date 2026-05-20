@@ -1,5 +1,38 @@
 # Changelog
 
+## adRutils 2.0.1
+
+### Fixes
+
+- [`add_meta_pooled_results()`](https://anaboeriu14.github.io/adRutils/reference/add_meta_pooled_results.md):
+  warn when input data uses non-broom CI column names (`lci`/`uci`,
+  `ci_low`/`ci_high`, etc.) instead of `conf.low`/`conf.high`.
+  Previously these columns would be silently carried forward from the
+  first cohort row instead of being recomputed from the pooled model,
+  which could produce misleading CIs on pooled rows.
+
+- [`add_meta_pooled_results()`](https://anaboeriu14.github.io/adRutils/reference/add_meta_pooled_results.md):
+  group columns are now explicitly attached to cohort rows up front in
+  the internal `.build_pooled_group()` helper, ensuring correct behavior
+  on the k \< 2 early-return path. No change in output for the standard
+  k \>= 2 case; this is a defensive cleanup that improves readability
+  and protects against future refactors.
+
+### Breaking changes
+
+- [`add_meta_pooled_results()`](https://anaboeriu14.github.io/adRutils/reference/add_meta_pooled_results.md):
+  now aborts when the input contains fewer than 2 unique cohorts
+  overall. Previously this case warned per-group and returned unchanged
+  data. Per-group k \< 2 cells (within an otherwise multi-cohort
+  dataset) still warn and carry on as before.
+
+### Documentation
+
+- [`add_meta_pooled_results()`](https://anaboeriu14.github.io/adRutils/reference/add_meta_pooled_results.md):
+  clarified CI column-name expectations in `@details`.
+
+------------------------------------------------------------------------
+
 ## adRutils 2.0.0
 
 Major cleanup release. Validation, naming, and several functions were

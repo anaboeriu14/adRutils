@@ -38,8 +38,7 @@ impute_random_forest(
   If `TRUE`, use the `"forests"` parallelization mode of
   [`missForest::missForest()`](https://rdrr.io/pkg/missForest/man/missForest.html).
   Default `FALSE`. Requires registering a parallel backend (e.g.,
-  [`doParallel::registerDoParallel()`](https://rdrr.io/pkg/doParallel/man/registerDoParallel.html))
-  *before* calling.
+  `doParallel::registerDoParallel()`) *before* calling.
 
 - quiet:
 
