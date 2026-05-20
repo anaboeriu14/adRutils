@@ -110,6 +110,14 @@ check_cohort_alignment <- function(x, y, by,
 #'   for the `cohort` column in the returned data. If `NULL`, a factor is
 #'   built from the unique values with `pooled_label` last.
 #'
+#' @details
+#' Confidence intervals for the pooled row are computed from the REML model
+#' and stored in `conf.low`/`conf.high` (broom convention). If your input
+#' data uses other CI column names (e.g., `lci`/`uci`), those columns will
+#' be treated as metadata and carried forward unchanged from the first
+#' cohort row of each group, NOT recomputed. Rename to `conf.low`/`conf.high`
+#' before calling to get correct pooled CIs.
+#'
 #' @return `data` with pooled rows appended and a `weight` column added.
 #'   New columns on the pooled rows: `I2`, `Q`, `tau2`, `n_cohorts`,
 #'   `same_direction`, `replicated`. The pooled row's `n_obs` is the sum
@@ -151,12 +159,28 @@ add_meta_pooled_results <- function(data,
     )
   )
 
+  #possible alternative col names for CI
+  alt_ci_cols <- intersect(c("lci", "uci", "ci_low", "ci_high",
+                             "CI_low", "CI_high"), names(data))
+
+  #broom style CI
+  has_broom_ci <-  all(c("conf.low", "conf.high") %in% names(data))
+
+  if (length(alt_ci_cols) > 0L && !has_broom_ci) {
+    cli::cli_warn(c(
+      "Found CI column{?s} {.field {alt_ci_cols}} but not {.field conf.low}/{.field conf.high}.",
+      "!" = "These columns will be carried forward unchanged from the first cohort row, NOT recomputed.",
+      "i" = "Rename to {.field conf.low}/{.field conf.high} before calling to get pooled CIs."
+    ))
+  }
+
   if (!requireNamespace("metafor", quietly = TRUE)) {
     cli::cli_abort(c(
       "The {.pkg metafor} package is required for meta-analysis",
       "i" = "Install with: {.code install.packages(\"metafor\")}"
     ))
   }
+
 
   # Level-1 check: meta-analysis is undefined with fewer than 2 cohorts.
   n_cohorts_global <- length(unique(data[[cohort_col]]))

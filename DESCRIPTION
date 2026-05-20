@@ -1,6 +1,6 @@
 Package: adRutils
 Title: Utility Functions for Data Analysis Workflows
-Version: 2.0.0
+Version: 2.0.1
 Authors@R:
     person("Ana", "Boeriu",
            email = "ana.boeriu@ucsf.edu",

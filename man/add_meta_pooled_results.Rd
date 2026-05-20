@@ -65,4 +65,11 @@ have only one cohort represented (e.g., when a model failed to fit in
 the other cohort, or when the input is unbalanced). These cells are
 retained as-is, with no pooled row appended and \code{weight = NA}, and a
 warning identifies which cells were skipped.
+
+Confidence intervals for the pooled row are computed from the REML model
+and stored in \code{conf.low}/\code{conf.high} (broom convention). If your input
+data uses other CI column names (e.g., \code{lci}/\code{uci}), those columns will
+be treated as metadata and carried forward unchanged from the first
+cohort row of each group, NOT recomputed. Rename to \code{conf.low}/\code{conf.high}
+before calling to get correct pooled CIs.
 }
