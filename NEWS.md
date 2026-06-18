@@ -1,15 +1,17 @@
 # adRutils 2.1.0
 
+## Breaking changes
+
+- `summarize_na()` and `drop_high_na_cols()` were renamed to
+  `summarize_missingness()` and `drop_cols_by_missingness()`. The old names
+  have been removed — update any code that called them.
+
 ## New
 
 - `compute_zscores()` — standardize numeric variables to z-scores, optionally
   group-wise via `group_vars`. Moved here from `adRpheno`; it's a
   domain-agnostic transform that completes the clean → transform → standardize
   toolchain alongside `transform_log10()` and the outlier functions.
-
-- `summarize_na()` and `drop_high_na_cols()` were renamed to
-  `summarize_missingness()` and `drop_cols_by_missingness()`. The old names
-  still work but are deprecated and warn.
 
 - `summarize_missingness()` gains an `na_strings` argument to count empty or
   sentinel strings (e.g. `""`, matched after whitespace trimming) as missing.
@@ -22,20 +24,20 @@
 
 ## Fixes
 
-- `summarize_na()`: removed a stray `names` attribute carried over from
-  `colSums()` onto the `count_na`/`percent_na` columns. Printed output is
-  unchanged; this only affects code that indexed a single value out of those
-  columns and saw an unexpected element name.
+- `summarize_missingness()`: removed a stray `names` attribute carried over from
+  `colSums()` onto the count columns. Printed output is unchanged; this only
+  affects code that indexed a single value out of those columns and saw an
+  unexpected element name.
 
 ## Documentation
 
-- New "Biomarker standardization" vignette walking through the full
+- New "Log-Transformation and Z-Scores" vignette walking through the full
   preprocessing workflow: outlier handling → log10 transform → z-scoring.
 
 ## Testing
 
-- Added tests for `compute_zscores()` and for the new blank-counting path in
-  `summarize_na()`.
+- Added tests for `compute_zscores()` and the new blank-counting path in
+  `summarize_missingness()`.
 
 -----------------------------------------------------------------------
 
@@ -44,10 +46,10 @@
 - `add_meta_pooled_results()`: warn when input data uses non-broom CI column names (`lci`/`uci`, `ci_low`/`ci_high`, etc.) instead of `conf.low`/`conf.high`. Previously these columns would be silently carried forward from the first cohort row instead of being recomputed from the pooled model, which could produce misleading CIs on pooled rows. |
 - `add_meta_pooled_results()`: group columns are now explicitly attached to cohort rows up front in the internal `.build_pooled_group()` helper, ensuring correct behavior on the k \< 2 early-return path. No change in output for the standard k \>= 2 case; this is a defensive cleanup that improves readability and protects against future refactors. |
 
-## Breaking changes |
+## Breaking changes 
 - `add_meta_pooled_results()`: now aborts when the input contains fewer than 2 unique cohorts overall. Previously this case warned per-group and returned unchanged data. Per-group k \< 2 cells (within an otherwise multi-cohort dataset) still warn and carry on as before. |
 
-## Documentation |
+## Documentation 
 - `add_meta_pooled_results()`: clarified CI column-name expectations in `@details`. 
 
 -----------------------------------------------------------------------
