@@ -18,10 +18,11 @@
       <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/data-cleaning.html">Data cleaning pipeline</a></li>
-    <li><a class="dropdown-item" href="../articles/meta_analysis.html">Meta-analysis workflow</a></li>
-    <li><a class="dropdown-item" href="../articles/trajectories.html">Trajectory classification</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/data_cleaning.html">Data Cleaning</a></li>
+    <li><a class="dropdown-item" href="../articles/lmm_trajectories.html">Trajectory Classification from Mixed-Effects Models</a></li>
+    <li><a class="dropdown-item" href="../articles/reml_meta_analysis.html">REML Meta-analysis</a></li>
     <li><a class="dropdown-item" href="../articles/upgrading.html">Upgrading from 1.x to 2.0</a></li>
+    <li><a class="dropdown-item" href="../articles/variable_standardization.html">Log-Transformation and Z-Scores</a></li>
   </ul></li>
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-news" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">News</button>
@@ -42,56 +43,69 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/anaboeriu14/adRutils/blob/v2.0.1/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/anaboeriu14/adRutils/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="2.1.0" id="adrutils-210">adRutils 2.1.0<a class="anchor" aria-label="anchor" href="#adrutils-210"></a></h2>
+<div class="section level3">
+<h3 id="new-2-1-0">New<a class="anchor" aria-label="anchor" href="#new-2-1-0"></a></h3>
+<ul><li><p><code><a href="../reference/compute_zscores.html">compute_zscores()</a></code> — standardize numeric variables to z-scores, optionally group-wise via <code>group_vars</code>. Moved here from <code>adRpheno</code>; it’s a domain-agnostic transform that completes the clean → transform → standardize toolchain alongside <code><a href="../reference/transform_log10.html">transform_log10()</a></code> and the outlier functions.</p></li>
+<li><p><code><a href="../reference/summarize_na.html">summarize_na()</a></code> gains an <code>na_strings</code> argument to also count empty or sentinel strings (e.g. <code>""</code>, matched after whitespace trimming) as missing. When supplied, the output gains <code>count_blank</code>, <code>count_missing</code>, and <code>percent_missing</code> columns, and <code>threshold</code> filters on <code>percent_missing</code>. The default (<code>na_strings = NULL</code>) is unchanged: only true <code>NA</code> is counted.</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="fixes-2-1-0">Fixes<a class="anchor" aria-label="anchor" href="#fixes-2-1-0"></a></h3>
+<ul><li>
+<code><a href="../reference/summarize_na.html">summarize_na()</a></code>: removed a stray <code>names</code> attribute carried over from <code><a href="https://rdrr.io/pkg/Matrix/man/colSums-methods.html" class="external-link">colSums()</a></code> onto the <code>count_na</code>/<code>percent_na</code> columns. Printed output is unchanged; this only affects code that indexed a single value out of those columns and saw an unexpected element name.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="documentation-2-1-0">Documentation<a class="anchor" aria-label="anchor" href="#documentation-2-1-0"></a></h3>
+<ul><li>New “Biomarker standardization” vignette walking through the full preprocessing workflow: outlier handling → log10 transform → z-scoring.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="testing-2-1-0">Testing<a class="anchor" aria-label="anchor" href="#testing-2-1-0"></a></h3>
+<ul><li>Added tests for <code><a href="../reference/compute_zscores.html">compute_zscores()</a></code> and for the new blank-counting path in <code><a href="../reference/summarize_na.html">summarize_na()</a></code>.</li>
+</ul><hr></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.0.1" id="adrutils-201">adRutils 2.0.1<a class="anchor" aria-label="anchor" href="#adrutils-201"></a></h2>
 <div class="section level3">
 <h3 id="fixes-2-0-1">Fixes<a class="anchor" aria-label="anchor" href="#fixes-2-0-1"></a></h3>
-<ul><li><p><code><a href="../reference/add_meta_pooled_results.html">add_meta_pooled_results()</a></code>: warn when input data uses non-broom CI column names (<code>lci</code>/<code>uci</code>, <code>ci_low</code>/<code>ci_high</code>, etc.) instead of <code>conf.low</code>/<code>conf.high</code>. Previously these columns would be silently carried forward from the first cohort row instead of being recomputed from the pooled model, which could produce misleading CIs on pooled rows.</p></li>
-<li><p><code><a href="../reference/add_meta_pooled_results.html">add_meta_pooled_results()</a></code>: group columns are now explicitly attached to cohort rows up front in the internal <code>.build_pooled_group()</code> helper, ensuring correct behavior on the k &lt; 2 early-return path. No change in output for the standard k &gt;= 2 case; this is a defensive cleanup that improves readability and protects against future refactors.</p></li>
-</ul></div>
-<div class="section level3">
-<h3 id="breaking-changes-2-0-1">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-2-0-1"></a></h3>
 <ul><li>
-<code><a href="../reference/add_meta_pooled_results.html">add_meta_pooled_results()</a></code>: now aborts when the input contains fewer than 2 unique cohorts overall. Previously this case warned per-group and returned unchanged data. Per-group k &lt; 2 cells (within an otherwise multi-cohort dataset) still warn and carry on as before.</li>
+<code><a href="../reference/add_meta_pooled_results.html">add_meta_pooled_results()</a></code>: warn when input data uses non-broom CI column names (<code>lci</code>/<code>uci</code>, <code>ci_low</code>/<code>ci_high</code>, etc.) instead of <code>conf.low</code>/<code>conf.high</code>. Previously these columns would be silently carried forward from the first cohort row instead of being recomputed from the pooled model, which could produce misleading CIs on pooled rows. |</li>
+<li>
+<code><a href="../reference/add_meta_pooled_results.html">add_meta_pooled_results()</a></code>: group columns are now explicitly attached to cohort rows up front in the internal <code>.build_pooled_group()</code> helper, ensuring correct behavior on the k &lt; 2 early-return path. No change in output for the standard k &gt;= 2 case; this is a defensive cleanup that improves readability and protects against future refactors. |</li>
 </ul></div>
 <div class="section level3">
-<h3 id="documentation-2-0-1">Documentation<a class="anchor" aria-label="anchor" href="#documentation-2-0-1"></a></h3>
+<h3 id="breaking-changes--2-0-1">Breaking changes |<a class="anchor" aria-label="anchor" href="#breaking-changes--2-0-1"></a></h3>
+<ul><li>
+<code><a href="../reference/add_meta_pooled_results.html">add_meta_pooled_results()</a></code>: now aborts when the input contains fewer than 2 unique cohorts overall. Previously this case warned per-group and returned unchanged data. Per-group k &lt; 2 cells (within an otherwise multi-cohort dataset) still warn and carry on as before. |</li>
+</ul></div>
+<div class="section level3">
+<h3 id="documentation--2-0-1">Documentation |<a class="anchor" aria-label="anchor" href="#documentation--2-0-1"></a></h3>
 <ul><li>
 <code><a href="../reference/add_meta_pooled_results.html">add_meta_pooled_results()</a></code>: clarified CI column-name expectations in <code>@details</code>.</li>
-</ul><hr></div>
-</div>
-    <div class="section level2">
-<h2 class="pkg-version" data-toc-text="2.0.0" id="adrutils-200">adRutils 2.0.0<a class="anchor" aria-label="anchor" href="#adrutils-200"></a></h2>
-<p>Major cleanup release. Validation, naming, and several functions were standardized across the package. The function reference reflects the new state; the changes are summarized below. See git history for per-function detail.</p>
-<div class="section level3">
-<h3 id="new-2-0-0">New<a class="anchor" aria-label="anchor" href="#new-2-0-0"></a></h3>
-<ul><li>Outlier detection moved here from <code>adRpheno</code> (it’s domain-agnostic): <code><a href="../reference/detect_outlier_thresholds.html">detect_outlier_thresholds()</a></code> and <code><a href="../reference/replace_outliers_with_na.html">replace_outliers_with_na()</a></code>.</li>
-</ul></div>
-<div class="section level3">
-<h3 id="breaking-changes-2-0-0">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-2-0-0"></a></h3>
-<ul><li><p>Several functions and parameters were renamed for clarity and consistency (e.g., <code>categorize_slopes</code> → <code>classify_trajectory_groups</code>, <code>verbose</code> → <code>quiet</code>).</p></li>
-<li><p><code>validate_params</code> was rewritten as <code>validate_args</code> with a richer interface and exported assertion helpers (<code>is_flag</code>, <code>is_string</code>, etc.).</p></li>
-<li><p>Cache utilities moved to <code>adRpheno</code>. For general caching use <code>memoise</code> or <code>cachem</code>.</p></li>
-<li><p><code>add_inverse_variance_weights</code> removed; REML weights are now computed inside <code>add_meta_pooled_results</code> and attached automatically.</p></li>
-<li><p>Confidence interval columns renamed to <code>conf.low</code>/<code>conf.high</code> (broom convention) in meta-analysis and coefficient extraction.</p></li>
-</ul></div>
-<div class="section level3">
-<h3 id="fixes-2-0-0">Fixes<a class="anchor" aria-label="anchor" href="#fixes-2-0-0"></a></h3>
-<ul><li><p><code>compare_coefs</code>: numerically stable p-values for highly significant differences.</p></li>
-<li><p><code>bin_and_categorize_variables</code>: single-pass categorical mapping; proper interval notation for default cutpoint labels.</p></li>
-<li><p><code>convert_columns_to_factors</code>: ordered conversion preserves unobserved factor levels.</p></li>
-<li><p><code><a href="../reference/add_meta_pooled_results.html">add_meta_pooled_results()</a></code>: now errors immediately when the input has fewer than 2 unique cohorts; meta-analysis is undefined with a single cohort. Per-cell singleton groups within multi-cohort inputs continue to warn-and-skip.</p></li>
-<li><p><code><a href="../reference/create_id_mapping.html">create_id_mapping()</a></code> and <code><a href="../reference/add_id_mapping.html">add_id_mapping()</a></code>: fixed <code>trim = TRUE</code> not actually deduplicating across whitespace differences. Trimming was happening after <code><a href="https://dplyr.tidyverse.org/reference/distinct.html" class="external-link">distinct()</a></code>, so <code>"A1 "</code> and <code>" A1"</code> were treated as distinct rows. Trimming now happens before deduplication.</p></li>
-<li><p><code><a href="../reference/create_pairwise_table.html">create_pairwise_table()</a></code>: fixed an internal <code>cli</code> evaluation error in the validation message when the grouping variable had fewer than 2 unique levels.</p></li>
-<li><p><code>id_mapping</code>: modernized <code><a href="https://dplyr.tidyverse.org/reference/across.html" class="external-link">dplyr::across()</a></code> calls to silence dplyr 1.1.0 deprecation warnings.</p></li>
-</ul></div>
-<div class="section level3">
-<h3 id="testing-2-0-0">Testing<a class="anchor" aria-label="anchor" href="#testing-2-0-0"></a></h3>
-<ul><li>Added a <code>tests/testthat/</code> suite to tests across the package’s exported functions.</li>
-</ul><hr></div>
+</ul><table class="table"><colgroup><col width="100%"></colgroup><tbody><tr><td align="left"># adRutils 2.0.0</td>
+</tr><tr><td align="left">Major cleanup release. Validation, naming, and several functions were standardized across the package. The function reference reflects the new state; the changes are summarized below. See git history for per-function detail.</td>
+</tr><tr><td align="left">## New</td>
+</tr><tr><td align="left">- Outlier detection moved here from <code>adRpheno</code> (it’s domain-agnostic): <code><a href="../reference/detect_outlier_thresholds.html">detect_outlier_thresholds()</a></code> and <code><a href="../reference/replace_outliers_with_na.html">replace_outliers_with_na()</a></code>.</td>
+</tr><tr><td align="left">## Breaking changes</td>
+</tr><tr><td align="left">- Several functions and parameters were renamed for clarity and consistency (e.g., <code>categorize_slopes</code> → <code>classify_trajectory_groups</code>, <code>verbose</code> → <code>quiet</code>).</td>
+</tr><tr><td align="left">- <code>validate_params</code> was rewritten as <code>validate_args</code> with a richer interface and exported assertion helpers (<code>is_flag</code>, <code>is_string</code>, etc.).</td>
+</tr><tr><td align="left">- Cache utilities moved to <code>adRpheno</code>. For general caching use <code>memoise</code> or <code>cachem</code>.</td>
+</tr><tr><td align="left">- <code>add_inverse_variance_weights</code> removed; REML weights are now computed inside <code>add_meta_pooled_results</code> and attached automatically.</td>
+</tr><tr><td align="left">- Confidence interval columns renamed to <code>conf.low</code>/<code>conf.high</code> (broom convention) in meta-analysis and coefficient extraction.</td>
+</tr><tr><td align="left">## Fixes</td>
+</tr><tr><td align="left">- <code>compare_coefs</code>: numerically stable p-values for highly significant differences.</td>
+</tr><tr><td align="left">- <code>bin_and_categorize_variables</code>: single-pass categorical mapping; proper interval notation for default cutpoint labels.</td>
+</tr><tr><td align="left">- <code>convert_columns_to_factors</code>: ordered conversion preserves unobserved factor levels.</td>
+</tr><tr><td align="left">- <code><a href="../reference/add_meta_pooled_results.html">add_meta_pooled_results()</a></code>: now errors immediately when the input has fewer than 2 unique cohorts; meta-analysis is undefined with a single cohort. Per-cell singleton groups within multi-cohort inputs continue to warn-and-skip.</td>
+</tr><tr><td align="left">- <code><a href="../reference/create_id_mapping.html">create_id_mapping()</a></code> and <code><a href="../reference/add_id_mapping.html">add_id_mapping()</a></code>: fixed <code>trim = TRUE</code> not actually deduplicating across whitespace differences. Trimming was happening after <code><a href="https://dplyr.tidyverse.org/reference/distinct.html" class="external-link">distinct()</a></code>, so <code>"A1 "</code> and <code>" A1"</code> were treated as distinct rows. Trimming now happens before deduplication.</td>
+</tr><tr><td align="left">- <code><a href="../reference/create_pairwise_table.html">create_pairwise_table()</a></code>: fixed an internal <code>cli</code> evaluation error in the validation message when the grouping variable had fewer than 2 unique levels.</td>
+</tr><tr><td align="left">- <code>id_mapping</code>: modernized <code><a href="https://dplyr.tidyverse.org/reference/across.html" class="external-link">dplyr::across()</a></code> calls to silence dplyr 1.1.0 deprecation warnings.</td>
+</tr><tr><td align="left">## Testing</td>
+</tr><tr><td align="left">- Added a <code>tests/testthat/</code> suite to tests across the package’s exported functions.</td>
+</tr></tbody></table></div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.5.0" id="adrutils-150">adRutils 1.5.0<a class="anchor" aria-label="anchor" href="#adrutils-150"></a></h2>

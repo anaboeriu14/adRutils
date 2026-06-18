@@ -1,5 +1,49 @@
 # Changelog
 
+## adRutils 2.1.0
+
+### New
+
+- [`compute_zscores()`](https://anaboeriu14.github.io/adRutils/reference/compute_zscores.md)
+  — standardize numeric variables to z-scores, optionally group-wise via
+  `group_vars`. Moved here from `adRpheno`; it’s a domain-agnostic
+  transform that completes the clean → transform → standardize toolchain
+  alongside
+  [`transform_log10()`](https://anaboeriu14.github.io/adRutils/reference/transform_log10.md)
+  and the outlier functions.
+
+- [`summarize_na()`](https://anaboeriu14.github.io/adRutils/reference/summarize_na.md)
+  gains an `na_strings` argument to also count empty or sentinel strings
+  (e.g. `""`, matched after whitespace trimming) as missing. When
+  supplied, the output gains `count_blank`, `count_missing`, and
+  `percent_missing` columns, and `threshold` filters on
+  `percent_missing`. The default (`na_strings = NULL`) is unchanged:
+  only true `NA` is counted.
+
+### Fixes
+
+- [`summarize_na()`](https://anaboeriu14.github.io/adRutils/reference/summarize_na.md):
+  removed a stray `names` attribute carried over from
+  [`colSums()`](https://rdrr.io/pkg/Matrix/man/colSums-methods.html)
+  onto the `count_na`/`percent_na` columns. Printed output is unchanged;
+  this only affects code that indexed a single value out of those
+  columns and saw an unexpected element name.
+
+### Documentation
+
+- New “Biomarker standardization” vignette walking through the full
+  preprocessing workflow: outlier handling → log10 transform →
+  z-scoring.
+
+### Testing
+
+- Added tests for
+  [`compute_zscores()`](https://anaboeriu14.github.io/adRutils/reference/compute_zscores.md)
+  and for the new blank-counting path in
+  [`summarize_na()`](https://anaboeriu14.github.io/adRutils/reference/summarize_na.md).
+
+------------------------------------------------------------------------
+
 ## adRutils 2.0.1
 
 ### Fixes
@@ -9,102 +53,49 @@
   `ci_low`/`ci_high`, etc.) instead of `conf.low`/`conf.high`.
   Previously these columns would be silently carried forward from the
   first cohort row instead of being recomputed from the pooled model,
-  which could produce misleading CIs on pooled rows.
-
+  which could produce misleading CIs on pooled rows. \|
 - [`add_meta_pooled_results()`](https://anaboeriu14.github.io/adRutils/reference/add_meta_pooled_results.md):
   group columns are now explicitly attached to cohort rows up front in
   the internal `.build_pooled_group()` helper, ensuring correct behavior
   on the k \< 2 early-return path. No change in output for the standard
   k \>= 2 case; this is a defensive cleanup that improves readability
-  and protects against future refactors.
+  and protects against future refactors. \|
 
-### Breaking changes
+### Breaking changes \|
 
 - [`add_meta_pooled_results()`](https://anaboeriu14.github.io/adRutils/reference/add_meta_pooled_results.md):
   now aborts when the input contains fewer than 2 unique cohorts
   overall. Previously this case warned per-group and returned unchanged
   data. Per-group k \< 2 cells (within an otherwise multi-cohort
-  dataset) still warn and carry on as before.
+  dataset) still warn and carry on as before. \|
 
-### Documentation
+### Documentation \|
 
 - [`add_meta_pooled_results()`](https://anaboeriu14.github.io/adRutils/reference/add_meta_pooled_results.md):
   clarified CI column-name expectations in `@details`.
 
-------------------------------------------------------------------------
-
-## adRutils 2.0.0
-
-Major cleanup release. Validation, naming, and several functions were
-standardized across the package. The function reference reflects the new
-state; the changes are summarized below. See git history for
-per-function detail.
-
-### New
-
-- Outlier detection moved here from `adRpheno` (it’s domain-agnostic):
-  [`detect_outlier_thresholds()`](https://anaboeriu14.github.io/adRutils/reference/detect_outlier_thresholds.md)
-  and
-  [`replace_outliers_with_na()`](https://anaboeriu14.github.io/adRutils/reference/replace_outliers_with_na.md).
-
-### Breaking changes
-
-- Several functions and parameters were renamed for clarity and
-  consistency (e.g., `categorize_slopes` → `classify_trajectory_groups`,
-  `verbose` → `quiet`).
-
-- `validate_params` was rewritten as `validate_args` with a richer
-  interface and exported assertion helpers (`is_flag`, `is_string`,
-  etc.).
-
-- Cache utilities moved to `adRpheno`. For general caching use `memoise`
-  or `cachem`.
-
-- `add_inverse_variance_weights` removed; REML weights are now computed
-  inside `add_meta_pooled_results` and attached automatically.
-
-- Confidence interval columns renamed to `conf.low`/`conf.high` (broom
-  convention) in meta-analysis and coefficient extraction.
-
-### Fixes
-
-- `compare_coefs`: numerically stable p-values for highly significant
-  differences.
-
-- `bin_and_categorize_variables`: single-pass categorical mapping;
-  proper interval notation for default cutpoint labels.
-
-- `convert_columns_to_factors`: ordered conversion preserves unobserved
-  factor levels.
-
-- [`add_meta_pooled_results()`](https://anaboeriu14.github.io/adRutils/reference/add_meta_pooled_results.md):
-  now errors immediately when the input has fewer than 2 unique cohorts;
-  meta-analysis is undefined with a single cohort. Per-cell singleton
-  groups within multi-cohort inputs continue to warn-and-skip.
-
-- [`create_id_mapping()`](https://anaboeriu14.github.io/adRutils/reference/create_id_mapping.md)
-  and
-  [`add_id_mapping()`](https://anaboeriu14.github.io/adRutils/reference/add_id_mapping.md):
-  fixed `trim = TRUE` not actually deduplicating across whitespace
-  differences. Trimming was happening after
-  [`distinct()`](https://dplyr.tidyverse.org/reference/distinct.html),
-  so `"A1 "` and `" A1"` were treated as distinct rows. Trimming now
-  happens before deduplication.
-
-- [`create_pairwise_table()`](https://anaboeriu14.github.io/adRutils/reference/create_pairwise_table.md):
-  fixed an internal `cli` evaluation error in the validation message
-  when the grouping variable had fewer than 2 unique levels.
-
-- `id_mapping`: modernized
-  [`dplyr::across()`](https://dplyr.tidyverse.org/reference/across.html)
-  calls to silence dplyr 1.1.0 deprecation warnings.
-
-### Testing
-
-- Added a `tests/testthat/` suite to tests across the package’s exported
-  functions.
-
-------------------------------------------------------------------------
+|  |
+|:---|
+| \# adRutils 2.0.0 |
+| Major cleanup release. Validation, naming, and several functions were standardized across the package. The function reference reflects the new state; the changes are summarized below. See git history for per-function detail. |
+| \## New |
+| \- Outlier detection moved here from `adRpheno` (it’s domain-agnostic): [`detect_outlier_thresholds()`](https://anaboeriu14.github.io/adRutils/reference/detect_outlier_thresholds.md) and [`replace_outliers_with_na()`](https://anaboeriu14.github.io/adRutils/reference/replace_outliers_with_na.md). |
+| \## Breaking changes |
+| \- Several functions and parameters were renamed for clarity and consistency (e.g., `categorize_slopes` → `classify_trajectory_groups`, `verbose` → `quiet`). |
+| \- `validate_params` was rewritten as `validate_args` with a richer interface and exported assertion helpers (`is_flag`, `is_string`, etc.). |
+| \- Cache utilities moved to `adRpheno`. For general caching use `memoise` or `cachem`. |
+| \- `add_inverse_variance_weights` removed; REML weights are now computed inside `add_meta_pooled_results` and attached automatically. |
+| \- Confidence interval columns renamed to `conf.low`/`conf.high` (broom convention) in meta-analysis and coefficient extraction. |
+| \## Fixes |
+| \- `compare_coefs`: numerically stable p-values for highly significant differences. |
+| \- `bin_and_categorize_variables`: single-pass categorical mapping; proper interval notation for default cutpoint labels. |
+| \- `convert_columns_to_factors`: ordered conversion preserves unobserved factor levels. |
+| \- [`add_meta_pooled_results()`](https://anaboeriu14.github.io/adRutils/reference/add_meta_pooled_results.md): now errors immediately when the input has fewer than 2 unique cohorts; meta-analysis is undefined with a single cohort. Per-cell singleton groups within multi-cohort inputs continue to warn-and-skip. |
+| \- [`create_id_mapping()`](https://anaboeriu14.github.io/adRutils/reference/create_id_mapping.md) and [`add_id_mapping()`](https://anaboeriu14.github.io/adRutils/reference/add_id_mapping.md): fixed `trim = TRUE` not actually deduplicating across whitespace differences. Trimming was happening after [`distinct()`](https://dplyr.tidyverse.org/reference/distinct.html), so `"A1 "` and `" A1"` were treated as distinct rows. Trimming now happens before deduplication. |
+| \- [`create_pairwise_table()`](https://anaboeriu14.github.io/adRutils/reference/create_pairwise_table.md): fixed an internal `cli` evaluation error in the validation message when the grouping variable had fewer than 2 unique levels. |
+| \- `id_mapping`: modernized [`dplyr::across()`](https://dplyr.tidyverse.org/reference/across.html) calls to silence dplyr 1.1.0 deprecation warnings. |
+| \## Testing |
+| \- Added a `tests/testthat/` suite to tests across the package’s exported functions. |
 
 ## adRutils 1.5.0
 

@@ -1,7 +1,7 @@
 # adRutils
 
 [![R-CMD-check](https://github.com/anaboeriu14/adRutils/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/anaboeriu14/adRutils/actions/workflows/R-CMD-check.yaml)
-[![Version](https://img.shields.io/badge/version-2.0.1-blue.svg)](https://github.com/anaboeriu14/adRutils/releases)
+[![Version](https://img.shields.io/badge/version-2.1.0-blue.svg)](https://github.com/anaboeriu14/adRutils/releases)
 [![Coverage](https://img.shields.io/badge/coverage-67%25-yellow?)](https://github.com/anaboeriu14/adRutils/blob/main/NEWS.md)
 
 A collection of R utility functions for data cleaning, transformation,
@@ -156,6 +156,8 @@ and undo.
 
 - [`transform_log10()`](https://anaboeriu14.github.io/adRutils/reference/transform_log10.md)
   : Transform numeric variables to a log10 scale
+- [`compute_zscores()`](https://anaboeriu14.github.io/adRutils/reference/compute_zscores.md)
+  : Standardize Numeric Variables
 - [`bin_and_categorize_variables()`](https://anaboeriu14.github.io/adRutils/reference/bin_and_categorize_variables.md)
   : Bin and categorize variables into groups
 - [`coalesce_variables()`](https://anaboeriu14.github.io/adRutils/reference/coalesce_variables.md)
@@ -261,11 +263,13 @@ and available for downstream code.
 
 ### All vignettes
 
-- [Data cleaning
-  pipeline](https://anaboeriu14.github.io/adRutils/articles/data-cleaning.md):
-- [Meta-analysis
-  workflow](https://anaboeriu14.github.io/adRutils/articles/meta_analysis.md):
-- [Trajectory
-  classification](https://anaboeriu14.github.io/adRutils/articles/trajectories.md):
+- [Data
+  Cleaning](https://anaboeriu14.github.io/adRutils/articles/data_cleaning.md):
+- [Trajectory Classification from Mixed-Effects
+  Models](https://anaboeriu14.github.io/adRutils/articles/lmm_trajectories.md):
+- [REML
+  Meta-analysis](https://anaboeriu14.github.io/adRutils/articles/reml_meta_analysis.md):
 - [Upgrading from 1.x to
   2.0](https://anaboeriu14.github.io/adRutils/articles/upgrading.md):
+- [Log-Transformation and
+  Z-Scores](https://anaboeriu14.github.io/adRutils/articles/variable_standardization.md):

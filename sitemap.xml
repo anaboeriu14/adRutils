@@ -2,11 +2,12 @@
 <url><loc>https://anaboeriu14.github.io/adRutils/404.html</loc></url>
 <url><loc>https://anaboeriu14.github.io/adRutils/LICENSE-text.html</loc></url>
 <url><loc>https://anaboeriu14.github.io/adRutils/LICENSE.html</loc></url>
-<url><loc>https://anaboeriu14.github.io/adRutils/articles/data-cleaning.html</loc></url>
+<url><loc>https://anaboeriu14.github.io/adRutils/articles/data_cleaning.html</loc></url>
 <url><loc>https://anaboeriu14.github.io/adRutils/articles/index.html</loc></url>
-<url><loc>https://anaboeriu14.github.io/adRutils/articles/meta_analysis.html</loc></url>
-<url><loc>https://anaboeriu14.github.io/adRutils/articles/trajectories.html</loc></url>
+<url><loc>https://anaboeriu14.github.io/adRutils/articles/lmm_trajectories.html</loc></url>
+<url><loc>https://anaboeriu14.github.io/adRutils/articles/reml_meta_analysis.html</loc></url>
 <url><loc>https://anaboeriu14.github.io/adRutils/articles/upgrading.html</loc></url>
+<url><loc>https://anaboeriu14.github.io/adRutils/articles/variable_standardization.html</loc></url>
 <url><loc>https://anaboeriu14.github.io/adRutils/authors.html</loc></url>
 <url><loc>https://anaboeriu14.github.io/adRutils/index.html</loc></url>
 <url><loc>https://anaboeriu14.github.io/adRutils/news/index.html</loc></url>
@@ -19,6 +20,7 @@
 <url><loc>https://anaboeriu14.github.io/adRutils/reference/coalesce_variables.html</loc></url>
 <url><loc>https://anaboeriu14.github.io/adRutils/reference/combine_timepoints.html</loc></url>
 <url><loc>https://anaboeriu14.github.io/adRutils/reference/compare_coefs.html</loc></url>
+<url><loc>https://anaboeriu14.github.io/adRutils/reference/compute_zscores.html</loc></url>
 <url><loc>https://anaboeriu14.github.io/adRutils/reference/convert_columns_to_factors.html</loc></url>
 <url><loc>https://anaboeriu14.github.io/adRutils/reference/create_id_mapping.html</loc></url>
 <url><loc>https://anaboeriu14.github.io/adRutils/reference/create_pairwise_table.html</loc></url>

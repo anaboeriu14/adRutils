@@ -35,6 +35,8 @@ and undo.
 
 - [`transform_log10()`](https://anaboeriu14.github.io/adRutils/reference/transform_log10.md)
   : Transform numeric variables to a log10 scale
+- [`compute_zscores()`](https://anaboeriu14.github.io/adRutils/reference/compute_zscores.md)
+  : Standardize Numeric Variables
 - [`bin_and_categorize_variables()`](https://anaboeriu14.github.io/adRutils/reference/bin_and_categorize_variables.md)
   : Bin and categorize variables into groups
 - [`coalesce_variables()`](https://anaboeriu14.github.io/adRutils/reference/coalesce_variables.md)

@@ -2,11 +2,12 @@ pandoc: 3.8.3
 pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
-  data-cleaning: data-cleaning.html
-  meta_analysis: meta_analysis.html
-  trajectories: trajectories.html
+  data_cleaning: data_cleaning.html
+  lmm_trajectories: lmm_trajectories.html
+  reml_meta_analysis: reml_meta_analysis.html
   upgrading: upgrading.html
-last_built: 2026-05-20T18:19Z
+  variable_standardization: variable_standardization.html
+last_built: 2026-06-18T18:41Z
 urls:
   reference: https://anaboeriu14.github.io/adRutils/reference
   article: https://anaboeriu14.github.io/adRutils/articles
