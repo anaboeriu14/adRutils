@@ -140,11 +140,11 @@ before downstream analysis.
 - [`remove_duplicates()`](https://anaboeriu14.github.io/adRutils/reference/remove_duplicates.md)
   : Remove duplicate rows by ID
 
-- [`summarize_missingness()`](https://anaboeriu14.github.io/adRutils/reference/summarize_missingness.md)
-  : Summarize missing values by column
+- [`summarize_na()`](https://anaboeriu14.github.io/adRutils/reference/summarize_na.md)
+  : Summarize NA values by column
 
-- [`drop_cols_by_missingness()`](https://anaboeriu14.github.io/adRutils/reference/drop_cols_by_missingness.md)
-  : Drop columns with a high percentage of missing values
+- [`drop_high_na_cols()`](https://anaboeriu14.github.io/adRutils/reference/drop_high_na_cols.md)
+  : Drop columns with a high percentage of NA values
 
 ## Variable transformation
 

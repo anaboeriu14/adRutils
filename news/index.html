@@ -43,7 +43,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/anaboeriu14/adRutils/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/anaboeriu14/adRutils/blob/v2.1.0/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
     <div class="section level2">
@@ -51,14 +51,12 @@
 <div class="section level3">
 <h3 id="new-2-1-0">New<a class="anchor" aria-label="anchor" href="#new-2-1-0"></a></h3>
 <ul><li><p><code><a href="../reference/compute_zscores.html">compute_zscores()</a></code> — standardize numeric variables to z-scores, optionally group-wise via <code>group_vars</code>. Moved here from <code>adRpheno</code>; it’s a domain-agnostic transform that completes the clean → transform → standardize toolchain alongside <code><a href="../reference/transform_log10.html">transform_log10()</a></code> and the outlier functions.</p></li>
-<li><p><code>summarize_na()</code> and <code>drop_high_na_cols()</code> were renamed to <code><a href="../reference/summarize_missingness.html">summarize_missingness()</a></code> and <code><a href="../reference/drop_cols_by_missingness.html">drop_cols_by_missingness()</a></code>. The old names still work but are deprecated and warn.</p></li>
-<li><p><code><a href="../reference/summarize_missingness.html">summarize_missingness()</a></code> gains an <code>na_strings</code> argument to count empty or sentinel strings (e.g. <code>""</code>, matched after whitespace trimming) as missing. When supplied, the output adds <code>count_blank</code>, <code>count_missing</code>, and <code>percent_missing</code> columns, and <code>threshold</code> then filters on <code>percent_missing</code>. The default (<code>na_strings = NULL</code>) is unchanged: only true <code>NA</code> is counted.</p></li>
-<li><p><code><a href="../reference/drop_cols_by_missingness.html">drop_cols_by_missingness()</a></code> also takes <code>na_strings</code>, so it can drop columns on blank-inclusive missingness, consistent with <code><a href="../reference/summarize_missingness.html">summarize_missingness()</a></code>.</p></li>
+<li><p><code><a href="../reference/summarize_na.html">summarize_na()</a></code> gains an <code>na_strings</code> argument to also count empty or sentinel strings (e.g. <code>""</code>, matched after whitespace trimming) as missing. When supplied, the output gains <code>count_blank</code>, <code>count_missing</code>, and <code>percent_missing</code> columns, and <code>threshold</code> filters on <code>percent_missing</code>. The default (<code>na_strings = NULL</code>) is unchanged: only true <code>NA</code> is counted.</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="fixes-2-1-0">Fixes<a class="anchor" aria-label="anchor" href="#fixes-2-1-0"></a></h3>
 <ul><li>
-<code>summarize_na()</code>: removed a stray <code>names</code> attribute carried over from <code><a href="https://rdrr.io/pkg/Matrix/man/colSums-methods.html" class="external-link">colSums()</a></code> onto the <code>count_na</code>/<code>percent_na</code> columns. Printed output is unchanged; this only affects code that indexed a single value out of those columns and saw an unexpected element name.</li>
+<code><a href="../reference/summarize_na.html">summarize_na()</a></code>: removed a stray <code>names</code> attribute carried over from <code><a href="https://rdrr.io/pkg/Matrix/man/colSums-methods.html" class="external-link">colSums()</a></code> onto the <code>count_na</code>/<code>percent_na</code> columns. Printed output is unchanged; this only affects code that indexed a single value out of those columns and saw an unexpected element name.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="documentation-2-1-0">Documentation<a class="anchor" aria-label="anchor" href="#documentation-2-1-0"></a></h3>
@@ -66,7 +64,7 @@
 </ul></div>
 <div class="section level3">
 <h3 id="testing-2-1-0">Testing<a class="anchor" aria-label="anchor" href="#testing-2-1-0"></a></h3>
-<ul><li>Added tests for <code><a href="../reference/compute_zscores.html">compute_zscores()</a></code> and for the new blank-counting path in <code>summarize_na()</code>.</li>
+<ul><li>Added tests for <code><a href="../reference/compute_zscores.html">compute_zscores()</a></code> and for the new blank-counting path in <code><a href="../reference/summarize_na.html">summarize_na()</a></code>.</li>
 </ul><hr></div>
 </div>
     <div class="section level2">

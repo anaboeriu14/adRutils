@@ -26,7 +26,7 @@
 <url><loc>https://anaboeriu14.github.io/adRutils/reference/create_pairwise_table.html</loc></url>
 <url><loc>https://anaboeriu14.github.io/adRutils/reference/custom_check.html</loc></url>
 <url><loc>https://anaboeriu14.github.io/adRutils/reference/detect_outlier_thresholds.html</loc></url>
-<url><loc>https://anaboeriu14.github.io/adRutils/reference/drop_cols_by_missingness.html</loc></url>
+<url><loc>https://anaboeriu14.github.io/adRutils/reference/drop_high_na_cols.html</loc></url>
 <url><loc>https://anaboeriu14.github.io/adRutils/reference/extract_coefficients.html</loc></url>
 <url><loc>https://anaboeriu14.github.io/adRutils/reference/extract_standardized_coefficients.html</loc></url>
 <url><loc>https://anaboeriu14.github.io/adRutils/reference/find_sibling_repo_path.html</loc></url>
@@ -44,7 +44,7 @@
 <url><loc>https://anaboeriu14.github.io/adRutils/reference/remove_duplicates.html</loc></url>
 <url><loc>https://anaboeriu14.github.io/adRutils/reference/replace_outliers_with_na.html</loc></url>
 <url><loc>https://anaboeriu14.github.io/adRutils/reference/select_cols_by_pattern.html</loc></url>
-<url><loc>https://anaboeriu14.github.io/adRutils/reference/summarize_missingness.html</loc></url>
+<url><loc>https://anaboeriu14.github.io/adRutils/reference/summarize_na.html</loc></url>
 <url><loc>https://anaboeriu14.github.io/adRutils/reference/transform_log10.html</loc></url>
 <url><loc>https://anaboeriu14.github.io/adRutils/reference/validate_args.html</loc></url>
 </urlset>
