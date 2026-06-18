@@ -97,8 +97,6 @@ help(package = "adRutils")
 
 ## Version Information
 
-**Current version:** 2.0.0
-
 See [Releases](https://github.com/anaboeriu14/adRutils/releases) and
 [NEWS.md](https://anaboeriu14.github.io/adRutils/NEWS.md) for the full
 changelog.
