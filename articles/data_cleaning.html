@@ -124,10 +124,11 @@ needs binning for downstream analysis.</p>
 <h2 id="step-1-inspect-missingness">Step 1: Inspect missingness<a class="anchor" aria-label="anchor" href="#step-1-inspect-missingness"></a>
 </h2>
 <p>Always look at NA patterns before you delete anything.
-<code><a href="../reference/summarize_na.html">summarize_na()</a></code> gives you a sorted view;
-<code><a href="../reference/drop_high_na_cols.html">drop_high_na_cols()</a></code> removes columns above a threshold.</p>
+<code><a href="../reference/summarize_missingness.html">summarize_missingness()</a></code> gives you a sorted view;
+<code><a href="../reference/drop_cols_by_missingness.html">drop_cols_by_missingness()</a></code> removes columns above a
+threshold.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/summarize_na.html">summarize_na</a></span><span class="op">(</span><span class="va">raw_data</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/summarize_missingness.html">summarize_missingness</a></span><span class="op">(</span><span class="va">raw_data</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 9 × 3</span></span></span>
 <span><span class="co">#&gt;   column       count_na percent_na</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
@@ -144,13 +145,13 @@ needs binning for downstream analysis.</p>
 <code>almost_empty</code> is close to it. We can drop both with a
 threshold of, say, 90%:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/drop_high_na_cols.html">drop_high_na_cols</a></span><span class="op">(</span><span class="va">raw_data</span>, threshold <span class="op">=</span> <span class="fl">90</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/drop_cols_by_missingness.html">drop_cols_by_missingness</a></span><span class="op">(</span><span class="va">raw_data</span>, threshold <span class="op">=</span> <span class="fl">90</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "subject_id" "age"        "bmi"        "weight_kg"  "dsst_v1"   </span></span>
 <span><span class="co">#&gt; [6] "dsst_v2"    "visit_year"</span></span></code></pre></div>
-<p><code><a href="../reference/drop_high_na_cols.html">drop_high_na_cols()</a></code> prints what it removed; if you want
-the same view without modifying the data, call
-<code>summarize_na(raw_data, threshold = 90)</code>.</p>
+<p><code><a href="../reference/drop_cols_by_missingness.html">drop_cols_by_missingness()</a></code> prints what it removed; if
+you want the same view without modifying the data, call
+<code>summarize_missingness(raw_data, threshold = 90)</code>.</p>
 </div>
 <div class="section level2">
 <h2 id="step-2-remove-duplicates">Step 2: Remove duplicates<a class="anchor" aria-label="anchor" href="#step-2-remove-duplicates"></a>
@@ -292,7 +293,7 @@ interval is closed on both ends (matching
 <p>The whole pipeline reads cleanly as a single chain:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">clean_data</span> <span class="op">&lt;-</span> <span class="va">raw_data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/drop_high_na_cols.html">drop_high_na_cols</a></span><span class="op">(</span>threshold <span class="op">=</span> <span class="fl">90</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/drop_cols_by_missingness.html">drop_cols_by_missingness</a></span><span class="op">(</span>threshold <span class="op">=</span> <span class="fl">90</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/remove_duplicates.html">remove_duplicates</a></span><span class="op">(</span><span class="va">subject_id</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/combine_timepoints.html">combine_timepoints</a></span><span class="op">(</span></span>
 <span>    base_names <span class="op">=</span> <span class="st">"dsst"</span>,</span>
@@ -309,8 +310,9 @@ interval is closed on both ends (matching
 </h2>
 <p>After cleaning, the typical next steps are:</p>
 <ul>
-<li>Inspect the cleaned dataset with <code><a href="../reference/summarize_na.html">summarize_na()</a></code> again
-to confirm nothing unexpected is missing.</li>
+<li>Inspect the cleaned dataset with
+<code><a href="../reference/summarize_missingness.html">summarize_missingness()</a></code> again to confirm nothing unexpected
+is missing.</li>
 <li>Convert pattern-named columns to factors with
 <code><a href="../reference/convert_columns_to_factors.html">convert_columns_to_factors()</a></code> if you have many of them.</li>
 <li>Pull related-but-named-differently columns together with

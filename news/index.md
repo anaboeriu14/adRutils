@@ -12,18 +12,28 @@
   [`transform_log10()`](https://anaboeriu14.github.io/adRutils/reference/transform_log10.md)
   and the outlier functions.
 
-- [`summarize_na()`](https://anaboeriu14.github.io/adRutils/reference/summarize_na.md)
-  gains an `na_strings` argument to also count empty or sentinel strings
+- `summarize_na()` and `drop_high_na_cols()` were renamed to
+  [`summarize_missingness()`](https://anaboeriu14.github.io/adRutils/reference/summarize_missingness.md)
+  and
+  [`drop_cols_by_missingness()`](https://anaboeriu14.github.io/adRutils/reference/drop_cols_by_missingness.md).
+  The old names still work but are deprecated and warn.
+
+- [`summarize_missingness()`](https://anaboeriu14.github.io/adRutils/reference/summarize_missingness.md)
+  gains an `na_strings` argument to count empty or sentinel strings
   (e.g. `""`, matched after whitespace trimming) as missing. When
-  supplied, the output gains `count_blank`, `count_missing`, and
-  `percent_missing` columns, and `threshold` filters on
+  supplied, the output adds `count_blank`, `count_missing`, and
+  `percent_missing` columns, and `threshold` then filters on
   `percent_missing`. The default (`na_strings = NULL`) is unchanged:
   only true `NA` is counted.
 
+- [`drop_cols_by_missingness()`](https://anaboeriu14.github.io/adRutils/reference/drop_cols_by_missingness.md)
+  also takes `na_strings`, so it can drop columns on blank-inclusive
+  missingness, consistent with
+  [`summarize_missingness()`](https://anaboeriu14.github.io/adRutils/reference/summarize_missingness.md).
+
 ### Fixes
 
-- [`summarize_na()`](https://anaboeriu14.github.io/adRutils/reference/summarize_na.md):
-  removed a stray `names` attribute carried over from
+- `summarize_na()`: removed a stray `names` attribute carried over from
   [`colSums()`](https://rdrr.io/pkg/Matrix/man/colSums-methods.html)
   onto the `count_na`/`percent_na` columns. Printed output is unchanged;
   this only affects code that indexed a single value out of those
@@ -39,8 +49,7 @@
 
 - Added tests for
   [`compute_zscores()`](https://anaboeriu14.github.io/adRutils/reference/compute_zscores.md)
-  and for the new blank-counting path in
-  [`summarize_na()`](https://anaboeriu14.github.io/adRutils/reference/summarize_na.md).
+  and for the new blank-counting path in `summarize_na()`.
 
 ------------------------------------------------------------------------
 

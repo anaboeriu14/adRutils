@@ -118,7 +118,7 @@
 <span><span class="co"># Clean data</span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="va">data</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu"><a href="reference/remove_duplicates.html">remove_duplicates</a></span><span class="op">(</span><span class="st">"subject_id"</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
-<span>  <span class="fu"><a href="reference/drop_high_na_cols.html">drop_high_na_cols</a></span><span class="op">(</span>threshold <span class="op">=</span> <span class="fl">99</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">drop_high_na_cols</span><span class="op">(</span>threshold <span class="op">=</span> <span class="fl">99</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu"><a href="reference/transform_log10.html">transform_log10</a></span><span class="op">(</span>vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"biomarker1"</span>, <span class="st">"biomarker2"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Fit models across groups</span></span>
