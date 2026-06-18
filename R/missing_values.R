@@ -1,7 +1,5 @@
 #' Summarize NA values by column
 #'
-#' Summarize NA values by column
-#'
 #' Returns a tibble with one row per column of `data`, listing the count and
 #' percentage of missing values, sorted from most to least missing.
 #'
