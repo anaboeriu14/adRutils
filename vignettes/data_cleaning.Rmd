@@ -1,8 +1,8 @@
 ---
-title: "Data cleaning pipeline"
+title: "Data Cleaning"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Data cleaning pipeline}
+  %\VignetteIndexEntry{Data Cleaning}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -49,7 +49,7 @@ raw_data$dsst_v1[sample(seq_len(nrow(raw_data)), 15)] <- NA
 dim(raw_data)
 ```
 
-## Step 1: inspect missingness
+## Step 1: Inspect missingness
 
 Always look at NA patterns before you delete anything. `summarize_na()` gives you a sorted view; `drop_high_na_cols()` removes columns above a threshold.
 
@@ -66,7 +66,7 @@ names(data)
 
 `drop_high_na_cols()` prints what it removed; if you want the same view without modifying the data, call `summarize_na(raw_data, threshold = 90)`.
 
-## Step 2: deduplicate
+## Step 2: Remove duplicates
 
 Our synthetic data has two duplicated subject IDs (`S042`, `S073`). `remove_duplicates()` defaults to keeping the row with the fewest NAs per duplicate ID — usually what you want when one record is more complete than the other.
 
@@ -77,7 +77,7 @@ nrow(data)
 
 The other strategies are `keep = "first"`, `"last"`, and `"none"` (which removes *all* duplicates including the originals — useful when you suspect any duplicated ID is a data integrity problem).
 
-## Step 3: combine longitudinal visits
+## Step 3: Combine longitudinal visits
 
 `dsst_v1` and `dsst_v2` are the same measure collected at two visits. Often you want a single coalesced column with a preferred source, plus a tracking column showing which visit contributed for each row.
 
@@ -96,7 +96,7 @@ data %>%
 
 `dsst_final` takes the first non-missing value across visits in the priority order you specified; `dsst_source` records which visit it came from. The original `dsst_v1` and `dsst_v2` are preserved unchanged.
 
-## Step 4: handle outliers
+## Step 4: Handle outliers
 
 Our `weight_kg` column has a 250 kg value that's almost certainly a data-entry error. `replace_outliers_with_na()` uses the IQR rule (Tukey's 1.5×IQR by default) to identify and replace outliers with `NA`.
 
@@ -123,7 +123,7 @@ If you only want to inspect the cutoffs without replacing anything, `detect_outl
 detect_outlier_thresholds(data, "weight_kg", multiplier = 1.5)
 ```
 
-## Step 5: bin continuous variables
+## Step 5: Bin continuous variables
 
 Many downstream analyses want categorical age groups, BMI categories, etc. `bin_and_categorize_variables()` handles three transformation types — cutpoints (continuous), categorical mappings, and custom functions — through a single interface.
 
@@ -177,4 +177,5 @@ After cleaning, the typical next steps are:
 - Inspect the cleaned dataset with `summarize_na()` again to confirm nothing unexpected is missing.
 - Convert pattern-named columns to factors with `convert_columns_to_factors()` if you have many of them.
 - Pull related-but-named-differently columns together with `coalesce_variables()` if your dataset uses inconsistent naming across sources.
-- Move on to modeling with `fit_models_by_group()` — see the meta-analysis vignette for a worked example.
+- Move on to modeling with `fit_models_by_group()` 
+— [REML Meta-analysis](reml_meta_analysis.html) 

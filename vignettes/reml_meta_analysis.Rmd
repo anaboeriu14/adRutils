@@ -1,8 +1,8 @@
 ---
-title: "Meta-analysis workflow"
+title: "REML Meta-analysis"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Meta-analysis workflow}
+  %\VignetteIndexEntry{REML Meta-analysis}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -58,7 +58,7 @@ combined <- bind_rows(discovery, replication)
 head(combined)
 ```
 
-## Step 1: pre-flight alignment check
+## Step 1: Check cohort alignment
 
 Before pooling, it's worth confirming that the two cohorts share the same set of group/term combinations you plan to analyze. `check_cohort_alignment()` flags any combinations present in only one cohort.
 
@@ -73,7 +73,7 @@ check_cohort_alignment(
 
 A perfect match is the happy path. In a real analysis, this step often catches issues like a category coded `"Control"` in one cohort and `"control"` in the other, or a level present in only one site.
 
-## Step 2: fit models in each cohort
+## Step 2: Fit models in each cohort
 
 `fit_models_by_group()` fits a linear model for every (outcome, group) combination. By passing `group_col = "cohort"`, we get one model per outcome per cohort — exactly what we need before pooling.
 
@@ -93,7 +93,7 @@ results %>%
 
 The returned tibble has list-columns for the fitted model object (`model_obj`) and tidy results (`model_res`), plus the data subset used (`dataf`). For pooling, we only need the tidy coefficients.
 
-## Step 3: extract tidy coefficients
+## Step 3: Extract tidy coefficients
 
 `extract_coefficients()` unnests `model_res` and adds confidence intervals computed from the standard errors. We can filter to a specific term — here, the treatment effect.
 
@@ -147,7 +147,7 @@ If you have more than two cohorts, the same pipeline works — `add_meta_pooled_
 The pipeline is:
 
 ```
-check_cohort_alignment()        # pre-flight
+check_cohort_alignment()        # check alignment
   ↓
 fit_models_by_group()           # parallel fits
   ↓

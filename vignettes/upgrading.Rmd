@@ -203,7 +203,7 @@ If any of these match a pattern in your code, double-check the output after upgr
 ## Quick reference {#quick-reference}
 
 | Old (1.x) | New (2.0) |
-|----|----|
+|------------------------------------|------------------------------------|
 | `categorize_slopes()` | `classify_trajectory_groups()` |
 | `coalesce_timepoints()` | `combine_timepoints()` |
 | `extract_standardized_coefs()` | `extract_standardized_coefficients()` |

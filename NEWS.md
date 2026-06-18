@@ -1,21 +1,49 @@
-# adRutils 2.0.1
+# adRutils 2.1.0
+
+## New
+
+- `compute_zscores()` — standardize numeric variables to z-scores, optionally
+  group-wise via `group_vars`. Moved here from `adRpheno`; it's a
+  domain-agnostic transform that completes the clean → transform → standardize
+  toolchain alongside `transform_log10()` and the outlier functions.
+
+- `summarize_na()` gains an `na_strings` argument to also count empty or
+  sentinel strings (e.g. `""`, matched after whitespace trimming) as missing.
+  When supplied, the output gains `count_blank`, `count_missing`, and
+  `percent_missing` columns, and `threshold` filters on `percent_missing`. The
+  default (`na_strings = NULL`) is unchanged: only true `NA` is counted.
 
 ## Fixes
 
-- `add_meta_pooled_results()`: warn when input data uses non-broom CI column names (`lci`/`uci`, `ci_low`/`ci_high`, etc.) instead of `conf.low`/`conf.high`. Previously these columns would be silently carried forward from the first cohort row instead of being recomputed from the pooled model, which could produce misleading CIs on pooled rows.
-
-- `add_meta_pooled_results()`: group columns are now explicitly attached to cohort rows up front in the internal `.build_pooled_group()` helper, ensuring correct behavior on the k \< 2 early-return path. No change in output for the standard k \>= 2 case; this is a defensive cleanup that improves readability and protects against future refactors.
-
-## Breaking changes
-
-- `add_meta_pooled_results()`: now aborts when the input contains fewer than 2 unique cohorts overall. Previously this case warned per-group and returned unchanged data. Per-group k \< 2 cells (within an otherwise multi-cohort dataset) still warn and carry on as before.
+- `summarize_na()`: removed a stray `names` attribute carried over from
+  `colSums()` onto the `count_na`/`percent_na` columns. Printed output is
+  unchanged; this only affects code that indexed a single value out of those
+  columns and saw an unexpected element name.
 
 ## Documentation
 
-- `add_meta_pooled_results()`: clarified CI column-name expectations in `@details`.
+- New "Biomarker standardization" vignette walking through the full
+  preprocessing workflow: outlier handling → log10 transform → z-scoring.
 
-------------------------------------------------------------------------
+## Testing
 
+- Added tests for `compute_zscores()` and for the new blank-counting path in
+  `summarize_na()`.
+
+-----------------------------------------------------------------------
+
+# adRutils 2.0.1 
+## Fixes 
+- `add_meta_pooled_results()`: warn when input data uses non-broom CI column names (`lci`/`uci`, `ci_low`/`ci_high`, etc.) instead of `conf.low`/`conf.high`. Previously these columns would be silently carried forward from the first cohort row instead of being recomputed from the pooled model, which could produce misleading CIs on pooled rows. |
+- `add_meta_pooled_results()`: group columns are now explicitly attached to cohort rows up front in the internal `.build_pooled_group()` helper, ensuring correct behavior on the k \< 2 early-return path. No change in output for the standard k \>= 2 case; this is a defensive cleanup that improves readability and protects against future refactors. |
+
+## Breaking changes |
+- `add_meta_pooled_results()`: now aborts when the input contains fewer than 2 unique cohorts overall. Previously this case warned per-group and returned unchanged data. Per-group k \< 2 cells (within an otherwise multi-cohort dataset) still warn and carry on as before. |
+
+## Documentation |
+- `add_meta_pooled_results()`: clarified CI column-name expectations in `@details`. 
+
+-----------------------------------------------------------------------
 # adRutils 2.0.0
 
 Major cleanup release. Validation, naming, and several functions were standardized across the package. The function reference reflects the new state; the changes are summarized below. See git history for per-function detail.

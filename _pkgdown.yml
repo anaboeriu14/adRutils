@@ -45,6 +45,7 @@ reference:
     Reshape, recode, and combine variables. Most functions add new columns rather than replacing originals, so transformations are easy to inspect and undo.
   contents:
   - transform_log10
+  - compute_zscores
   - bin_and_categorize_variables
   - coalesce_variables
   - combine_timepoints

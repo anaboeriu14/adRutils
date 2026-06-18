@@ -1,0 +1,158 @@
+---
+title: "Log-Transformation and Z-Scores"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Log-Transformation and Z-Scores}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment  = "#>"
+)
+```
+
+## Overview
+
+Many analyses need numeric measures put on a common, comparable scale before
+modeling. The usual sequence is **handle outliers → transform skewed variables →
+standardize**, and adRutils provides a function for each step, all of which add
+new columns rather than overwriting originals so every stage is easy to inspect
+and reverse.
+
+This pattern applies to any set of skewed, differently-scaled numeric measures —
+assay panels, lab chemistries, gene-expression values, questionnaire subscales,
+and so on. We use a small set of plasma biomarkers as the running example here
+because they exercise every step (right-skewed distributions on very different
+numeric scales), but nothing in the workflow is specific to biomarkers. The result is 
+a set of standardized variables (mean 0, SD 1) suitable for comparison or combining;
+the outlier and log steps are preparation that makes that final standardization more robust.
+
+The [Data cleaning pipeline](data_cleaning.html) vignette covers the upstream
+steps — missingness, duplicates, binning. This one picks up at the
+transform-and-standardize stage.
+
+```{r setup, message = FALSE}
+library(adRutils)
+library(dplyr)
+```
+
+## An example dataset
+
+Three measures on very different scales: `marker_a` in the hundreds, `marker_b`
+and `marker_c` both small and right-skewed.
+
+```{r data}
+set.seed(7)
+n <- 60
+
+measures <- tibble::tibble(
+  subject_id = sprintf("S%03d", 1:n),
+  ancestry   = sample(c("EUR", "AFR"), n, replace = TRUE),
+  marker_a   = round(rnorm(n, 900, 150), 1),
+  marker_b   = round(rlnorm(n, log(2),  0.5), 2),
+  marker_c   = round(rlnorm(n, log(15), 0.6), 1)
+)
+
+# inject one implausible value to demonstrate outlier handling
+measures$marker_c[1] <- 500
+
+head(measures)
+```
+
+## Step 1: Handle outliers
+
+`replace_outliers_with_na()` flags values outside the Tukey IQR fence and sets
+them to `NA`. Apply it to all three measures at once.
+
+```{r outliers}
+measures <- replace_outliers_with_na(
+  measures,
+  var_names          = c("marker_a", "marker_b", "marker_c"),
+  multiplier         = 1.5,
+  remove_all_na_rows = FALSE
+)
+```
+
+To inspect the cutoffs without altering the data, `detect_outlier_thresholds()`
+returns the bounds for a single column:
+
+```{r thresholds}
+detect_outlier_thresholds(measures, "marker_c", multiplier = 1.5)
+```
+
+## Step 2: Transform skewed variables
+
+`transform_log10()` adds `log10_<var>` columns and leaves the originals in place.
+It requires strictly positive input, which suits concentration-style measures.
+
+```{r log}
+measures <- transform_log10(
+  measures,
+  vars = c("marker_a", "marker_b", "marker_c")
+)
+
+names(measures)
+```
+
+## Step 3: Standardize
+
+Standardizing the log-scaled measures to z-scores (mean 0, SD 1) puts them on a
+common scale so they can be compared or combined. We standardize the `log10_`
+columns from Step 2.
+
+```{r zscores}
+log_vars <- c("log10_marker_a", "log10_marker_b", "log10_marker_c")
+
+measures <- compute_zscores(
+  measures,
+  vars   = log_vars,
+  prefix = "z_"
+)
+
+measures %>%
+  select(subject_id, dplyr::starts_with("z_")) %>%
+  head()
+```
+
+When distributions differ systematically across a grouping variable,
+standardizing within strata keeps each group internally comparable. Pass
+`group_vars`:
+
+```{r zscores-grouped}
+measures <- compute_zscores(
+  measures,
+  vars       = log_vars,
+  prefix     = "z_within_ancestry_",
+  group_vars = "ancestry"
+)
+```
+
+## The pipeline together
+
+```{r pipeline, eval = FALSE}
+standardized <- raw_measures %>%
+  replace_outliers_with_na(
+    var_names          = c("marker_a", "marker_b", "marker_c"),
+    remove_all_na_rows = FALSE
+  ) %>%
+  transform_log10(vars = c("marker_a", "marker_b", "marker_c")) %>%
+  compute_zscores(
+    vars   = c("log10_marker_a", "log10_marker_b", "log10_marker_c"),
+    prefix = "z_"
+  )
+```
+
+## What to do next
+
+The standardized `z_` columns are ready for modeling — for example fitting models
+across groups with `fit_models_by_group()` ([REML Meta-analysis](reml_meta_analysis.html)), or
+building composite indices from the standardized values.
+
+## Session information
+
+```{r session}
+sessionInfo()
+```

@@ -4,29 +4,45 @@
 \alias{summarize_na}
 \title{Summarize NA values by column}
 \usage{
-summarize_na(data, threshold = NULL)
+summarize_na(data, threshold = NULL, na_strings = NULL)
 }
 \arguments{
 \item{data}{A data frame or tibble.}
 
-\item{threshold}{Optional numeric in \verb{[0, 100]}. If supplied, only
-columns with \code{percent_na >= threshold} are returned.}
+\item{threshold}{Optional numeric in \verb{[0, 100]}. If supplied, only columns
+at or above this missingness percentage are returned.}
+
+\item{na_strings}{Optional character vector of string values to treat as
+missing, compared after trimming whitespace (so \code{""} also matches
+whitespace-only entries). Applied to character and factor columns only.
+When \code{NULL} (default), only true \code{NA} is counted and the output is
+identical to prior versions.}
 }
 \value{
-A tibble with columns \code{column}, \code{count_na}, and \code{percent_na}
-(rounded to 3 decimal places).
+A tibble sorted from most to least missing. With \code{na_strings = NULL}:
+columns \code{column}, \code{count_na}, \code{percent_na}. With \code{na_strings} supplied:
+columns \code{column}, \code{count_na}, \code{count_blank}, \code{count_missing},
+\code{percent_missing}. Percentages are rounded to 3 decimal places.
 }
 \description{
-Returns a tibble with one row per column of \code{data}, listing the count
-and percentage of \code{NA} values, sorted from most to least missing.
+Summarize NA values by column
+}
+\details{
+Returns a tibble with one row per column of \code{data}, listing the count and
+percentage of missing values, sorted from most to least missing.
+
+By default only true \code{NA} values are counted. Supply \code{na_strings} to also
+count empty or sentinel strings (e.g. \code{""}, \code{"."}, \code{"NA"}) as missing. In
+that case the output gains \code{count_blank}, \code{count_missing}, and
+\code{percent_missing} columns, and \code{threshold} filters on \code{percent_missing}.
 }
 \examples{
 df <- data.frame(
   a = c(1, 2, NA, 4, 5),
-  b = c(NA, NA, 3, 4, 5),
-  c = 1:5
+  b = c("x", "", "  ", "y", NA),
+  stringsAsFactors = FALSE
 )
 summarize_na(df)
-summarize_na(df, threshold = 50)
+summarize_na(df, na_strings = "")
 
 }

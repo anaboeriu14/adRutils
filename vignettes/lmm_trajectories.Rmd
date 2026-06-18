@@ -1,8 +1,8 @@
 ---
-title: "Trajectory classification"
+title: "Trajectory Classification from Mixed-Effects Models"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Trajectory classification}
+  %\VignetteIndexEntry{Trajectory Classification from Mixed-Effects Models}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
