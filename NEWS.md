@@ -7,11 +7,18 @@
   domain-agnostic transform that completes the clean → transform → standardize
   toolchain alongside `transform_log10()` and the outlier functions.
 
-- `summarize_na()` gains an `na_strings` argument to also count empty or
+- `summarize_na()` and `drop_high_na_cols()` were renamed to
+  `summarize_missingness()` and `drop_cols_by_missingness()`. The old names
+  still work but are deprecated and warn.
+
+- `summarize_missingness()` gains an `na_strings` argument to count empty or
   sentinel strings (e.g. `""`, matched after whitespace trimming) as missing.
-  When supplied, the output gains `count_blank`, `count_missing`, and
-  `percent_missing` columns, and `threshold` filters on `percent_missing`. The
-  default (`na_strings = NULL`) is unchanged: only true `NA` is counted.
+  When supplied, the output adds `count_blank`, `count_missing`, and
+  `percent_missing` columns, and `threshold` then filters on `percent_missing`.
+  The default (`na_strings = NULL`) is unchanged: only true `NA` is counted.
+
+- `drop_cols_by_missingness()` also takes `na_strings`, so it can drop columns
+  on blank-inclusive missingness, consistent with `summarize_missingness()`.
 
 ## Fixes
 

@@ -38,8 +38,8 @@ reference:
   - detect_outlier_thresholds
   - replace_outliers_with_na
   - remove_duplicates
-  - summarize_na
-  - drop_high_na_cols
+  - summarize_missingness
+  - drop_cols_by_missingness
 - title: Variable transformation
   desc: |
     Reshape, recode, and combine variables. Most functions add new columns rather than replacing originals, so transformations are easy to inspect and undo.

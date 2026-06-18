@@ -51,20 +51,20 @@ dim(raw_data)
 
 ## Step 1: Inspect missingness
 
-Always look at NA patterns before you delete anything. `summarize_na()` gives you a sorted view; `drop_high_na_cols()` removes columns above a threshold.
+Always look at NA patterns before you delete anything. `summarize_missingness()` gives you a sorted view; `drop_cols_by_missingness()` removes columns above a threshold.
 
 ```{r summarize-na}
-summarize_na(raw_data)
+summarize_missingness(raw_data)
 ```
 
 `fully_empty` is 100% missing and `almost_empty` is close to it. We can drop both with a threshold of, say, 90%:
 
 ```{r drop-na-cols}
-data <- drop_high_na_cols(raw_data, threshold = 90)
+data <- drop_cols_by_missingness(raw_data, threshold = 90)
 names(data)
 ```
 
-`drop_high_na_cols()` prints what it removed; if you want the same view without modifying the data, call `summarize_na(raw_data, threshold = 90)`.
+`drop_cols_by_missingness()` prints what it removed; if you want the same view without modifying the data, call `summarize_missingness(raw_data, threshold = 90)`.
 
 ## Step 2: Remove duplicates
 
@@ -157,7 +157,7 @@ The whole pipeline reads cleanly as a single chain:
 
 ```{r pipeline, eval = FALSE}
 clean_data <- raw_data %>%
-  drop_high_na_cols(threshold = 90) %>%
+  drop_cols_by_missingness(threshold = 90) %>%
   remove_duplicates(subject_id) %>%
   combine_timepoints(
     base_names = "dsst",
@@ -174,7 +174,7 @@ clean_data <- raw_data %>%
 
 After cleaning, the typical next steps are:
 
-- Inspect the cleaned dataset with `summarize_na()` again to confirm nothing unexpected is missing.
+- Inspect the cleaned dataset with `summarize_missingness()` again to confirm nothing unexpected is missing.
 - Convert pattern-named columns to factors with `convert_columns_to_factors()` if you have many of them.
 - Pull related-but-named-differently columns together with `coalesce_variables()` if your dataset uses inconsistent naming across sources.
 - Move on to modeling with `fit_models_by_group()` 

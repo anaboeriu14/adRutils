@@ -1,12 +1,12 @@
-#' Summarize NA values by column
+#' Summarize missing values by column
 #'
 #' Returns a tibble with one row per column of `data`, listing the count and
 #' percentage of missing values, sorted from most to least missing.
 #'
-#' By default only true `NA` values are counted. Supply `na_strings` to also
-#' count empty or sentinel strings (e.g. `""`, `"."`, `"NA"`) as missing. In
-#' that case the output gains `count_blank`, `count_missing`, and
-#' `percent_missing` columns, and `threshold` filters on `percent_missing`.
+#' By default only `NA` values are counted. Use `na_strings` to also count
+#' empty or sentinel strings (e.g. `""`, `"."`, `"NA"`) as missing. In that
+#' case the output gains `count_blank`, `count_missing`, and `percent_missing`
+#' columns, and `threshold` filters on `percent_missing`.
 #'
 #' @param data A data frame or tibble.
 #' @param threshold Optional numeric in `[0, 100]`. If supplied, only columns
@@ -14,8 +14,7 @@
 #' @param na_strings Optional character vector of string values to treat as
 #'   missing, compared after trimming whitespace (so `""` also matches
 #'   whitespace-only entries). Applied to character and factor columns only.
-#'   When `NULL` (default), only true `NA` is counted and the output is
-#'   identical to prior versions.
+#'   When `NULL` (default), only true `NA` is counted.
 #'
 #' @return A tibble sorted from most to least missing. With `na_strings = NULL`:
 #'   columns `column`, `count_na`, `percent_na`. With `na_strings` supplied:
@@ -28,11 +27,12 @@
 #'   b = c("x", "", "  ", "y", NA),
 #'   stringsAsFactors = FALSE
 #' )
-#' summarize_na(df)
-#' summarize_na(df, na_strings = "")
+#' summarize_missingness(df)
+#' summarize_missingness(df, na_strings = "")
 #'
+#' @seealso [drop_cols_by_missingness()] to remove high-missingness columns.
 #' @export
-summarize_na <- function(data, threshold = NULL, na_strings = NULL) {
+summarize_missingness <- function(data, threshold = NULL, na_strings = NULL) {
 
   validate_args(
     data = data,
@@ -98,32 +98,34 @@ summarize_na <- function(data, threshold = NULL, na_strings = NULL) {
   result
 }
 
-#' Drop columns with a high percentage of NA values
+
+#' Drop columns with a high percentage of missing values
 #'
-#' Removes columns from `data` whose `NA` percentage is at or above
-#' `threshold`. To inspect what would be dropped without modifying the
-#' data, call [summarize_na()] with the same threshold.
+#' Removes columns from `data` whose missingness percentage is at or above
+#' `threshold`. To inspect what would be dropped without modifying the data,
+#' call [summarize_missingness()] with the same `threshold` (and `na_strings`).
 #'
-#' @param data A data frame or tibble.
-#' @param threshold Numeric in `[0, 100]`. Columns with
-#'   `percent_na >= threshold` are removed. Default `99`.
+#' @inheritParams summarize_missingness
+#' @param threshold Numeric in `[0, 100]`. Columns at or above this
+#'   missingness percentage are removed. Default `99`.
 #' @param quiet If `TRUE`, suppress messages. Default `FALSE`.
 #'
-#' @return `data` with high-NA columns removed.
+#' @return `data` with high-missingness columns removed.
 #'
 #' @examples
 #' df <- data.frame(
-#'   id              = 1:100,
-#'   almost_empty    = c(rep(NA, 99), 1),
+#'   id               = 1:100,
+#'   almost_empty     = c(rep(NA, 99), 1),
 #'   completely_empty = rep(NA, 100),
-#'   mostly_filled   = c(rep(NA, 20), 1:80)
+#'   mostly_filled    = c(rep(NA, 20), 1:80)
 #' )
-#' drop_high_na_cols(df, threshold = 90)
+#' drop_cols_by_missingness(df, threshold = 90)
 #'
-#' @seealso [summarize_na()] for inspecting NA patterns without removing
-#'   columns.
+#' @seealso [summarize_missingness()] for inspecting missingness without
+#'   removing columns.
 #' @export
-drop_high_na_cols <- function(data, threshold = 99, quiet = FALSE) {
+drop_cols_by_missingness <- function(data, threshold = 99,
+                                     na_strings = NULL, quiet = FALSE) {
 
   validate_args(
     data  = data,
@@ -133,12 +135,17 @@ drop_high_na_cols <- function(data, threshold = 99, quiet = FALSE) {
         condition = is.numeric(threshold) && length(threshold) == 1L &&
           threshold >= 0 && threshold <= 100,
         message   = "{.arg threshold} must be a single number in [0, 100]"
+      ),
+      list(
+        condition = is.null(na_strings) || is.character(na_strings),
+        message   = "{.arg na_strings} must be NULL or a character vector"
       )
     )
   )
 
-  na_info        <- summarize_na(data)
-  cols_to_remove <- na_info$column[na_info$percent_na >= threshold]
+  na_info        <- summarize_missingness(data, na_strings = na_strings)
+  pct_col        <- if (is.null(na_strings)) "percent_na" else "percent_missing"
+  cols_to_remove <- na_info$column[na_info[[pct_col]] >= threshold]
 
   if (length(cols_to_remove) == 0L) {
     if (!quiet) {

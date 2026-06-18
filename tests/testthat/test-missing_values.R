@@ -1,12 +1,12 @@
-# summarize_na -------------------------------------------------------------
+# summarize_missingness -------------------------------------------------------------
 
-test_that("summarize_na returns one row per column with count and percent NA", {
+test_that("summarize_missingness returns one row per column with count and percent NA", {
   df <- data.frame(
     a = c(1, 2, NA, 4, 5),
     b = c(NA, NA, 3, 4, 5),
     c = 1:5
   )
-  res <- summarize_na(df)
+  res <- summarize_missingness(df)
 
   expect_named(res, c("column", "count_na", "percent_na"))
   expect_equal(nrow(res), 3)
@@ -19,38 +19,38 @@ test_that("summarize_na returns one row per column with count and percent NA", {
   expect_equal(unname(res$percent_na), c(40, 20, 0))
 })
 
-test_that("summarize_na threshold filters out columns below the cutoff", {
+test_that("summarize_missingness threshold filters out columns below the cutoff", {
   df <- data.frame(
     a = c(1, 2, NA, 4, 5),     # 20%
     b = c(NA, NA, 3, 4, 5),    # 40%
     c = 1:5                    # 0%
   )
-  res <- summarize_na(df, threshold = 30)
+  res <- summarize_missingness(df, threshold = 30)
   expect_equal(as.character(res$column), "b")
 })
 
-test_that("summarize_na rejects out-of-range threshold", {
+test_that("summarize_missingness rejects out-of-range threshold", {
   df <- data.frame(x = 1:3)
-  expect_error(summarize_na(df, threshold = -1))
-  expect_error(summarize_na(df, threshold = 150))
+  expect_error(summarize_missingness(df, threshold = -1))
+  expect_error(summarize_missingness(df, threshold = 150))
 })
 
 
-# drop_high_na_cols --------------------------------------------------------
+# drop_cols_by_missingness --------------------------------------------------------
 
-test_that("drop_high_na_cols removes columns at or above threshold", {
+test_that("drop_cols_by_missingness removes columns at or above threshold", {
   df <- data.frame(
     id            = 1:100,
     almost_empty  = c(rep(NA, 99), 1),     # 99% NA
     fully_empty   = rep(NA, 100),          # 100% NA
     mostly_filled = c(rep(NA, 20), 1:80)   # 20% NA
   )
-  out <- drop_high_na_cols(df, threshold = 90, quiet = TRUE)
+  out <- drop_cols_by_missingness(df, threshold = 90, quiet = TRUE)
 
   expect_equal(names(out), c("id", "mostly_filled"))
 })
 
-test_that("drop_high_na_cols is a no-op when nothing crosses the threshold", {
+test_that("drop_cols_by_missingness is a no-op when nothing crosses the threshold", {
   df <- data.frame(id = 1:10, x = c(NA, 1:9))   # 10% NA
-  expect_equal(drop_high_na_cols(df, threshold = 50, quiet = TRUE), df)
+  expect_equal(drop_cols_by_missingness(df, threshold = 50, quiet = TRUE), df)
 })
