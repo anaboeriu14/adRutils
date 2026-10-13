@@ -1,3 +1,15 @@
+# adRutils 2.1.1
+
+## Changes
+
+-   `remove_duplicates()`: with `keep = "most_complete"`, now checks whether rows sharing an ID have conflicting non-missing values. Conflicting IDs are listed in a warning and stored in `attr(result, "conflicting_ids")`; the most complete row is still kept. Rows are never merged.
+
+## Fixes
+
+-   `remove_duplicates()`: single-column inputs now return a data frame for all `keep` strategies.
+
+------------------------------------------------------------------------
+
 # adRutils 2.1.0
 
 ## Breaking changes

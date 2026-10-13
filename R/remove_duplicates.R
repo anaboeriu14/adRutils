@@ -1,25 +1,49 @@
 #' Remove duplicate rows by ID
 #'
-#' Identifies and removes duplicate rows based on a single ID column. By
-#' default, keeps the row with the fewest `NA` values per duplicate ID
-#' (the "most complete" row).
+#' Identifies rows that share an ID and keeps one row per ID according to
+#' `keep`. By default, keeps the row with the fewest `NA` values (the
+#' "most complete" row).
+#'
+#' @details
+#' With `keep = "most_complete"`, each duplicated ID is handled as follows:
+#'
+#' * **Identical rows**: the first occurrence is kept.
+#' * **Rows that differ only in missingness**: the row with the fewest
+#'   `NA` values is kept.
+#' * **Rows with conflicting non-missing values** (e.g., two different
+#'   ages for the same ID): a warning lists the affected IDs, and the row
+#'   with the fewest `NA` values is kept. Ties are broken by row order.
+#'
+#' Rows are never merged; the kept row always exists in the input as-is.
+#' Values are compared with exact equality, so numeric values differing
+#' only by floating-point noise are treated as conflicting.
 #'
 #' @param dataf A data frame.
 #' @param id_col Column name (quoted or unquoted) identifying rows.
 #' @param keep One of `"most_complete"` (default), `"first"`, `"last"`, or
 #'   `"none"`. `"none"` removes *all* rows with duplicate IDs, including
 #'   their originals.
-#' @param quiet If `TRUE`, suppress messages. Default `FALSE`.
+#' @param quiet If `TRUE`, suppress messages. Conflict warnings are still
+#'   recorded in the `"conflicting_ids"` attribute. Default `FALSE`.
 #'
-#' @return `dataf` with duplicates removed according to `keep`.
+#' @return `dataf` with duplicates removed according to `keep`. When
+#'   `keep = "most_complete"`, the IDs with conflicting values are attached
+#'   as an attribute; access them via `attr(result, "conflicting_ids")`.
 #'
 #' @examples
 #' df <- data.frame(
-#'   id  = c(1, 2, 2, 3),
-#'   val = c(10, NA, 20, 30)
+#'   id  = c(1, 2, 2, 3, 3, 4, 4),
+#'   age = c(60, NA, 65, 70, 70, 50, 55),
+#'   bmi = c(22, 24, 24, 30, 30, 21, NA)
 #' )
-#' remove_duplicates(df, id_col = "id")  # keeps id=2 row with val=20
+#' # id 2: keeps the more complete row
+#' # id 3: identical rows, keeps the first
+#' # id 4: conflicting ages, warns and keeps the more complete row
+#' result <- remove_duplicates(df, id_col = "id")
+#' attr(result, "conflicting_ids")
 #'
+#' @seealso [dplyr::distinct()] for removing rows that are identical across
+#'   all columns regardless of ID.
 #' @export
 remove_duplicates <- function(dataf, id_col,
                               keep  = c("most_complete", "first", "last", "none"),
@@ -45,7 +69,7 @@ remove_duplicates <- function(dataf, id_col,
   if (!quiet) .report_duplicate_info(dupe_info)
 
   result <- .remove_duplicates_by_strategy(
-    dataf, id_values, dupe_info, keep, id_col_name
+    dataf, id_values, dupe_info, keep, id_col_name, quiet
   )
 
   if (!quiet) {
@@ -90,8 +114,8 @@ remove_duplicates <- function(dataf, id_col,
 .report_duplicate_info <- function(dupe_info) {
   cli::cli_alert_info("Found {dupe_info$n_unique} unique ID{?s} with duplicates")
 
-  ids       <- as.character(dupe_info$unique_ids)
-  preview   <- if (length(ids) <= 5L) ids else c(utils::head(ids, 5L), "...")
+  ids     <- as.character(dupe_info$unique_ids)
+  preview <- if (length(ids) <= 5L) ids else c(utils::head(ids, 5L), "...")
   cli::cli_alert_info("Duplicate IDs: {.val {preview}}")
 }
 
@@ -100,64 +124,61 @@ remove_duplicates <- function(dataf, id_col,
 #' @keywords internal
 #' @noRd
 .remove_duplicates_by_strategy <- function(dataf, id_values, dupe_info,
-                                           keep, id_col_name) {
+                                           keep, id_col_name, quiet) {
   switch(keep,
-         first         = dataf[!duplicated(id_values), ],
-         last          = dataf[!duplicated(id_values, fromLast = TRUE), ],
-         none          = dataf[!dupe_info$mask, ],
-         most_complete = .keep_most_complete(dataf, id_values,
-                                             dupe_info$unique_ids, id_col_name)
+         first         = dataf[!duplicated(id_values), , drop = FALSE],
+         last          = dataf[!duplicated(id_values, fromLast = TRUE), , drop = FALSE],
+         none          = dataf[!dupe_info$mask, , drop = FALSE],
+         most_complete = .keep_most_complete(dataf, id_values, dupe_info,
+                                             id_col_name, quiet)
   )
 }
 
 
-#' For each duplicate ID, keep only the row with the fewest NAs.
+#' For each duplicate ID, keep the row with the fewest NAs (first on ties).
+#' Warns about IDs whose rows have conflicting non-missing values.
 #' @keywords internal
 #' @noRd
-.keep_most_complete <- function(dataf, id_values, unique_ids, id_col_name) {
-  rows_to_keep <- logical(nrow(dataf))
+.keep_most_complete <- function(dataf, id_values, dupe_info,
+                                id_col_name, quiet) {
+  rows_to_keep <- !dupe_info$mask
+  value_cols   <- setdiff(names(dataf), id_col_name)
+  conflicting  <- character()
 
-  non_dupes <- !(duplicated(id_values) | duplicated(id_values, fromLast = TRUE))
-  rows_to_keep[non_dupes] <- TRUE
-
-  for (dup_id in unique_ids) {
-    best_row <- .find_most_complete_row(dataf, id_values, dup_id, id_col_name)
-    if (!is.null(best_row)) rows_to_keep[best_row] <- TRUE
-  }
-
-  dataf[rows_to_keep, ]
-}
-
-
-#' Locate the row index with fewest NAs (excluding the ID column) for a
-#' given duplicated ID.
-#' @keywords internal
-#' @noRd
-.find_most_complete_row <- function(dataf, id_values, dup_id, id_col_name) {
-  rows_with_id <- if (is.na(dup_id)) {
-    which(is.na(id_values))
-  } else {
-    which(id_values == dup_id & !is.na(id_values))
-  }
-
-  if (length(rows_with_id) == 0L) return(NULL)
-  if (length(rows_with_id) == 1L) return(rows_with_id)
-
-  na_counts <- .count_nas_excluding_id(dataf, rows_with_id, id_col_name)
-  rows_with_id[which.min(na_counts)]
-}
-
-
-#' Count NAs in a set of rows, excluding the ID column.
-#' @keywords internal
-#' @noRd
-.count_nas_excluding_id <- function(dataf, row_indices, id_col_name) {
-  vapply(row_indices, function(row_idx) {
-    row_data   <- dataf[row_idx, , drop = FALSE]
-    id_col_idx <- which(names(dataf) == id_col_name)
-    if (length(id_col_idx) > 0L) {
-      row_data <- row_data[, -id_col_idx, drop = FALSE]
+  for (dup_id in dupe_info$unique_ids) {
+    idx <- if (is.na(dup_id)) {
+      which(is.na(id_values))
+    } else {
+      which(id_values == dup_id)
     }
-    sum(is.na(row_data))
-  }, FUN.VALUE = integer(1))
+    rows <- dataf[idx, value_cols, drop = FALSE]
+
+    if (.has_conflicting_values(rows)) {
+      conflicting <- c(conflicting, as.character(dup_id))
+    }
+
+    na_counts <- rowSums(is.na(rows))
+    rows_to_keep[idx[which.min(na_counts)]] <- TRUE
+  }
+
+  if (!quiet && length(conflicting) > 0L) {
+    cli::cli_alert_warning(
+      "{length(conflicting)} ID{?s} with conflicting values (kept most complete row): {.val {conflicting}}"
+    )
+  }
+
+  result <- dataf[rows_to_keep, , drop = FALSE]
+  attr(result, "conflicting_ids") <- conflicting
+  result
+}
+
+
+#' TRUE if any column has more than one distinct non-missing value
+#' across the rows sharing an ID.
+#' @keywords internal
+#' @noRd
+.has_conflicting_values <- function(rows) {
+  any(vapply(rows, function(x) {
+    length(unique(x[!is.na(x)])) > 1L
+  }, logical(1)))
 }
