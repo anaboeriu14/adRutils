@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">adRutils</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,28 +43,47 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/anaboeriu14/adRutils/blob/v2.1.0/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/anaboeriu14/adRutils/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="2.1.1" id="adrutils-211">adRutils 2.1.1<a class="anchor" aria-label="anchor" href="#adrutils-211"></a></h2>
+<div class="section level3">
+<h3 id="changes-2-1-1">Changes<a class="anchor" aria-label="anchor" href="#changes-2-1-1"></a></h3>
+<ul><li>
+<code><a href="../reference/remove_duplicates.html">remove_duplicates()</a></code>: with <code>keep = "most_complete"</code>, now checks whether rows sharing an ID have conflicting non-missing values. Conflicting IDs are listed in a warning and stored in <code>attr(result, "conflicting_ids")</code>; the most complete row is still kept. Rows are never merged.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="fixes-2-1-1">Fixes<a class="anchor" aria-label="anchor" href="#fixes-2-1-1"></a></h3>
+<ul><li>
+<code><a href="../reference/remove_duplicates.html">remove_duplicates()</a></code>: single-column inputs now return a data frame for all <code>keep</code> strategies.</li>
+</ul><hr></div>
+</div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.1.0" id="adrutils-210">adRutils 2.1.0<a class="anchor" aria-label="anchor" href="#adrutils-210"></a></h2>
+<div class="section level3">
+<h3 id="breaking-changes-2-1-0">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-2-1-0"></a></h3>
+<ul><li>
+<code>summarize_na()</code> and <code>drop_high_na_cols()</code> were renamed to <code><a href="../reference/summarize_missingness.html">summarize_missingness()</a></code> and <code><a href="../reference/drop_cols_by_missingness.html">drop_cols_by_missingness()</a></code>. The old names have been removed — update any code that called them.</li>
+</ul></div>
 <div class="section level3">
 <h3 id="new-2-1-0">New<a class="anchor" aria-label="anchor" href="#new-2-1-0"></a></h3>
 <ul><li><p><code><a href="../reference/compute_zscores.html">compute_zscores()</a></code> — standardize numeric variables to z-scores, optionally group-wise via <code>group_vars</code>. Moved here from <code>adRpheno</code>; it’s a domain-agnostic transform that completes the clean → transform → standardize toolchain alongside <code><a href="../reference/transform_log10.html">transform_log10()</a></code> and the outlier functions.</p></li>
-<li><p><code><a href="../reference/summarize_na.html">summarize_na()</a></code> gains an <code>na_strings</code> argument to also count empty or sentinel strings (e.g. <code>""</code>, matched after whitespace trimming) as missing. When supplied, the output gains <code>count_blank</code>, <code>count_missing</code>, and <code>percent_missing</code> columns, and <code>threshold</code> filters on <code>percent_missing</code>. The default (<code>na_strings = NULL</code>) is unchanged: only true <code>NA</code> is counted.</p></li>
+<li><p><code><a href="../reference/summarize_missingness.html">summarize_missingness()</a></code> gains an <code>na_strings</code> argument to count empty or sentinel strings (e.g. <code>""</code>, matched after whitespace trimming) as missing. When supplied, the output adds <code>count_blank</code>, <code>count_missing</code>, and <code>percent_missing</code> columns, and <code>threshold</code> then filters on <code>percent_missing</code>. The default (<code>na_strings = NULL</code>) is unchanged: only true <code>NA</code> is counted.</p></li>
+<li><p><code><a href="../reference/drop_cols_by_missingness.html">drop_cols_by_missingness()</a></code> also takes <code>na_strings</code>, so it can drop columns on blank-inclusive missingness, consistent with <code><a href="../reference/summarize_missingness.html">summarize_missingness()</a></code>.</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="fixes-2-1-0">Fixes<a class="anchor" aria-label="anchor" href="#fixes-2-1-0"></a></h3>
 <ul><li>
-<code><a href="../reference/summarize_na.html">summarize_na()</a></code>: removed a stray <code>names</code> attribute carried over from <code><a href="https://rdrr.io/pkg/Matrix/man/colSums-methods.html" class="external-link">colSums()</a></code> onto the <code>count_na</code>/<code>percent_na</code> columns. Printed output is unchanged; this only affects code that indexed a single value out of those columns and saw an unexpected element name.</li>
+<code><a href="../reference/summarize_missingness.html">summarize_missingness()</a></code>: removed a stray <code>names</code> attribute carried over from <code><a href="https://rdrr.io/pkg/Matrix/man/colSums-methods.html" class="external-link">colSums()</a></code> onto the count columns. Printed output is unchanged; this only affects code that indexed a single value out of those columns and saw an unexpected element name.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="documentation-2-1-0">Documentation<a class="anchor" aria-label="anchor" href="#documentation-2-1-0"></a></h3>
-<ul><li>New “Biomarker standardization” vignette walking through the full preprocessing workflow: outlier handling → log10 transform → z-scoring.</li>
+<ul><li>New “Log-Transformation and Z-Scores” vignette walking through the full preprocessing workflow: outlier handling → log10 transform → z-scoring.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="testing-2-1-0">Testing<a class="anchor" aria-label="anchor" href="#testing-2-1-0"></a></h3>
-<ul><li>Added tests for <code><a href="../reference/compute_zscores.html">compute_zscores()</a></code> and for the new blank-counting path in <code><a href="../reference/summarize_na.html">summarize_na()</a></code>.</li>
+<ul><li>Added tests for <code><a href="../reference/compute_zscores.html">compute_zscores()</a></code> and the new blank-counting path in <code><a href="../reference/summarize_missingness.html">summarize_missingness()</a></code>.</li>
 </ul><hr></div>
 </div>
     <div class="section level2">
@@ -77,12 +96,12 @@
 <code><a href="../reference/add_meta_pooled_results.html">add_meta_pooled_results()</a></code>: group columns are now explicitly attached to cohort rows up front in the internal <code>.build_pooled_group()</code> helper, ensuring correct behavior on the k &lt; 2 early-return path. No change in output for the standard k &gt;= 2 case; this is a defensive cleanup that improves readability and protects against future refactors. |</li>
 </ul></div>
 <div class="section level3">
-<h3 id="breaking-changes--2-0-1">Breaking changes |<a class="anchor" aria-label="anchor" href="#breaking-changes--2-0-1"></a></h3>
+<h3 id="breaking-changes-2-0-1">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-2-0-1"></a></h3>
 <ul><li>
 <code><a href="../reference/add_meta_pooled_results.html">add_meta_pooled_results()</a></code>: now aborts when the input contains fewer than 2 unique cohorts overall. Previously this case warned per-group and returned unchanged data. Per-group k &lt; 2 cells (within an otherwise multi-cohort dataset) still warn and carry on as before. |</li>
 </ul></div>
 <div class="section level3">
-<h3 id="documentation--2-0-1">Documentation |<a class="anchor" aria-label="anchor" href="#documentation--2-0-1"></a></h3>
+<h3 id="documentation-2-0-1">Documentation<a class="anchor" aria-label="anchor" href="#documentation-2-0-1"></a></h3>
 <ul><li>
 <code><a href="../reference/add_meta_pooled_results.html">add_meta_pooled_results()</a></code>: clarified CI column-name expectations in <code>@details</code>.</li>
 </ul><table class="table"><colgroup><col width="100%"></colgroup><tbody><tr><td align="left"># adRutils 2.0.0</td>
@@ -303,7 +322,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

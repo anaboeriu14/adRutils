@@ -49,14 +49,14 @@ dim(raw_data)
 ## Step 1: Inspect missingness
 
 Always look at NA patterns before you delete anything.
-[`summarize_na()`](https://anaboeriu14.github.io/adRutils/reference/summarize_na.md)
+[`summarize_missingness()`](https://anaboeriu14.github.io/adRutils/reference/summarize_missingness.md)
 gives you a sorted view;
-[`drop_high_na_cols()`](https://anaboeriu14.github.io/adRutils/reference/drop_high_na_cols.md)
+[`drop_cols_by_missingness()`](https://anaboeriu14.github.io/adRutils/reference/drop_cols_by_missingness.md)
 removes columns above a threshold.
 
 ``` r
 
-summarize_na(raw_data)
+summarize_missingness(raw_data)
 #> # A tibble: 9 × 3
 #>   column       count_na percent_na
 #>   <chr>           <dbl>      <dbl>
@@ -76,15 +76,15 @@ drop both with a threshold of, say, 90%:
 
 ``` r
 
-data <- drop_high_na_cols(raw_data, threshold = 90)
+data <- drop_cols_by_missingness(raw_data, threshold = 90)
 names(data)
 #> [1] "subject_id" "age"        "bmi"        "weight_kg"  "dsst_v1"   
 #> [6] "dsst_v2"    "visit_year"
 ```
 
-[`drop_high_na_cols()`](https://anaboeriu14.github.io/adRutils/reference/drop_high_na_cols.md)
+[`drop_cols_by_missingness()`](https://anaboeriu14.github.io/adRutils/reference/drop_cols_by_missingness.md)
 prints what it removed; if you want the same view without modifying the
-data, call `summarize_na(raw_data, threshold = 90)`.
+data, call `summarize_missingness(raw_data, threshold = 90)`.
 
 ## Step 2: Remove duplicates
 
@@ -240,7 +240,7 @@ The whole pipeline reads cleanly as a single chain:
 ``` r
 
 clean_data <- raw_data %>%
-  drop_high_na_cols(threshold = 90) %>%
+  drop_cols_by_missingness(threshold = 90) %>%
   remove_duplicates(subject_id) %>%
   combine_timepoints(
     base_names = "dsst",
@@ -258,7 +258,7 @@ clean_data <- raw_data %>%
 After cleaning, the typical next steps are:
 
 - Inspect the cleaned dataset with
-  [`summarize_na()`](https://anaboeriu14.github.io/adRutils/reference/summarize_na.md)
+  [`summarize_missingness()`](https://anaboeriu14.github.io/adRutils/reference/summarize_missingness.md)
   again to confirm nothing unexpected is missing.
 - Convert pattern-named columns to factors with
   [`convert_columns_to_factors()`](https://anaboeriu14.github.io/adRutils/reference/convert_columns_to_factors.md)

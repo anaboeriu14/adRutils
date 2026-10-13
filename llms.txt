@@ -1,7 +1,7 @@
 # adRutils
 
 [![R-CMD-check](https://github.com/anaboeriu14/adRutils/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/anaboeriu14/adRutils/actions/workflows/R-CMD-check.yaml)
-[![Version](https://img.shields.io/badge/version-2.1.0-blue.svg)](https://github.com/anaboeriu14/adRutils/releases)
+[![Version](https://img.shields.io/badge/version-2.1.1-blue.svg)](https://github.com/anaboeriu14/adRutils/releases)
 [![Coverage](https://img.shields.io/badge/coverage-67%25-yellow?)](https://github.com/anaboeriu14/adRutils/blob/main/NEWS.md)
 
 A collection of R utility functions for data cleaning, transformation,
@@ -140,11 +140,11 @@ before downstream analysis.
 - [`remove_duplicates()`](https://anaboeriu14.github.io/adRutils/reference/remove_duplicates.md)
   : Remove duplicate rows by ID
 
-- [`summarize_na()`](https://anaboeriu14.github.io/adRutils/reference/summarize_na.md)
-  : Summarize NA values by column
+- [`summarize_missingness()`](https://anaboeriu14.github.io/adRutils/reference/summarize_missingness.md)
+  : Summarize missing values by column
 
-- [`drop_high_na_cols()`](https://anaboeriu14.github.io/adRutils/reference/drop_high_na_cols.md)
-  : Drop columns with a high percentage of NA values
+- [`drop_cols_by_missingness()`](https://anaboeriu14.github.io/adRutils/reference/drop_cols_by_missingness.md)
+  : Drop columns with a high percentage of missing values
 
 ## Variable transformation
 

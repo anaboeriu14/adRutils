@@ -1,6 +1,32 @@
 # Changelog
 
+## adRutils 2.1.1
+
+### Changes
+
+- [`remove_duplicates()`](https://anaboeriu14.github.io/adRutils/reference/remove_duplicates.md):
+  with `keep = "most_complete"`, now checks whether rows sharing an ID
+  have conflicting non-missing values. Conflicting IDs are listed in a
+  warning and stored in `attr(result, "conflicting_ids")`; the most
+  complete row is still kept. Rows are never merged.
+
+### Fixes
+
+- [`remove_duplicates()`](https://anaboeriu14.github.io/adRutils/reference/remove_duplicates.md):
+  single-column inputs now return a data frame for all `keep`
+  strategies.
+
+------------------------------------------------------------------------
+
 ## adRutils 2.1.0
+
+### Breaking changes
+
+- `summarize_na()` and `drop_high_na_cols()` were renamed to
+  [`summarize_missingness()`](https://anaboeriu14.github.io/adRutils/reference/summarize_missingness.md)
+  and
+  [`drop_cols_by_missingness()`](https://anaboeriu14.github.io/adRutils/reference/drop_cols_by_missingness.md).
+  The old names have been removed — update any code that called them.
 
 ### New
 
@@ -12,35 +38,40 @@
   [`transform_log10()`](https://anaboeriu14.github.io/adRutils/reference/transform_log10.md)
   and the outlier functions.
 
-- [`summarize_na()`](https://anaboeriu14.github.io/adRutils/reference/summarize_na.md)
-  gains an `na_strings` argument to also count empty or sentinel strings
+- [`summarize_missingness()`](https://anaboeriu14.github.io/adRutils/reference/summarize_missingness.md)
+  gains an `na_strings` argument to count empty or sentinel strings
   (e.g. `""`, matched after whitespace trimming) as missing. When
-  supplied, the output gains `count_blank`, `count_missing`, and
-  `percent_missing` columns, and `threshold` filters on
+  supplied, the output adds `count_blank`, `count_missing`, and
+  `percent_missing` columns, and `threshold` then filters on
   `percent_missing`. The default (`na_strings = NULL`) is unchanged:
   only true `NA` is counted.
 
+- [`drop_cols_by_missingness()`](https://anaboeriu14.github.io/adRutils/reference/drop_cols_by_missingness.md)
+  also takes `na_strings`, so it can drop columns on blank-inclusive
+  missingness, consistent with
+  [`summarize_missingness()`](https://anaboeriu14.github.io/adRutils/reference/summarize_missingness.md).
+
 ### Fixes
 
-- [`summarize_na()`](https://anaboeriu14.github.io/adRutils/reference/summarize_na.md):
+- [`summarize_missingness()`](https://anaboeriu14.github.io/adRutils/reference/summarize_missingness.md):
   removed a stray `names` attribute carried over from
   [`colSums()`](https://rdrr.io/pkg/Matrix/man/colSums-methods.html)
-  onto the `count_na`/`percent_na` columns. Printed output is unchanged;
-  this only affects code that indexed a single value out of those
-  columns and saw an unexpected element name.
+  onto the count columns. Printed output is unchanged; this only affects
+  code that indexed a single value out of those columns and saw an
+  unexpected element name.
 
 ### Documentation
 
-- New “Biomarker standardization” vignette walking through the full
-  preprocessing workflow: outlier handling → log10 transform →
+- New “Log-Transformation and Z-Scores” vignette walking through the
+  full preprocessing workflow: outlier handling → log10 transform →
   z-scoring.
 
 ### Testing
 
 - Added tests for
   [`compute_zscores()`](https://anaboeriu14.github.io/adRutils/reference/compute_zscores.md)
-  and for the new blank-counting path in
-  [`summarize_na()`](https://anaboeriu14.github.io/adRutils/reference/summarize_na.md).
+  and the new blank-counting path in
+  [`summarize_missingness()`](https://anaboeriu14.github.io/adRutils/reference/summarize_missingness.md).
 
 ------------------------------------------------------------------------
 
@@ -61,7 +92,7 @@
   k \>= 2 case; this is a defensive cleanup that improves readability
   and protects against future refactors. \|
 
-### Breaking changes \|
+### Breaking changes
 
 - [`add_meta_pooled_results()`](https://anaboeriu14.github.io/adRutils/reference/add_meta_pooled_results.md):
   now aborts when the input contains fewer than 2 unique cohorts
@@ -69,7 +100,7 @@
   data. Per-group k \< 2 cells (within an otherwise multi-cohort
   dataset) still warn and carry on as before. \|
 
-### Documentation \|
+### Documentation
 
 - [`add_meta_pooled_results()`](https://anaboeriu14.github.io/adRutils/reference/add_meta_pooled_results.md):
   clarified CI column-name expectations in `@details`.

@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="index.html">adRutils</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -71,7 +71,7 @@
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header"><h1 id="adrutils">adRutils<a class="anchor" aria-label="anchor" href="#adrutils"></a>
 </h1></div>
-<p><a href="https://github.com/anaboeriu14/adRutils/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/anaboeriu14/adRutils/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a> <a href="https://github.com/anaboeriu14/adRutils/releases" class="external-link"><img src="https://img.shields.io/badge/version-2.1.0-blue.svg" alt="Version"></a> <a href="https://github.com/anaboeriu14/adRutils/blob/main/NEWS.md" class="external-link"><img src="https://img.shields.io/badge/coverage-67%25-yellow?" alt="Coverage"></a></p>
+<p><a href="https://github.com/anaboeriu14/adRutils/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/anaboeriu14/adRutils/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a> <a href="https://github.com/anaboeriu14/adRutils/releases" class="external-link"><img src="https://img.shields.io/badge/version-2.1.1-blue.svg" alt="Version"></a> <a href="https://github.com/anaboeriu14/adRutils/blob/main/NEWS.md" class="external-link"><img src="https://img.shields.io/badge/coverage-67%25-yellow?" alt="Coverage"></a></p>
 <p>A collection of R utility functions for data cleaning, transformation, file operations, ID mapping, and statistical modeling. Designed to streamline data workflows and improve reproducibility.</p>
 <blockquote>
 <p><strong>Version 2.0.0 is a major cleanup release.</strong> Several functions and parameters have been renamed for clarity and consistency. See <a href="NEWS.html">NEWS.md</a> for the full list.</p>
@@ -118,7 +118,7 @@
 <span><span class="co"># Clean data</span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="va">data</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu"><a href="reference/remove_duplicates.html">remove_duplicates</a></span><span class="op">(</span><span class="st">"subject_id"</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
-<span>  <span class="fu"><a href="reference/drop_high_na_cols.html">drop_high_na_cols</a></span><span class="op">(</span>threshold <span class="op">=</span> <span class="fl">99</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">drop_high_na_cols</span><span class="op">(</span>threshold <span class="op">=</span> <span class="fl">99</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu"><a href="reference/transform_log10.html">transform_log10</a></span><span class="op">(</span>vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"biomarker1"</span>, <span class="st">"biomarker2"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Fit models across groups</span></span>
@@ -219,7 +219,7 @@ R package version 2.0.0. https://github.com/anaboeriu14/adRutils</code></pre>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>
